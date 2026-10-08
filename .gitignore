@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+*.tgz
+
+# Tooling
+coverage/
+.eslintcache
+*.tsbuildinfo
+
+# Expo / React Native
+.expo/
+.expo-shared/
+
+# Local environment
+.env
+.env.*
+!.env.example
+.npmrc
+
+# Editors
+.vscode/
+.idea/
+
+# macOS
+.DS_Store
+**/.DS_Store
+__MACOSX/

@@ -1,0 +1,18 @@
+export const Border = {
+  button: 1,
+  input: 1,
+  chip: 1,
+  tabs: 1,
+  select: 1,
+  dropdown: 1,
+  modal: 1,
+  header: 1,
+  inputNumber: 1,
+  inputOTP: 1,
+  accordion: 1,
+  checkbox: 1,
+  infobox: 1,
+  radio: 1,
+  toggle: 1,
+  spinnerLoader: 2,
+};
