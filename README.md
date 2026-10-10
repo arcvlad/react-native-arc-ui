@@ -1,30 +1,52 @@
-# react-native-arc-ui
+<div align="center">
 
-**ARCUI** is a modern React Native UI library focused on accessible components, predictable APIs, design tokens, and UI-thread-first motion.
+# ARCUI
 
-Built for React 19, modern React Native, Reanimated, and both Expo and bare React Native applications.
+**High-performance React Native UI with UI-thread-first motion, accessibility, theming, and predictable APIs.**
 
-Current version: **1.0.0**.
+Built for React 19, modern React Native, Reanimated, Expo, and bare React Native applications.
 
-## Highlights
+[![npm version](https://img.shields.io/npm/v/react-native-arc-ui?style=flat-square&label=npm)](https://www.npmjs.com/package/react-native-arc-ui)
+![React 19](https://img.shields.io/badge/React-19-149ECA?style=flat-square)
+![TypeScript](https://img.shields.io/badge/TypeScript-first-3178C6?style=flat-square)
+![New Architecture](https://img.shields.io/badge/React%20Native-New%20Architecture-61DAFB?style=flat-square)
 
-- Accessible React Native components with native roles and semantic state
-- UI-thread-first motion powered by Reanimated
-- Light, dark, system, and reversed theme composition
-- Token-driven colors, typography, spacing, sizing, radii, borders, animation, and safe-area behavior
-- Centralized ARCUI font scaling with Dynamic Type support
-- Reduced Motion support
-- Predictable controlled state ownership for semantic application state
-- SelectionGroup coordination for selection-aware controls
-- Runtime-localizable ARCUI-owned strings
-- Provider-owned Toast and Dialog lifecycle
-- TypeScript-first public APIs
-- Expo and bare React Native support
-- React Native New Architecture support
+[Documentation](https://arcui.arcstylen.com) · [npm](https://www.npmjs.com/package/react-native-arc-ui) · [GitHub](https://github.com/arcvlad/react-native-arc-ui) · [Issues](https://github.com/arcvlad/react-native-arc-ui/issues)
+
+</div>
+
+<table>
+  <tr>
+    <td align="center">
+      <img
+        src="https://arcui.arcstylen.com/github/react-native-arc-ui/assets/1.1.0/arcui-showcase-light-v1.gif"
+        width="260"
+        alt="ARCUI light theme showcase"
+      />
+    </td>
+    <td align="center">
+      <img
+        src="https://arcui.arcstylen.com/github/react-native-arc-ui/assets/1.1.0/arcui-showcase-dark-v1.gif"
+        width="260"
+        alt="ARCUI dark theme showcase"
+      />
+    </td>
+  </tr>
+</table>
+
+## Why ARCUI
+
+|                                  |                                                                                                                     |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| **UI-thread-first motion**       | Frame-level visual work uses Reanimated and stays off the JavaScript thread where practical.                        |
+| **Accessibility from the start** | Native semantics, controlled font scaling, Reduced Motion, accessible state, and localizable library-owned strings. |
+| **Tokens and themes**            | Light, dark, system, theme interpolation, `ReverseTheme`, and design-system-first configuration.                    |
+| **Predictable state ownership**  | React owns semantic state. SharedValues own frame-level visual state. Public APIs make that boundary explicit.      |
+| **AI-ready guidance**            | Version-matched references and patterns ship with the package for AI-assisted ARCUI development.                    |
+
+ARCUI is designed for modern React Native applications that need reusable UI without giving up motion quality, accessibility, or control over the design system.
 
 ## Installation
-
-Install ARCUI and its peer dependencies:
 
 ```bash
 npm install react-native-arc-ui react-native-reanimated react-native-gesture-handler react-native-svg
@@ -37,29 +59,13 @@ npm install react-native-arc-ui
 npx expo install react-native-reanimated react-native-gesture-handler react-native-svg
 ```
 
-Follow the official setup instructions for Reanimated and React Native Gesture Handler for the versions used by your application.
+Follow the official setup instructions for the Reanimated and React Native Gesture Handler versions used by your application.
 
-ARCUI 1.x does not require `react-native-worklets` directly. If the Reanimated version used by your application requires additional setup or dependencies, follow the installation requirements for that Reanimated and React Native combination.
-
-## Compatibility
-
-ARCUI 1.x supports:
-
-| Dependency                   | Version           |
-| ---------------------------- | ----------------- |
-| React                        | `>=19.0.0`        |
-| React Native                 | `>=0.78.0`        |
-| React Native Reanimated      | `>=3.19.0 <5.0.0` |
-| React Native Gesture Handler | `>=2.28.0`        |
-| React Native SVG             | `>=15.0.0`        |
-
-ARCUI primarily targets modern React Native and the New Architecture.
-
-The 1.x line intentionally uses Reanimated APIs shared by supported Reanimated 3.19+ and 4.x releases.
+ARCUI `1.x` does not require `react-native-worklets` directly. Consumers using a Reanimated version that requires additional setup should follow that Reanimated version's installation requirements.
 
 ## Quick start
 
-Wrap your application with the `ARCUI` provider and keep semantic application state in React:
+Wrap your application once with `ARCUI`:
 
 ```tsx
 import { useState } from "react";
@@ -89,7 +95,100 @@ export default function App() {
 }
 ```
 
-The provider owns ARCUI-wide infrastructure including theme state, animated theme progress, font scale, safe-area information, localization strings, and provider-managed overlay infrastructure.
+The provider owns ARCUI-wide theme state, animated theme progress, font scale, safe-area information, localization strings, and shared overlay infrastructure.
+
+## AI-assisted development
+
+ARCUI `1.1+` ships version-matched guidance for AI coding tools in the published `ai/` directory.
+
+```text
+ai/
+├── SKILL.md
+├── INDEX.md
+├── references/
+└── patterns/
+```
+
+Start with `ai/SKILL.md`. `ai/INDEX.md` routes the agent to focused references only when needed, while `references/` documents ARCUI contracts and `patterns/` covers common composition workflows.
+
+The guidance ships alongside the package so AI-generated ARCUI code can target the same API version installed in the application. The `ai/` directory is documentation-only and is not part of ARCUI's runtime entry points.
+
+## Motion that follows the UI
+
+ARCUI uses React state for semantic and structural state, and Reanimated SharedValues for continuous visual state.
+
+That means theme interpolation, transforms, gesture movement, progress, visibility transitions, and other frame-level feedback can stay on the UI thread where practical.
+
+```text
+semantic state  → React
+visual progress → SharedValues
+frame updates   → UI thread
+```
+
+ARCUI does not use React state as an animation frame driver. Motion respects Reduced Motion preferences, and the library does not intentionally cap animation to 60 FPS on higher-refresh-rate devices.
+
+## Themes and composition
+
+ARCUI supports `system`, `light`, and `dark` themes with animated transitions.
+
+```tsx
+<ARCUI theme="system">{children}</ARCUI>
+```
+
+`ReverseTheme` inverts the animated theme context for a subtree, so composed components continue to interpolate naturally without maintaining a second static theme implementation.
+
+```tsx
+import { ReverseTheme, Text, ThemedView } from "react-native-arc-ui";
+
+<ReverseTheme>
+  <ThemedView>
+    <Text>Opposite theme, same ARCUI behavior.</Text>
+  </ThemedView>
+</ReverseTheme>;
+```
+
+For application-specific theme-aware UI, ARCUI exposes:
+
+```ts
+import {
+  useARCUITheme,
+  useARCUIAnimatedTheme,
+  useARCUISystem,
+} from "react-native-arc-ui";
+```
+
+## Tokens first
+
+Colors, typography, spacing, sizing, radii, borders, animation configuration, safe-area behavior, and component defaults are driven by ARCUI tokens.
+
+```tsx
+import {
+  ARCUI,
+  Screen,
+  Text,
+  defaultTokens,
+  type TTokensOverride,
+} from "react-native-arc-ui";
+
+const tokens = {
+  spacing: {
+    ...defaultTokens.spacing,
+    l: 24,
+  },
+} satisfies TTokensOverride;
+
+export default function App() {
+  return (
+    <ARCUI tokens={tokens}>
+      <Screen>
+        <Text>Custom ARCUI tokens.</Text>
+      </Screen>
+    </ARCUI>
+  );
+}
+```
+
+Top-level token overrides are intentionally shallow. Compose nested token groups explicitly when customizing them.
 
 ## Components
 
@@ -117,464 +216,97 @@ The provider owns ARCUI-wide infrastructure including theme state, animated them
 
 `Dropdown` · `Modal`
 
-Toast and Dialog are exposed through provider-owned imperative APIs rather than public visual components.
+Toast and Dialog use provider-owned imperative APIs rather than public visual components.
 
-## State ownership
+## Controlled where semantics matter
 
 ARCUI keeps semantic application state explicit.
 
-Components whose public API represents application state use controlled ownership instead of maintaining a hidden second source of truth.
-
 ```tsx
-import { useState } from "react";
-import { Checkbox } from "react-native-arc-ui";
+const [checked, setChecked] = useState(false);
 
-export function Example() {
-  const [checked, setChecked] = useState(false);
-
-  return (
-    <Checkbox checked={checked} onCheckedChange={setChecked}>
-      Remember this device
-    </Checkbox>
-  );
-}
+<Checkbox checked={checked} onCheckedChange={setChecked}>
+  Remember this device
+</Checkbox>;
 ```
 
-The consumer remains the source of truth. ARCUI requests state changes through callbacks and renders from the value supplied by the owner.
+The consumer remains the source of truth. ARCUI requests changes through callbacks and renders from the value supplied by the owner.
 
-The same principle is used across selection controls, tabs, sliders, accordions, chips, and selects where semantic state belongs to the application.
-
-### SelectionGroup
-
-Selection-aware controls can delegate ownership to a controlled `SelectionGroup`.
-
-```tsx
-import { useState } from "react";
-import { SelectionGroup, Toggle } from "react-native-arc-ui";
-
-export function NotificationPreferences() {
-  const [values, setValues] = useState<string[]>(["product"]);
-
-  return (
-    <SelectionGroup multiple values={values} onValuesChange={setValues}>
-      <Toggle value="product">Product updates</Toggle>
-      <Toggle value="marketing">Marketing</Toggle>
-    </SelectionGroup>
-  );
-}
-```
-
-### Text inputs
-
-`Input` and `InputArea` intentionally preserve React Native's native controlled and uncontrolled `TextInput` ownership.
-
-Controlled:
-
-```tsx
-<Input value={value} onChangeText={setValue} />
-```
-
-Uncontrolled:
-
-```tsx
-<Input defaultValue="Initial value" />
-```
-
-A mounted input should not switch between controlled and uncontrolled ownership.
-
-## Themes
-
-ARCUI supports system, light, and dark themes.
-
-```tsx
-<ARCUI theme="system">{children}</ARCUI>
-```
-
-```tsx
-<ARCUI theme="light">{children}</ARCUI>
-```
-
-```tsx
-<ARCUI theme="dark">{children}</ARCUI>
-```
-
-Theme transitions are animated with Reanimated where appropriate.
-
-`ReverseTheme` can be used to render a subtree against the opposite resolved theme while preserving ARCUI theme behavior.
-
-ARCUI also exposes public theme/system hooks:
-
-```ts
-import {
-  useARCUITheme,
-  useARCUIAnimatedTheme,
-  useARCUISystem,
-} from "react-native-arc-ui";
-```
-
-`useARCUITheme()` provides resolved theme information and design tokens.
-
-`useARCUIAnimatedTheme()` exposes animated theme state for custom ARCUI-compatible visual components.
-
-`useARCUISystem()` exposes ARCUI-managed runtime system values such as font scale and safe-area information.
-
-## Design tokens
-
-ARCUI is tokens-first.
-
-Default token values are available from the package root:
-
-```ts
-import {
-  defaultTokens,
-  Colors,
-  ColorsLight,
-  ColorsDark,
-  Sizings,
-  Spacing,
-  SafeArea,
-  Radius,
-  Border,
-  Typography,
-  ZIndex,
-} from "react-native-arc-ui";
-```
-
-ARCUI token configuration is resolved when the provider mounts.
-
-Top-level token overrides are intentionally shallow. When overriding a nested token group, compose it from the existing group instead of relying on recursive deep merging.
-
-```tsx
-import {
-  ARCUI,
-  defaultTokens,
-  type TTokensOverride,
-} from "react-native-arc-ui";
-
-const tokens = {
-  spacing: {
-    ...defaultTokens.spacing,
-    l: 24,
-  },
-} satisfies TTokensOverride;
-
-export default function App() {
-  return <ARCUI tokens={tokens}>{children}</ARCUI>;
-}
-```
-
-Public token types include:
-
-```ts
-import type {
-  TTokens,
-  TTokensOverride,
-  TThemeWithCustomTokens,
-  TTypographyStyle,
-  TSafeAreaOffset,
-  TSafeAreaComponentTokens,
-  TSafeAreaTokens,
-} from "react-native-arc-ui";
-```
-
-ARCUI also supports application-specific custom token extensions through its generic token types.
-
-## Localization
-
-Reusable ARCUI-owned strings are separate from design tokens and can be overridden through the provider.
-
-```tsx
-<ARCUI
-  strings={{
-    modalCloseAccessibilityLabel: "Close",
-    headerBackAccessibilityLabel: "Back",
-    selectSearchPlaceholder: "Search",
-    selectEmptyLabel: "No results",
-  }}
->
-  {children}
-</ARCUI>
-```
-
-Strings are runtime-reactive.
-
-The resolved strings and public string types are available through:
-
-```ts
-import {
-  defaultStrings,
-  useARCUIStrings,
-  type TARCUIStrings,
-  type TARCUIStringsOverride,
-} from "react-native-arc-ui";
-```
+Native text-input ownership is preserved where it is useful: `Input` and `InputArea` support React Native's normal controlled and uncontrolled `TextInput` patterns.
 
 ## Accessibility
 
-Accessibility is a first-class ARCUI requirement.
+Accessibility is part of the component architecture, not a final pass.
 
-ARCUI components use native roles, semantic accessibility state, accessible labels and actions, centralized font scaling, accessible validation states, Reduced Motion support, and real React semantic state rather than intermediate animation progress.
+ARCUI includes native roles and semantic state, accessible labels and actions, central font-scale handling, accessible validation states, Reduced Motion support, localizable ARCUI-owned strings, and consumer accessibility escape hatches where they are safe.
 
-ARCUI avoids generic gesture instructions such as `"Double tap to activate"` when native accessibility roles and states already describe the interaction.
+## Toast and Dialog
 
-Library-owned reusable accessibility strings are localizable through the ARCUI strings system.
-
-Consumer accessibility overrides remain available where they do not conflict with component correctness or semantic invariants.
-
-## Typography and font scaling
-
-ARCUI uses a central font-scale value for library-managed typography.
-
-Text that ARCUI scales manually disables duplicate native font scaling and respects the configured maximum font-size multiplier where applicable.
-
-Typography token slots are native-style-first. In addition to ARCUI defaults such as `fontWeight`, `fontFamily`, and `letterSpacing`, consumers can use applicable React Native `TextStyle` properties such as `fontStyle`, `fontVariant`, and `textTransform`.
-
-`fontSize` and explicitly configured `lineHeight` values are treated as unscaled base metrics and are applied through ARCUI's central font scale.
-
-Semantic and theme text colors remain owned by ARCUI color/state tokens or explicit component color APIs rather than typography tokens.
-
-For example, a design system can make built-in Button labels uppercase through typography tokens:
+Transient global feedback is managed through ARCUI's shared provider infrastructure.
 
 ```tsx
-import {
-  ARCUI,
-  defaultTokens,
-  type TTokensOverride,
-} from "react-native-arc-ui";
+import { showDialog, showToast } from "react-native-arc-ui";
 
-const tokens = {
-  typography: {
-    ...defaultTokens.typography,
-    button: {
-      ...defaultTokens.typography.button,
-      label: {
-        ...defaultTokens.typography.button.label,
-        textTransform: "uppercase",
-      },
-    },
-  },
-} satisfies TTokensOverride;
-
-export default function App() {
-  return <ARCUI tokens={tokens}>{children}</ARCUI>;
-}
-```
-
-Components that accept custom `ReactNode` content leave that custom content's typography under consumer ownership unless the component contract explicitly states otherwise.
-
-## Motion
-
-ARCUI uses Reanimated for visual motion.
-
-React state owns semantic and structural state, while SharedValues own frame-level visual state.
-
-ARCUI favors UI-thread execution for gesture movement, transforms, theme interpolation, progress, visibility transitions, and other continuous visual feedback.
-
-Animated components respect Reduced Motion preferences.
-
-## Imperative APIs
-
-### Toast
-
-Toast is exposed through a provider-owned imperative API:
-
-```ts
-import {
-  showToast,
-  hideToast,
-  type TToastId,
-  type TToastInput,
-  type TToastPlacement,
-} from "react-native-arc-ui";
-```
-
-Example:
-
-```tsx
-const toastId = showToast({
+showToast({
   message: "Changes saved",
   placement: "bottom",
 });
 
-hideToast(toastId);
-```
-
-### Dialog
-
-Dialog is also provider-owned and imperative:
-
-```ts
-import {
-  showDialog,
-  hideDialog,
-  type TDialog,
-  type TDialogAction,
-  type TDialogActionType,
-} from "react-native-arc-ui";
-```
-
-Dialog rendering and lifecycle are managed by ARCUI rather than through a public `Dialog` component.
-
-### Modal
-
-`Modal` uses explicit controlled visibility and is available from the root package:
-
-```ts
-import {
-  Modal,
-  useModal,
-  type IModal,
-  type TModalHeight,
-} from "react-native-arc-ui";
-```
-
-## Extension APIs
-
-ARCUI exposes selected hooks for building application-specific components that follow the same state model as built-in components.
-
-```ts
-import {
-  useInputState,
-  type TInputModifier,
-  type IUseInputState,
-  type TUseInputStateResult,
-} from "react-native-arc-ui";
-```
-
-`useInputState` is intentionally public so custom input-like components can reuse ARCUI focus and modifier semantics.
-
-Internal provider registries, component internals, and lifecycle utilities are not part of the public API contract.
-
-## Public types
-
-ARCUI exports component contracts and associated public unions directly from the package root.
-
-Examples:
-
-```ts
-import type {
-  IButton,
-  ICheckbox,
-  IRadio,
-  IToggle,
-  IInput,
-  ISelect,
-  ISlider,
-  IModal,
-  TIconType,
-  TSelectOption,
-  TDropdownPlacement,
-  TToastInput,
-  TToastPlacement,
-} from "react-native-arc-ui";
-```
-
-Animation configuration types are also public:
-
-```ts
-import type {
-  TAnimationDirection,
-  TEasing,
-  TPressAnimation,
-} from "react-native-arc-ui";
+showDialog({
+  title: "Continue?",
+  message: "Your current changes will be preserved.",
+  actions: [{ label: "Continue" }],
+});
 ```
 
 ## Testing
 
-Testing utilities intentionally live under a separate package entry point.
+ARCUI's test utilities live outside the production entry point:
 
 ```tsx
 import { ARCUIMock } from "react-native-arc-ui/testing";
+
+render(
+  <ARCUIMock>
+    <MyComponent />
+  </ARCUIMock>,
+);
 ```
 
-Example:
+Avoid deep imports from `src` or `dist`; only documented package entry points are part of the public API contract.
 
-```tsx
-render(<ARCUIMock>{children}</ARCUIMock>);
-```
+## Compatibility
 
-`ARCUIMock` is not exported from the main `react-native-arc-ui` entry point. This keeps testing infrastructure outside the production runtime surface.
+ARCUI `1.x` targets modern React Native while keeping the public runtime compatible across supported Reanimated 3.19+ and 4.x environments.
 
-## Package boundaries
+| Dependency                   | Supported range   |
+| ---------------------------- | ----------------- |
+| React                        | `>=19.0.0`        |
+| React Native                 | `>=0.78.0`        |
+| React Native Reanimated      | `>=3.19.0 <5.0.0` |
+| React Native Gesture Handler | `>=2.28.0`        |
+| React Native SVG             | `>=15.0.0`        |
 
-ARCUI exposes these supported consumer entry points:
+New Architecture is the primary modern target. Consumers should choose a Reanimated version compatible with their React Native version and architecture.
 
-```ts
-import { Button } from "react-native-arc-ui";
-```
+## Documentation
 
-and:
+Full documentation, component examples, API guidance, theming, tokens, motion, accessibility, AI guidance, and integration details live at:
 
-```ts
-import { ARCUIMock } from "react-native-arc-ui/testing";
-```
+**https://arcui.arcstylen.com**
 
-Internal implementation paths are not part of the public API contract.
-
-Avoid deep imports such as:
-
-```text
-react-native-arc-ui/src/...
-react-native-arc-ui/dist/...
-```
-
-## TypeScript
-
-ARCUI is written in TypeScript and ships declaration files.
-
-Public APIs prefer exact React Native and dependency-exported types over structural substitutes.
-
-Type-only imports are enforced throughout the source.
-
-The public surface is intentionally explicit rather than exposing internal implementation modules through deep imports.
-
-## Architecture principles
-
-ARCUI 1.x follows this priority:
-
-```text
-Correctness
-↓
-Accessibility
-↓
-Predictable API
-↓
-Tokens and configuration
-↓
-UI-thread motion
-↓
-Performance
-↓
-Testability
-↓
-Simplicity
-```
-
-In practice:
-
-- React state owns semantic and structural state.
-- SharedValues own frame-level visual state.
-- SharedValue `.value` is not read or written during normal React render.
-- UI-thread motion is preferred where practical.
-- Reduced Motion is supported.
-- Semantic accessibility state follows real React state.
-- Reusable design-system values are token-driven.
-- Reusable library-owned strings are localizable.
-- Cosmetic invalid input degrades safely where practical.
-- Fundamental architecture invariant violations fail clearly.
-- Consumer native escape hatches are preserved when they do not violate correctness or accessibility invariants.
+The README is intentionally a fast product and onboarding overview rather than a complete API reference.
 
 ## Project
 
-Source code, releases, and issue tracking are hosted on GitHub.
+- [Documentation](https://arcui.arcstylen.com)
+- [npm package](https://www.npmjs.com/package/react-native-arc-ui)
+- [Source code](https://github.com/arcvlad/react-native-arc-ui)
+- [Changelog](./CHANGELOG.md)
+- [Issues](https://github.com/arcvlad/react-native-arc-ui/issues)
 
-- Repository: https://github.com/arcvlad/react-native-arc-ui
-- Issues: https://github.com/arcvlad/react-native-arc-ui/issues
-
-ARCUI follows semantic versioning. The public API starts with `1.0.0`.
+ARCUI follows semantic versioning.
 
 ## License
 
-ARCUI is released under the MIT License.
-
-See [`LICENSE`](./LICENSE) for the full license text.
+ARCUI is distributed under the MIT License. See [`LICENSE`](./LICENSE) for details.

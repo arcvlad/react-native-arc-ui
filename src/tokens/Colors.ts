@@ -5,7 +5,7 @@ export const ColorsLight = {
     screen: "rgba(250,250,250,1)",
   },
   themedView: {
-    background: "#FAFAFA",
+    background: "rgba(250,250,250,1)",
   },
   text: {
     primary: "rgba(17,17,17,1)",
@@ -570,7 +570,7 @@ export const ColorsDark = {
     screen: "rgba(17,17,17,1)",
   },
   themedView: {
-    background: "#111111",
+    background: "rgba(17,17,17,1)",
   },
   text: {
     primary: "rgba(250,250,250,1)",
