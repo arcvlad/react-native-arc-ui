@@ -1,6 +1,6 @@
 {
   "name": "react-native-arc-ui",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Accessible, token-driven React Native UI components with UI-thread-first motion.",
   "author": {
     "name": "Vladimir Janjić",
@@ -57,7 +57,9 @@
   },
   "files": [
     "dist",
+    "ai",
     "README.md",
+    "CHANGELOG.md",
     "LICENSE"
   ],
   "scripts": {
