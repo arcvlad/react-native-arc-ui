@@ -15,6 +15,7 @@ import {
   resolveNonNegativeMetric,
 } from "../../utils/numberUtils";
 import { resolveTextContent } from "../../utils/reactNode";
+import { resolveThemeColor } from "../../utils/resolveThemeColor";
 import { resolveTypographyStyle } from "../../utils/resolveTypography";
 import type {
   IDivider,
@@ -66,9 +67,7 @@ const DividerComponent = ({
   orientation = "horizontal",
   length = "100%",
   thickness,
-  color,
-  darkColor,
-  lightColor,
+  colors,
   radius,
   label,
   labelPosition = "center",
@@ -99,26 +98,31 @@ const DividerComponent = ({
   );
 
   /**
-   * Theme color resolution contract:
+   * Per-slot color resolution:
    *
-   * 1. color -> fixed in both themes
-   * 2. darkColor + lightColor -> theme-aware pair
-   * 3. only one pair value -> ignore incomplete pair
-   * 4. nothing -> semantic Divider tokens
+   * colors override
+   * ↓
+   * ARCUI Divider tokens
    */
-  const hasCustomThemePair =
-    darkColor !== undefined && lightColor !== undefined;
+  const resolvedLineColor = resolveThemeColor(
+    colors?.line,
+    tokens.colors.light.divider.line,
+    tokens.colors.dark.divider.line,
+    "Divider colors.line",
+  );
 
-  const resolvedLightLineColor =
-    color ??
-    (hasCustomThemePair ? lightColor : tokens.colors.light.divider.line);
+  const resolvedLabelColor = resolveThemeColor(
+    colors?.label,
+    tokens.colors.light.divider.label,
+    tokens.colors.dark.divider.label,
+    "Divider colors.label",
+  );
 
-  const resolvedDarkLineColor =
-    color ?? (hasCustomThemePair ? darkColor : tokens.colors.dark.divider.line);
+  const resolvedLightLineColor = resolvedLineColor.light;
+  const resolvedDarkLineColor = resolvedLineColor.dark;
 
-  const lightLabelColor = tokens.colors.light.divider.label;
-
-  const darkLabelColor = tokens.colors.dark.divider.label;
+  const lightLabelColor = resolvedLabelColor.light;
+  const darkLabelColor = resolvedLabelColor.dark;
 
   const resolvedLabelText =
     resolvedOrientation === "horizontal" ? resolveTextContent(label) : null;

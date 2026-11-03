@@ -15,11 +15,7 @@ Modal visibility is controlled application state.
 ```tsx
 const [visible, setVisible] = useState(false);
 
-<Modal
-  visible={visible}
-  onClose={() => setVisible(false)}
-  title="Details"
->
+<Modal visible={visible} onClose={() => setVisible(false)} title="Details">
   {content}
 </Modal>;
 ```
@@ -80,10 +76,7 @@ The consumer owns the trigger's visual presentation through:
   items={items}
   onSelect={handleSelect}
   trigger={({ onPress, isOpen, disabled }) => (
-    <Button
-      onPress={onPress}
-      disabled={disabled}
-    >
+    <Button onPress={onPress} disabled={disabled}>
       {isOpen ? "Close" : "Open"}
     </Button>
   )}
@@ -95,8 +88,9 @@ requires state outside Dropdown's public contract.
 
 Dropdown item values must be stable and unique.
 
-Use item `destructive` semantics for destructive actions instead of only
-hardcoding a red color when the behavior is truly destructive.
+Use item `tone="danger"` for destructive actions instead of only hardcoding a
+red color when the behavior is truly destructive. Item-level `colors` may
+customize the visual palette without changing that semantic intent.
 
 ## Dialog
 
@@ -104,10 +98,7 @@ Dialog is imperative public API and requires an `ARCUI` provider to be
 mounted before it is called:
 
 ```tsx
-import {
-  hideDialog,
-  showDialog,
-} from "react-native-arc-ui";
+import { hideDialog, showDialog } from "react-native-arc-ui";
 ```
 
 Show:
@@ -127,7 +118,9 @@ showDialog({
 
 ARCUI does not generate an implicit confirmation action.
 
-Provide explicit actions when actions are required.
+Provide explicit actions when actions are required. Dialog actions reuse
+Button `tone` and `colors`, so destructive or branded actions should use the
+Button contract rather than a Dialog-specific color API.
 
 Dialog supports one active instance.
 
@@ -166,17 +159,19 @@ Toast is imperative and requires an `ARCUI` provider to be mounted before it
 is called:
 
 ```tsx
-import {
-  hideToast,
-  showToast,
-} from "react-native-arc-ui";
+import { hideToast, showToast } from "react-native-arc-ui";
 
 const id = showToast({
   message: "Saved",
+  tone: "success",
 });
 
 hideToast(id);
 ```
+
+Toast supports `neutral`, `info`, `success`, `warning`, and `danger` tones plus
+per-instance `colors`. A custom `icon` is consumer-owned and is not implicitly
+recolored by the Toast palette.
 
 `showToast` returns the Toast id.
 

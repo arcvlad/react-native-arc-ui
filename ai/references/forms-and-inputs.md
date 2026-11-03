@@ -22,17 +22,14 @@ Controlled:
 ```tsx
 const [value, setValue] = useState("");
 
-<Input
-  value={value}
-  onChangeText={setValue}
-/>;
+<Input value={value} onChangeText={setValue} />;
 ```
 
 Uncontrolled native ownership is also available through inherited native
 `defaultValue`:
 
 ```tsx
-<Input defaultValue="Initial value" />;
+<Input defaultValue="Initial value" />
 ```
 
 Do not switch a mounted input between controlled and uncontrolled ownership.
@@ -72,10 +69,7 @@ Use native `maxLength` when a character limit is part of the input contract.
 ```tsx
 const [quantity, setQuantity] = useState(1);
 
-<InputNumber
-  value={quantity}
-  onValueChange={setQuantity}
-/>;
+<InputNumber value={quantity} onValueChange={setQuantity} />;
 ```
 
 Use `min`, `max`, `step`, and `decimals` through the public contract rather than
@@ -84,6 +78,11 @@ reimplementing numeric normalization around a generic input.
 Its increment/decrement controls are icon-only actions with ARCUI-localizable
 accessible labels.
 
+The step controls reuse Button presentation semantics. Use
+`decrementButtonType` / `incrementButtonType`, the matching `...ButtonTone`, and
+`...ButtonColors` props when their appearance needs to differ from the default.
+Do not try to style those nested actions through the field `colors` object.
+
 ## `InputOTP`
 
 `InputOTP` is controlled:
@@ -91,11 +90,7 @@ accessible labels.
 ```tsx
 const [code, setCode] = useState("");
 
-<InputOTP
-  value={code}
-  onValueChange={setCode}
-  onComplete={handleComplete}
-/>;
+<InputOTP value={code} onValueChange={setCode} onComplete={handleComplete} />;
 ```
 
 Use it for segmented code entry instead of manually coordinating multiple
@@ -113,16 +108,31 @@ Keep validation logic outside the visual component.
 Example:
 
 ```tsx
-<Input
-  label="Email"
-  value={email}
-  onChangeText={setEmail}
-  error={emailError}
-/>
+<Input label="Email" value={email} onChangeText={setEmail} error={emailError} />
 ```
 
 Do not duplicate the same error text both inside the field API and as a separate
 accessible message unless the design/semantics require distinct content.
+
+## Field colors
+
+`Input`, `InputPassword`, `InputArea`, `InputNumber`, and `InputOTP` use ARCUI's
+shared field color model where the component exposes the corresponding visual
+slot. Exact supported slots differ by component, so inspect the exported color
+type instead of assuming every field owns every state.
+
+Use the component `colors` prop for per-instance state-aware or theme-aware
+field color overrides. A color may be a fixed string or a complete
+`{ light, dark }` pair. Partial `colors` objects preserve ARCUI fallback for
+omitted states.
+
+Do not recreate field state palettes through unrelated typography tokens or
+parallel light/dark props.
+
+`Select` and `Slider` have their own component-specific `colors` contracts. Do
+not assume their color shape is interchangeable with the shared field contract.
+
+Read `tokens-and-theming.md` for the cross-component color resolution model.
 
 ## Disabled versus inactive
 
@@ -155,11 +165,7 @@ Single mode:
 ```tsx
 const [value, setValue] = useState<string | null>(null);
 
-<Select
-  value={value}
-  onValueChange={setValue}
-  options={options}
-/>;
+<Select value={value} onValueChange={setValue} options={options} />;
 ```
 
 Multiple mode:
@@ -201,11 +207,7 @@ Single mode:
 ```tsx
 const [value, setValue] = useState(50);
 
-<Slider
-  value={value}
-  onValueChange={setValue}
-  onValueCommit={handleCommit}
-/>;
+<Slider value={value} onValueChange={setValue} onValueCommit={handleCommit} />;
 ```
 
 Range mode:
@@ -254,10 +256,7 @@ const handleSubmit = async () => {
   }
 };
 
-<Button
-  loading={submitting}
-  onPress={handleSubmit}
->
+<Button loading={submitting} onPress={handleSubmit}>
   Save
 </Button>;
 ```
@@ -270,9 +269,7 @@ Use `FluidView` when validation messages or conditional fields should cause
 surrounding layout to reposition smoothly.
 
 ```tsx
-<FluidView>
-  {showExtraField ? <Input {...extraFieldProps} /> : null}
-</FluidView>
+<FluidView>{showExtraField ? <Input {...extraFieldProps} /> : null}</FluidView>
 ```
 
 Semantic field presence remains React-owned.

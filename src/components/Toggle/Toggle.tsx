@@ -21,6 +21,7 @@ import { useSelectionPress } from "../../internal/selection/useSelectionPress";
 import { useSelectionState } from "../../internal/selection/useSelectionState";
 import { isFiniteNumber } from "../../utils/numberUtils";
 import { resolveAnimation } from "../../utils/resolveAnimation";
+import { resolveThemeColor } from "../../utils/resolveThemeColor";
 import { resolveTextContent } from "../../utils/reactNode";
 import { resolveTypographyStyle } from "../../utils/resolveTypography";
 import { Icon } from "../Icon/Icon";
@@ -95,6 +96,7 @@ const ToggleComponent = ({
   height,
   thumbSize,
   error,
+  colors,
   textStyle,
   style,
   onPress,
@@ -342,142 +344,177 @@ const ToggleComponent = ({
 
   const errorFontSize = tokens.typography.toggle.error.fontSize;
 
-  // ─── Theme token extraction ──────────────────────────────────────────────
+  // ─── Theme color endpoints ───────────────────────────────────────────────
 
-  const lightTrackBorderPrimary =
-    tokens.colors.light.toggle.track.border.primary;
+  const resolvedTrackBorderDefault = resolveThemeColor(
+    colors?.track?.border?.default,
+    tokens.colors.light.toggle.track.border.primary,
+    tokens.colors.dark.toggle.track.border.primary,
+    "Toggle colors.track.border.default",
+  );
+  const resolvedTrackBorderPressed = resolveThemeColor(
+    colors?.track?.border?.pressed,
+    tokens.colors.light.toggle.track.border.pressed,
+    tokens.colors.dark.toggle.track.border.pressed,
+    "Toggle colors.track.border.pressed",
+  );
+  const resolvedTrackBorderDisabled = resolveThemeColor(
+    colors?.track?.border?.disabled,
+    tokens.colors.light.toggle.track.border.disabled,
+    tokens.colors.dark.toggle.track.border.disabled,
+    "Toggle colors.track.border.disabled",
+  );
+  const resolvedTrackBorderInactive = resolveThemeColor(
+    colors?.track?.border?.inactive,
+    tokens.colors.light.toggle.track.border.inactive,
+    tokens.colors.dark.toggle.track.border.inactive,
+    "Toggle colors.track.border.inactive",
+  );
 
-  const lightTrackBorderPressed =
-    tokens.colors.light.toggle.track.border.pressed;
+  const lightTrackBorderPrimary = resolvedTrackBorderDefault.light;
+  const darkTrackBorderPrimary = resolvedTrackBorderDefault.dark;
+  const lightTrackBorderPressed = resolvedTrackBorderPressed.light;
+  const darkTrackBorderPressed = resolvedTrackBorderPressed.dark;
+  const lightTrackBorderDisabled = resolvedTrackBorderDisabled.light;
+  const darkTrackBorderDisabled = resolvedTrackBorderDisabled.dark;
+  const lightTrackBorderInactive = resolvedTrackBorderInactive.light;
+  const darkTrackBorderInactive = resolvedTrackBorderInactive.dark;
 
-  const lightTrackBorderDisabled =
-    tokens.colors.light.toggle.track.border.disabled;
+  const resolvedTrackBackgroundDefault = resolveThemeColor(
+    colors?.track?.background?.default,
+    tokens.colors.light.toggle.track.background.primary,
+    tokens.colors.dark.toggle.track.background.primary,
+    "Toggle colors.track.background.default",
+  );
+  const resolvedTrackBackgroundPressed = resolveThemeColor(
+    colors?.track?.background?.pressed,
+    tokens.colors.light.toggle.track.background.pressed,
+    tokens.colors.dark.toggle.track.background.pressed,
+    "Toggle colors.track.background.pressed",
+  );
+  const resolvedTrackBackgroundDisabled = resolveThemeColor(
+    colors?.track?.background?.disabled,
+    tokens.colors.light.toggle.track.background.disabled,
+    tokens.colors.dark.toggle.track.background.disabled,
+    "Toggle colors.track.background.disabled",
+  );
+  const resolvedTrackBackgroundInactive = resolveThemeColor(
+    colors?.track?.background?.inactive,
+    tokens.colors.light.toggle.track.background.inactive,
+    tokens.colors.dark.toggle.track.background.inactive,
+    "Toggle colors.track.background.inactive",
+  );
 
-  const lightTrackBorderInactive =
-    tokens.colors.light.toggle.track.border.inactive;
+  const lightTrackBackgroundPrimary = resolvedTrackBackgroundDefault.light;
+  const darkTrackBackgroundPrimary = resolvedTrackBackgroundDefault.dark;
+  const lightTrackBackgroundPressed = resolvedTrackBackgroundPressed.light;
+  const darkTrackBackgroundPressed = resolvedTrackBackgroundPressed.dark;
+  const lightTrackBackgroundDisabled = resolvedTrackBackgroundDisabled.light;
+  const darkTrackBackgroundDisabled = resolvedTrackBackgroundDisabled.dark;
+  const lightTrackBackgroundInactive = resolvedTrackBackgroundInactive.light;
+  const darkTrackBackgroundInactive = resolvedTrackBackgroundInactive.dark;
 
-  const darkTrackBorderPrimary = tokens.colors.dark.toggle.track.border.primary;
+  const resolvedThumbUnchecked = resolveThemeColor(
+    colors?.thumb?.unchecked,
+    tokens.colors.light.toggle.thumb.unchecked,
+    tokens.colors.dark.toggle.thumb.unchecked,
+    "Toggle colors.thumb.unchecked",
+  );
+  const resolvedThumbChecked = resolveThemeColor(
+    colors?.thumb?.checked,
+    tokens.colors.light.toggle.thumb.checked,
+    tokens.colors.dark.toggle.thumb.checked,
+    "Toggle colors.thumb.checked",
+  );
+  const resolvedThumbPressedUnchecked = resolveThemeColor(
+    colors?.thumb?.pressedUnchecked,
+    tokens.colors.light.toggle.thumb.pressedUnchecked,
+    tokens.colors.dark.toggle.thumb.pressedUnchecked,
+    "Toggle colors.thumb.pressedUnchecked",
+  );
+  const resolvedThumbPressedChecked = resolveThemeColor(
+    colors?.thumb?.pressedChecked,
+    tokens.colors.light.toggle.thumb.pressedChecked,
+    tokens.colors.dark.toggle.thumb.pressedChecked,
+    "Toggle colors.thumb.pressedChecked",
+  );
+  const resolvedThumbDisabledUnchecked = resolveThemeColor(
+    colors?.thumb?.disabledUnchecked,
+    tokens.colors.light.toggle.thumb.disabledUnchecked,
+    tokens.colors.dark.toggle.thumb.disabledUnchecked,
+    "Toggle colors.thumb.disabledUnchecked",
+  );
+  const resolvedThumbDisabledChecked = resolveThemeColor(
+    colors?.thumb?.disabledChecked,
+    tokens.colors.light.toggle.thumb.disabledChecked,
+    tokens.colors.dark.toggle.thumb.disabledChecked,
+    "Toggle colors.thumb.disabledChecked",
+  );
+  const resolvedThumbInactiveUnchecked = resolveThemeColor(
+    colors?.thumb?.inactiveUnchecked,
+    tokens.colors.light.toggle.thumb.inactiveUnchecked,
+    tokens.colors.dark.toggle.thumb.inactiveUnchecked,
+    "Toggle colors.thumb.inactiveUnchecked",
+  );
+  const resolvedThumbInactiveChecked = resolveThemeColor(
+    colors?.thumb?.inactiveChecked,
+    tokens.colors.light.toggle.thumb.inactiveChecked,
+    tokens.colors.dark.toggle.thumb.inactiveChecked,
+    "Toggle colors.thumb.inactiveChecked",
+  );
 
-  const darkTrackBorderPressed = tokens.colors.dark.toggle.track.border.pressed;
+  const lightThumbUnchecked = resolvedThumbUnchecked.light;
+  const darkThumbUnchecked = resolvedThumbUnchecked.dark;
+  const lightThumbChecked = resolvedThumbChecked.light;
+  const darkThumbChecked = resolvedThumbChecked.dark;
+  const lightThumbPressedUnchecked = resolvedThumbPressedUnchecked.light;
+  const darkThumbPressedUnchecked = resolvedThumbPressedUnchecked.dark;
+  const lightThumbPressedChecked = resolvedThumbPressedChecked.light;
+  const darkThumbPressedChecked = resolvedThumbPressedChecked.dark;
+  const lightThumbDisabledUnchecked = resolvedThumbDisabledUnchecked.light;
+  const darkThumbDisabledUnchecked = resolvedThumbDisabledUnchecked.dark;
+  const lightThumbDisabledChecked = resolvedThumbDisabledChecked.light;
+  const darkThumbDisabledChecked = resolvedThumbDisabledChecked.dark;
+  const lightThumbInactiveUnchecked = resolvedThumbInactiveUnchecked.light;
+  const darkThumbInactiveUnchecked = resolvedThumbInactiveUnchecked.dark;
+  const lightThumbInactiveChecked = resolvedThumbInactiveChecked.light;
+  const darkThumbInactiveChecked = resolvedThumbInactiveChecked.dark;
 
-  const darkTrackBorderDisabled =
-    tokens.colors.dark.toggle.track.border.disabled;
+  const resolvedTextDefault = resolveThemeColor(
+    colors?.text?.default,
+    tokens.colors.light.toggle.text.primary,
+    tokens.colors.dark.toggle.text.primary,
+    "Toggle colors.text.default",
+  );
+  const resolvedTextDisabled = resolveThemeColor(
+    colors?.text?.disabled,
+    tokens.colors.light.toggle.text.disabled,
+    tokens.colors.dark.toggle.text.disabled,
+    "Toggle colors.text.disabled",
+  );
+  const resolvedTextInactive = resolveThemeColor(
+    colors?.text?.inactive,
+    tokens.colors.light.toggle.text.inactive,
+    tokens.colors.dark.toggle.text.inactive,
+    "Toggle colors.text.inactive",
+  );
 
-  const darkTrackBorderInactive =
-    tokens.colors.dark.toggle.track.border.inactive;
+  const lightTextPrimary = resolvedTextDefault.light;
+  const darkTextPrimary = resolvedTextDefault.dark;
+  const lightTextDisabled = resolvedTextDisabled.light;
+  const darkTextDisabled = resolvedTextDisabled.dark;
+  const lightTextInactive = resolvedTextInactive.light;
+  const darkTextInactive = resolvedTextInactive.dark;
 
-  const lightTrackBackgroundPrimary =
-    tokens.colors.light.toggle.track.background.primary;
+  const resolvedError = resolveThemeColor(
+    colors?.error,
+    tokens.colors.light.toggle.error,
+    tokens.colors.dark.toggle.error,
+    "Toggle colors.error",
+  );
+  const lightError = resolvedError.light;
+  const darkError = resolvedError.dark;
 
-  const lightTrackBackgroundPressed =
-    tokens.colors.light.toggle.track.background.pressed;
-
-  const lightTrackBackgroundDisabled =
-    tokens.colors.light.toggle.track.background.disabled;
-
-  const lightTrackBackgroundInactive =
-    tokens.colors.light.toggle.track.background.inactive;
-
-  const darkTrackBackgroundPrimary =
-    tokens.colors.dark.toggle.track.background.primary;
-
-  const darkTrackBackgroundPressed =
-    tokens.colors.dark.toggle.track.background.pressed;
-
-  const darkTrackBackgroundDisabled =
-    tokens.colors.dark.toggle.track.background.disabled;
-
-  const darkTrackBackgroundInactive =
-    tokens.colors.dark.toggle.track.background.inactive;
-
-  const lightThumbUnchecked = tokens.colors.light.toggle.thumb.unchecked;
-
-  const lightThumbChecked = tokens.colors.light.toggle.thumb.checked;
-
-  const lightThumbPressedUnchecked =
-    tokens.colors.light.toggle.thumb.pressedUnchecked;
-
-  const lightThumbPressedChecked =
-    tokens.colors.light.toggle.thumb.pressedChecked;
-
-  const lightThumbDisabledUnchecked =
-    tokens.colors.light.toggle.thumb.disabledUnchecked;
-
-  const lightThumbDisabledChecked =
-    tokens.colors.light.toggle.thumb.disabledChecked;
-
-  const lightThumbInactiveUnchecked =
-    tokens.colors.light.toggle.thumb.inactiveUnchecked;
-
-  const lightThumbInactiveChecked =
-    tokens.colors.light.toggle.thumb.inactiveChecked;
-
-  const darkThumbUnchecked = tokens.colors.dark.toggle.thumb.unchecked;
-
-  const darkThumbChecked = tokens.colors.dark.toggle.thumb.checked;
-
-  const darkThumbPressedUnchecked =
-    tokens.colors.dark.toggle.thumb.pressedUnchecked;
-
-  const darkThumbPressedChecked =
-    tokens.colors.dark.toggle.thumb.pressedChecked;
-
-  const darkThumbDisabledUnchecked =
-    tokens.colors.dark.toggle.thumb.disabledUnchecked;
-
-  const darkThumbDisabledChecked =
-    tokens.colors.dark.toggle.thumb.disabledChecked;
-
-  const darkThumbInactiveUnchecked =
-    tokens.colors.dark.toggle.thumb.inactiveUnchecked;
-
-  const darkThumbInactiveChecked =
-    tokens.colors.dark.toggle.thumb.inactiveChecked;
-
-  const lightTextPrimary = tokens.colors.light.toggle.text.primary;
-
-  const lightTextDisabled = tokens.colors.light.toggle.text.disabled;
-
-  const lightTextInactive = tokens.colors.light.toggle.text.inactive;
-
-  const darkTextPrimary = tokens.colors.dark.toggle.text.primary;
-
-  const darkTextDisabled = tokens.colors.dark.toggle.text.disabled;
-
-  const darkTextInactive = tokens.colors.dark.toggle.text.inactive;
-
-  const lightError = tokens.colors.light.states.danger;
-
-  const darkError = tokens.colors.dark.states.danger;
-
-  // ─── Toggle-owned visual resolution ──────────────────────────────────────
-
-  /**
-   * Shared selection infrastructure supplies semantic progress values.
-   *
-   * Toggle owns how those values are rendered:
-   *
-   * disabled
-   * ↓
-   * inactive
-   * ↓
-   * error
-   * ↓
-   * pressed
-   * ↓
-   * normal
-   *
-   * Animated styles are split by visual element and meaningful dependency
-   * lifecycle. This keeps checked thumb motion independent from unrelated
-   * track/label calculations while preserving the shared selection model.
-   */
-
-  /**
-   * Track and textual/custom content use the same press scale SharedValue.
-   *
-   * Reanimated 3+ supports sharing one animated style across animated
-   * components, so no duplicate scale mapper is required here.
-   */
   const animatedScaleStyle = useAnimatedStyle(() => ({
     transform: [
       {
@@ -900,8 +937,12 @@ const ToggleComponent = ({
           <Icon
             type="alertCircle"
             size={tokens.sizings.icon.xs}
-            darkColor={darkError}
-            lightColor={lightError}
+            colors={{
+              icon: {
+                light: lightError,
+                dark: darkError,
+              },
+            }}
           />
 
           <Animated.Text

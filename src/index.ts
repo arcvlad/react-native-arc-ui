@@ -40,6 +40,10 @@ export type {
   TThemeWithCustomTokens,
 } from "./types/tokens";
 
+export type { TThemeColor } from "./types/colors";
+
+export type { IFieldColors } from "./types/fieldColors";
+
 export type {
   TSafeAreaOffset,
   TSafeAreaComponentTokens,
@@ -144,28 +148,46 @@ export { showDialog, hideDialog } from "./components/Dialog/DialogContext";
 
 // ─── Component Types ──────────────────────────────────────────────────────────
 
-export type { IButton } from "./components/Button/types";
+export type { IScreenColors } from "./components/Screen/types";
 
-export type { ICheckbox } from "./components/Checkbox/types";
+export type { IThemedViewColors } from "./components/ThemedView/types";
 
-export type { IRadio } from "./components/Radio/types";
+export type {
+  IButton,
+  IButtonColors,
+  IButtonStateColors,
+  TButtonTone,
+} from "./components/Button/types";
 
-export type { IToggle } from "./components/Toggle/types";
+export type { ICheckbox, ICheckboxColors } from "./components/Checkbox/types";
 
-export type { IInfobox, TInfoboxType } from "./components/Infobox/types";
+export type { IRadio, IRadioColors } from "./components/Radio/types";
+
+export type { IToggle, IToggleColors } from "./components/Toggle/types";
+
+export type {
+  IInfobox,
+  IInfoboxColors,
+  TInfoboxTone,
+} from "./components/Infobox/types";
 
 export type {
   IIcon,
+  IIconColors,
   TIconType,
   TIconSet,
   TIconAnimatedColor,
 } from "./components/Icon/types";
 
-export type { IDivider } from "./components/Divider/types";
+export type { IDivider, IDividerColors } from "./components/Divider/types";
 
-export type { IText } from "./components/Text/types";
+export type { IText, ITextColors } from "./components/Text/types";
 
-export type { IAccordion } from "./components/Accordion/types";
+export type {
+  IAccordion,
+  IAccordionColors,
+  IAccordionStateColors,
+} from "./components/Accordion/types";
 
 export type { IAccordionGroup } from "./components/Accordion/AccordionGroup";
 
@@ -178,18 +200,34 @@ export type {
   TDialog,
   TDialogAction,
   TDialogActionType,
+  IDialogColors,
 } from "./components/Dialog/types";
 
-export type { ISpinnerLoader } from "./components/SpinnerLoader/types";
+export type {
+  ISpinnerLoader,
+  ISpinnerLoaderColors,
+} from "./components/SpinnerLoader/types";
 
-export type { IChip } from "./components/Chip/types";
+export type {
+  IChip,
+  IChipColors,
+  IChipColorStates,
+} from "./components/Chip/types";
 
-export type { IProgressBar } from "./components/ProgressBar/types";
+export type {
+  IProgressBar,
+  IProgressBarColors,
+} from "./components/ProgressBar/types";
 
-export type { ISkeletonLoader } from "./components/SkeletonLoader/types";
+export type {
+  ISkeletonLoader,
+  ISkeletonLoaderColors,
+} from "./components/SkeletonLoader/types";
 
 export type {
   IHeader,
+  IHeaderColors,
+  IHeaderControlColors,
   THeaderAction,
   THeaderTitleAlign,
 } from "./components/Header/types";
@@ -199,6 +237,7 @@ export type {
   ITabBar,
   ITabNavigation,
   ITabScreen,
+  ITabsColors,
   TTabBadge,
   TTabType,
   TTabBarPosition,
@@ -210,26 +249,46 @@ export type {
   TTabContent,
 } from "./components/Tabs/types";
 
-export type { IBadge } from "./components/Badge/types";
+export type {
+  IBadge,
+  IBadgeColors,
+  TBadgeTone,
+} from "./components/Badge/types";
 
 export type {
   ISelect,
+  ISelectColors,
+  ISelectBorderColors,
+  ISelectTwoStateColors,
+  ISelectTextColors,
+  ISelectItemColors,
+  ISelectItemBackgroundColors,
+  ISelectItemContentColors,
+  ISelectSearchColors,
   TSelectOption,
   TSelectValue,
 } from "./components/Select/types";
 
 export type {
   IInput,
+  IInputColors,
   TInputType,
   TInputRightAction,
 } from "./components/Input/types";
 
-export type { IInputPassword } from "./components/InputPassword/types";
+export type {
+  IInputPassword,
+  IInputPasswordColors,
+} from "./components/InputPassword/types";
 
-export type { IInputArea } from "./components/InputArea/types";
+export type {
+  IInputArea,
+  IInputAreaColors,
+} from "./components/InputArea/types";
 
 export type {
   IInputNumber,
+  IInputNumberColors,
   TInputNumberButtonType,
   TInputNumberButtonShape,
   TInputNumberValueType,
@@ -237,24 +296,35 @@ export type {
 
 export type {
   IInputOTP,
+  IInputOTPColors,
   TInputOTPType,
   TInputOTPRef,
 } from "./components/InputOTP/types";
 
 export type {
   ISlider,
+  ISliderColors,
   TSliderLayout,
   TSliderRangeValue,
 } from "./components/Slider/types";
 
 export type {
   IDropdown,
+  IDropdownColors,
+  IDropdownItemColors,
+  IDropdownItemBackgroundColors,
+  IDropdownItemContentColors,
   TDropdownItem,
+  TDropdownItemTone,
   TDropdownPlacement,
   TDropdownTriggerProps,
 } from "./components/Dropdown/types";
 
-export type { IModal, TModalHeight } from "./components/Modal/types";
+export type {
+  IModal,
+  IModalColors,
+  TModalHeight,
+} from "./components/Modal/types";
 
 export type { IFluidView } from "./components/FluidView/types";
 
@@ -265,9 +335,11 @@ export type { IScreen } from "./components/Screen/types";
 export type { IThemedView } from "./components/ThemedView/types";
 
 export type {
+  IToastColors,
   TToastId,
   TToastInput,
   TToastPlacement,
+  TToastTone,
 } from "./components/Toast/types";
 
 export type { TTypographyStyle } from "./tokens/Typography";

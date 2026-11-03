@@ -1,8 +1,20 @@
 import type { ReactNode } from "react";
 
+import type { TThemeColor } from "../../types/colors";
+
 export type TToastId = string;
 
 export type TToastPlacement = "top" | "bottom";
+
+export type TToastTone = "neutral" | "info" | "success" | "warning" | "danger";
+
+export interface IToastColors {
+  background?: TThemeColor;
+  text?: TThemeColor;
+  border?: Readonly<{
+    stacked?: TThemeColor;
+  }>;
+}
 
 /**
  * Public Toast request accepted by showToast().
@@ -15,6 +27,18 @@ export type TToastInput = {
    * Empty or whitespace-only messages are semantic API misuse and throw.
    */
   message: string;
+
+  /**
+   * Semantic Toast palette.
+   *
+   * @default "neutral"
+   */
+  tone?: TToastTone;
+
+  /**
+   * Per-instance ARCUI-owned Toast color overrides.
+   */
+  colors?: Readonly<IToastColors>;
 
   /**
    * Optional decorative content rendered before the message.

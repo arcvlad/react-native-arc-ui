@@ -1,6 +1,18 @@
 import type { ReactNode, Ref } from "react";
 import type { View, ViewProps } from "react-native";
 
+import type { TThemeColor } from "../../types/colors";
+
+export interface IThemedViewColors {
+  /**
+   * ThemedView background color.
+   *
+   * A string is fixed across themes. A { light, dark } pair participates in
+   * ARCUI's animated theme transition.
+   */
+  background?: TThemeColor;
+}
+
 export interface IThemedView extends ViewProps {
   children?: ReactNode;
 
@@ -13,24 +25,11 @@ export interface IThemedView extends ViewProps {
   ref?: Ref<View>;
 
   /**
-   * Fixed background color used in both themes.
+   * Per-instance ARCUI-owned color overrides.
    *
-   * Takes priority over darkColor/lightColor and
-   * style.backgroundColor.
+   * colors.background takes priority over style.backgroundColor. When no
+   * background override is provided, style.backgroundColor remains a static
+   * native escape hatch before ARCUI falls back to ThemedView tokens.
    */
-  color?: string;
-
-  /**
-   * Dark-theme background color override.
-   *
-   * Used only when lightColor is also provided.
-   */
-  darkColor?: string;
-
-  /**
-   * Light-theme background color override.
-   *
-   * Used only when darkColor is also provided.
-   */
-  lightColor?: string;
+  colors?: Readonly<IThemedViewColors>;
 }

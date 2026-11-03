@@ -35,6 +35,7 @@ import { resolveNonNegativeMetric } from "../../utils/numberUtils";
 import { platformElevation } from "../../utils/platformUtils";
 import { resolveAnimation } from "../../utils/resolveAnimation";
 import { resolveSafeArea } from "../../utils/resolveSafeArea";
+import { resolveThemeColor } from "../../utils/resolveThemeColor";
 import { resolveTypographyStyle } from "../../utils/resolveTypography";
 import { Button } from "../Button/Button";
 import { Icon } from "../Icon/Icon";
@@ -284,25 +285,53 @@ const DialogComponent = () => {
 
   // ─── Semantic theme colors ────────────────────────────────────────────────
 
-  const lightBackdrop = tokens.colors.light.dialog.backdrop;
+  const dialogColors = activeDialog?.dialog.colors;
 
-  const darkBackdrop = tokens.colors.dark.dialog.backdrop;
+  const backdrop = resolveThemeColor(
+    dialogColors?.backdrop,
+    tokens.colors.light.dialog.backdrop,
+    tokens.colors.dark.dialog.backdrop,
+    "Dialog.colors.backdrop",
+  );
 
-  const lightBackground = tokens.colors.light.dialog.background;
+  const background = resolveThemeColor(
+    dialogColors?.background,
+    tokens.colors.light.dialog.background,
+    tokens.colors.dark.dialog.background,
+    "Dialog.colors.background",
+  );
 
-  const darkBackground = tokens.colors.dark.dialog.background;
+  const titleColor = resolveThemeColor(
+    dialogColors?.title,
+    tokens.colors.light.dialog.title,
+    tokens.colors.dark.dialog.title,
+    "Dialog.colors.title",
+  );
 
-  const lightTitle = tokens.colors.light.dialog.title;
+  const messageColor = resolveThemeColor(
+    dialogColors?.message,
+    tokens.colors.light.dialog.message,
+    tokens.colors.dark.dialog.message,
+    "Dialog.colors.message",
+  );
 
-  const darkTitle = tokens.colors.dark.dialog.title;
+  const iconColor = resolveThemeColor(
+    dialogColors?.icon,
+    tokens.colors.light.dialog.icon,
+    tokens.colors.dark.dialog.icon,
+    "Dialog.colors.icon",
+  );
 
-  const lightMessage = tokens.colors.light.dialog.message;
-
-  const darkMessage = tokens.colors.dark.dialog.message;
-
-  const lightIcon = tokens.colors.light.dialog.icon;
-
-  const darkIcon = tokens.colors.dark.dialog.icon;
+  const lightBackdrop = backdrop.light;
+  const darkBackdrop = backdrop.dark;
+  const lightBackground = background.light;
+  const darkBackground = background.dark;
+  const lightTitle = titleColor.light;
+  const darkTitle = titleColor.dark;
+  const lightMessage = messageColor.light;
+  const darkMessage = messageColor.dark;
+  const lightIcon = iconColor.light;
+  const darkIcon = iconColor.dark;
 
   const themeColors = useDerivedValue(() => ({
     backdrop: interpolateColor(
@@ -781,8 +810,12 @@ const DialogComponent = () => {
                       <Icon
                         type={dialog.icon}
                         size={tokens.sizings.dialog.iconSize}
-                        darkColor={darkIcon}
-                        lightColor={lightIcon}
+                        colors={{
+                          icon: {
+                            light: lightIcon,
+                            dark: darkIcon,
+                          },
+                        }}
                       />
                     ) : null)}
                 </View>
@@ -838,6 +871,8 @@ const DialogComponent = () => {
                     <Button
                       key={`${dialogId}-${actionIndex}`}
                       type={resolveActionType(action, actionIndex)}
+                      tone={action.tone}
+                      colors={action.colors}
                       loading={isLoading}
                       disabled={
                         !isOpen || action.disabled || isAnotherActionLoading

@@ -6,9 +6,9 @@ repairing an ARCUI setup.
 Always prefer dependency versions compatible with the consumer's React Native
 or Expo version.
 
-## ARCUI 1.x compatibility
+## Compatibility
 
-ARCUI 1.x expects:
+The current ARCUI package expects:
 
 ```text
 React                        >= 19.0.0
@@ -18,10 +18,10 @@ React Native Reanimated      >= 3.19.0 < 5.0.0
 React Native SVG             >= 15.0.0
 ```
 
-ARCUI 1.x intentionally stays on the API surface shared by supported
-Reanimated 3.19+ and Reanimated 4 releases.
+ARCUI intentionally stays on the API surface shared by the supported
+Reanimated 3.19+ and Reanimated 4 range.
 
-`react-native-worklets` is not an ARCUI 1.x peer dependency.
+`react-native-worklets` is not an ARCUI direct peer dependency.
 
 If the consumer uses Reanimated 4, satisfy the Worklets requirements of that
 Reanimated/React Native/Expo combination.
@@ -194,11 +194,7 @@ for localization-specific setup.
 ## Minimal screen
 
 ```tsx
-import {
-  ARCUI,
-  Screen,
-  Text,
-} from "react-native-arc-ui";
+import { ARCUI, Screen, Text } from "react-native-arc-ui";
 
 export default function App() {
   return (
@@ -240,5 +236,5 @@ After setup, verify:
 6. gestures used by Modal/Slider and other interactive components work;
 7. TypeScript resolves the root package declarations;
 8. real device safe-area insets are supplied when the application requires
-them;
+   them;
 9. no internal ARCUI providers or deep imports were added unnecessarily.

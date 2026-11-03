@@ -15,7 +15,7 @@ import Animated, {
 import { useARCUISystem, useARCUITheme } from "../../contexts/hooks";
 
 import { resolveTypographyStyle } from "../../utils/resolveTypography";
-import type { ISliderColors, TSliderLayout } from "./types";
+import type { ISliderAnimatedColors, TSliderLayout } from "./types";
 import { formatSliderValue, sliderNormalizedToValue } from "./utils";
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
@@ -34,7 +34,7 @@ interface ISliderHeader {
   rangeLoPos: SharedValue<number>;
   rangeHiPos: SharedValue<number>;
 
-  colors: ISliderColors;
+  colors: ISliderAnimatedColors;
 
   testID?: string;
 }
@@ -89,9 +89,7 @@ const SliderHeaderComponent = ({
     fontSize: labelFontSize * fontScale.value,
 
     lineHeight:
-      labelLineHeight != null
-        ? labelLineHeight * fontScale.value
-        : undefined,
+      labelLineHeight != null ? labelLineHeight * fontScale.value : undefined,
   }));
 
   const valueLineHeight = tokens.typography.slider.value.lineHeight;
@@ -100,9 +98,7 @@ const SliderHeaderComponent = ({
     fontSize: valueFontSize * fontScale.value,
 
     lineHeight:
-      valueLineHeight != null
-        ? valueLineHeight * fontScale.value
-        : undefined,
+      valueLineHeight != null ? valueLineHeight * fontScale.value : undefined,
   }));
 
   const animatedTextColorStyle = useAnimatedStyle(() => ({

@@ -15,12 +15,14 @@ import {
   useARCUITheme,
 } from "../../contexts/hooks";
 import { resolveAnimation } from "../../utils/resolveAnimation";
+import { resolveThemeColor } from "../../utils/resolveThemeColor";
 import { Icon } from "../Icon/Icon";
 import { resolveTypographyStyle } from "../../utils/resolveTypography";
-import type { TSelectOption } from "./types";
+import type { ISelectItemColors, TSelectOption } from "./types";
 
 interface ISelectItem {
   option: TSelectOption;
+  colors?: Readonly<ISelectItemColors>;
   isSelected: boolean;
   multiple: boolean;
 
@@ -43,6 +45,7 @@ interface ISelectItem {
 
 const SelectItemComponent = ({
   option,
+  colors,
   isSelected,
   multiple,
   itemHeight,
@@ -175,43 +178,88 @@ const SelectItemComponent = ({
     [tokens.sizings.select.checkSlotWidth],
   );
 
-  // ─── Token extraction ─────────────────────────────────────────────────────
+  // ─── Color endpoints ───────────────────────────────────────────────────────
 
-  const lightBgDefault = tokens.colors.light.select.item.background.default;
+  const lightPalette = tokens.colors.light.select.item;
+  const darkPalette = tokens.colors.dark.select.item;
 
-  const darkBgDefault = tokens.colors.dark.select.item.background.default;
+  const backgroundDefault = resolveThemeColor(
+    colors?.background?.default,
+    lightPalette.background.default,
+    darkPalette.background.default,
+    "Select colors.item.background.default",
+  );
+  const backgroundSelected = resolveThemeColor(
+    colors?.background?.selected,
+    lightPalette.background.selected,
+    darkPalette.background.selected,
+    "Select colors.item.background.selected",
+  );
+  const backgroundPressed = resolveThemeColor(
+    colors?.background?.pressed,
+    lightPalette.background.pressed,
+    darkPalette.background.pressed,
+    "Select colors.item.background.pressed",
+  );
 
-  const lightBgSelected = tokens.colors.light.select.item.background.selected;
+  const textDefault = resolveThemeColor(
+    colors?.text?.default,
+    lightPalette.text.default,
+    darkPalette.text.default,
+    "Select colors.item.text.default",
+  );
+  const textSelected = resolveThemeColor(
+    colors?.text?.selected,
+    lightPalette.text.selected,
+    darkPalette.text.selected,
+    "Select colors.item.text.selected",
+  );
+  const textDisabled = resolveThemeColor(
+    colors?.text?.disabled,
+    lightPalette.text.disabled,
+    darkPalette.text.disabled,
+    "Select colors.item.text.disabled",
+  );
 
-  const darkBgSelected = tokens.colors.dark.select.item.background.selected;
+  const iconDefault = resolveThemeColor(
+    colors?.icon?.default,
+    lightPalette.icon.default,
+    darkPalette.icon.default,
+    "Select colors.item.icon.default",
+  );
+  const iconSelected = resolveThemeColor(
+    colors?.icon?.selected,
+    lightPalette.icon.selected,
+    darkPalette.icon.selected,
+    "Select colors.item.icon.selected",
+  );
+  const iconDisabled = resolveThemeColor(
+    colors?.icon?.disabled,
+    lightPalette.icon.disabled,
+    darkPalette.icon.disabled,
+    "Select colors.item.icon.disabled",
+  );
 
-  const lightBgPressed = tokens.colors.light.select.item.background.pressed;
+  const lightBgDefault = backgroundDefault.light;
+  const darkBgDefault = backgroundDefault.dark;
+  const lightBgSelected = backgroundSelected.light;
+  const darkBgSelected = backgroundSelected.dark;
+  const lightBgPressed = backgroundPressed.light;
+  const darkBgPressed = backgroundPressed.dark;
 
-  const darkBgPressed = tokens.colors.dark.select.item.background.pressed;
+  const lightTextDefault = textDefault.light;
+  const darkTextDefault = textDefault.dark;
+  const lightTextSelected = textSelected.light;
+  const darkTextSelected = textSelected.dark;
+  const lightTextDisabled = textDisabled.light;
+  const darkTextDisabled = textDisabled.dark;
 
-  const lightTextDefault = tokens.colors.light.select.item.text.default;
-
-  const darkTextDefault = tokens.colors.dark.select.item.text.default;
-
-  const lightTextSelected = tokens.colors.light.select.item.text.selected;
-
-  const darkTextSelected = tokens.colors.dark.select.item.text.selected;
-
-  const lightTextDisabled = tokens.colors.light.select.item.text.disabled;
-
-  const darkTextDisabled = tokens.colors.dark.select.item.text.disabled;
-
-  const lightIconDefault = tokens.colors.light.select.item.icon.default;
-
-  const darkIconDefault = tokens.colors.dark.select.item.icon.default;
-
-  const lightIconSelected = tokens.colors.light.select.item.icon.selected;
-
-  const darkIconSelected = tokens.colors.dark.select.item.icon.selected;
-
-  const lightIconDisabled = tokens.colors.light.select.item.icon.disabled;
-
-  const darkIconDisabled = tokens.colors.dark.select.item.icon.disabled;
+  const lightIconDefault = iconDefault.light;
+  const darkIconDefault = iconDefault.dark;
+  const lightIconSelected = iconSelected.light;
+  const darkIconSelected = iconSelected.dark;
+  const lightIconDisabled = iconDisabled.light;
+  const darkIconDisabled = iconDisabled.dark;
 
   const itemRadius = tokens.radius.selectItem;
 
@@ -373,8 +421,12 @@ const SelectItemComponent = ({
             <Icon
               type={option.icon}
               size={iconSize}
-              lightColor={lightIcon}
-              darkColor={darkIcon}
+              colors={{
+                icon: {
+                  light: lightIcon,
+                  dark: darkIcon,
+                },
+              }}
               accessible={false}
             />
           )}
@@ -404,8 +456,12 @@ const SelectItemComponent = ({
                 <Icon
                   type="check"
                   size={iconSize}
-                  lightColor={lightIcon}
-                  darkColor={darkIcon}
+                  colors={{
+                    icon: {
+                      light: lightIcon,
+                      dark: darkIcon,
+                    },
+                  }}
                   accessible={false}
                 />
               )}

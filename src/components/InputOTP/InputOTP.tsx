@@ -68,6 +68,7 @@ interface IOTPCell {
   disabled: boolean;
   inactive: boolean;
   hasError: boolean;
+  colors?: IInputOTP["colors"];
   autoFocus: boolean;
 
   nativeProps: TextInputProps;
@@ -94,6 +95,7 @@ const OTPCellComponent = ({
   disabled,
   inactive,
   hasError,
+  colors,
   autoFocus,
   nativeProps,
   accessibilityLabel,
@@ -128,6 +130,7 @@ const OTPCellComponent = ({
   });
 
   const { backgroundColor, borderColor, textColor } = useFieldAnimatedColors({
+    colors,
     focusedProgress,
     errorProgress,
     disabledProgress,
@@ -261,6 +264,7 @@ const InputOTPComponent = ({
   allowedChars,
   label,
   error,
+  colors,
   disabled = false,
   active = true,
   style,
@@ -384,6 +388,7 @@ const InputOTPComponent = ({
   });
 
   const { labelColor, errorColor } = useFieldAnimatedColors({
+    colors,
     focusedProgress,
     errorProgress,
     disabledProgress,
@@ -692,6 +697,7 @@ const InputOTPComponent = ({
                 disabled={disabled}
                 inactive={!active}
                 hasError={hasError}
+                colors={colors}
                 autoFocus={autoFocus && index === initialFocusIndex}
                 nativeProps={nativeCellProps}
                 accessibilityLabel={resolvedAccessibilityLabel}

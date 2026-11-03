@@ -1,6 +1,13 @@
 import type { Ref } from "react";
 import type { StyleProp, TextInputProps, ViewStyle } from "react-native";
 
+import type { IFieldColors } from "../../types/fieldColors";
+
+export type IInputOTPColors = Pick<
+  IFieldColors,
+  "background" | "border" | "text" | "label" | "error"
+>;
+
 export type TInputOTPType = "numeric" | "alphanumeric";
 
 export type TInputOTPRef = {
@@ -123,6 +130,8 @@ export type IInputOTP = TInputOTPNativeProps & {
   label?: string;
 
   error?: string;
+
+  colors?: Readonly<IInputOTPColors>;
 
   /**
    * Fully disabled semantic state.

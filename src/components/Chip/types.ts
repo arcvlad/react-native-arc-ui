@@ -2,10 +2,27 @@ import type { ReactNode, Ref } from "react";
 import type { PressableProps, StyleProp, View, ViewStyle } from "react-native";
 
 import type { TPressAnimation } from "../../tokens";
+import type { TThemeColor } from "../../types/colors";
 import type { IIcon } from "../Icon/types";
 import type { TSelectionValue } from "../SelectionGroup/types";
 
 export type TChipType = "solid" | "border" | "transparent";
+
+export interface IChipColorStates {
+  default?: TThemeColor;
+  pressed?: TThemeColor;
+  selected?: TThemeColor;
+  selectedPressed?: TThemeColor;
+  disabled?: TThemeColor;
+  selectedDisabled?: TThemeColor;
+}
+
+export interface IChipColors {
+  background?: Readonly<IChipColorStates>;
+  border?: Readonly<IChipColorStates>;
+  text?: Readonly<IChipColorStates>;
+  icon?: Readonly<IChipColorStates>;
+}
 
 interface IChipBase extends Omit<
   PressableProps,
@@ -21,6 +38,8 @@ interface IChipBase extends Omit<
   children: ReactNode;
 
   type?: TChipType;
+
+  colors?: Readonly<IChipColors>;
 
   animation?: TPressAnimation;
 

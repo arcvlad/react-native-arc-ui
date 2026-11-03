@@ -18,22 +18,49 @@ import {
 } from "../../contexts/hooks";
 import { resolveAnimation } from "../../utils/resolveAnimation";
 import { resolveTextContent } from "../../utils/reactNode";
+import { resolveThemeColor } from "../../utils/resolveThemeColor";
 import { resolveTypographyStyle } from "../../utils/resolveTypography";
 import { Icon } from "../Icon/Icon";
 
 import type { TIconType } from "../Icon/types";
-import type { IInfobox, TInfoboxType } from "./types";
+import type { IInfobox, TInfoboxTone } from "./types";
 
-const DEFAULT_ICON_BY_TYPE = {
-  default: "info",
+const DEFAULT_ICON_BY_TONE = {
+  info: "info",
+  success: "check",
   warning: "alertCircle",
   danger: "xCircle",
-} as const satisfies Record<TInfoboxType, TIconType>;
+} as const satisfies Record<TInfoboxTone, TIconType>;
+
+const resolveInfoboxTone = (value: unknown): TInfoboxTone => {
+  switch (value) {
+    case "info":
+    case "success":
+    case "warning":
+    case "danger":
+      return value;
+
+    case undefined:
+      return "info";
+
+    default:
+      if (__DEV__) {
+        console.error(
+          `[react-native-arc-ui] Infobox tone "${String(
+            value,
+          )}" is invalid. Falling back to "info".`,
+        );
+      }
+
+      return "info";
+  }
+};
 
 const InfoboxComponent = ({
   ref,
   children,
-  type = "default",
+  tone: toneProp = "info",
+  colors,
   icon,
   customIcon,
   style,
@@ -55,28 +82,57 @@ const InfoboxComponent = ({
 
   // ─── Semantic color targets ───────────────────────
 
-  const lightSemanticColors = tokens.colors.light.infobox[type];
+  const tone = resolveInfoboxTone(toneProp);
 
-  const darkSemanticColors = tokens.colors.dark.infobox[type];
+  const lightSemanticColors = tokens.colors.light.infobox[tone];
+  const darkSemanticColors = tokens.colors.dark.infobox[tone];
+
+  const background = resolveThemeColor(
+    colors?.background,
+    lightSemanticColors.background,
+    darkSemanticColors.background,
+    "Infobox.colors.background",
+  );
+
+  const border = resolveThemeColor(
+    colors?.border,
+    lightSemanticColors.border,
+    darkSemanticColors.border,
+    "Infobox.colors.border",
+  );
+
+  const textColor = resolveThemeColor(
+    colors?.text,
+    lightSemanticColors.text,
+    darkSemanticColors.text,
+    "Infobox.colors.text",
+  );
+
+  const iconColor = resolveThemeColor(
+    colors?.icon,
+    lightSemanticColors.icon,
+    darkSemanticColors.icon,
+    "Infobox.colors.icon",
+  );
 
   /**
-   * Infobox semantic types are discrete states rather than positions on
+   * Infobox tones are discrete semantic states rather than positions on
    * an ordinal axis.
    *
-   * Each visual color therefore moves directly from its currently
-   * rendered value toward the new semantic target.
+   * Each visual color therefore moves directly from its currently rendered
+   * value toward the new tone/override target.
    */
-  const lightBorderColor = useSharedValue(lightSemanticColors.border);
+  const lightBackgroundColor = useSharedValue(background.light);
+  const darkBackgroundColor = useSharedValue(background.dark);
 
-  const darkBorderColor = useSharedValue(darkSemanticColors.border);
+  const lightBorderColor = useSharedValue(border.light);
+  const darkBorderColor = useSharedValue(border.dark);
 
-  const lightTextColor = useSharedValue(lightSemanticColors.text);
+  const lightTextColor = useSharedValue(textColor.light);
+  const darkTextColor = useSharedValue(textColor.dark);
 
-  const darkTextColor = useSharedValue(darkSemanticColors.text);
-
-  const lightIconColor = useSharedValue(lightSemanticColors.icon);
-
-  const darkIconColor = useSharedValue(darkSemanticColors.icon);
+  const lightIconColor = useSharedValue(iconColor.light);
+  const darkIconColor = useSharedValue(iconColor.dark);
 
   useEffect(() => {
     const updateColor = (value: SharedValue<string>, target: string) => {
@@ -87,19 +143,22 @@ const InfoboxComponent = ({
         : withTiming(target, animationConfig);
     };
 
-    updateColor(lightBorderColor, lightSemanticColors.border);
+    updateColor(lightBackgroundColor, background.light);
+    updateColor(darkBackgroundColor, background.dark);
 
-    updateColor(darkBorderColor, darkSemanticColors.border);
+    updateColor(lightBorderColor, border.light);
+    updateColor(darkBorderColor, border.dark);
 
-    updateColor(lightTextColor, lightSemanticColors.text);
+    updateColor(lightTextColor, textColor.light);
+    updateColor(darkTextColor, textColor.dark);
 
-    updateColor(darkTextColor, darkSemanticColors.text);
-
-    updateColor(lightIconColor, lightSemanticColors.icon);
-
-    updateColor(darkIconColor, darkSemanticColors.icon);
+    updateColor(lightIconColor, iconColor.light);
+    updateColor(darkIconColor, iconColor.dark);
 
     return () => {
+      cancelAnimation(lightBackgroundColor);
+      cancelAnimation(darkBackgroundColor);
+
       cancelAnimation(lightBorderColor);
       cancelAnimation(darkBorderColor);
 
@@ -112,15 +171,16 @@ const InfoboxComponent = ({
   }, [
     prefersReducedMotion,
     animationConfig,
-
-    lightSemanticColors.border,
-    lightSemanticColors.text,
-    lightSemanticColors.icon,
-
-    darkSemanticColors.border,
-    darkSemanticColors.text,
-    darkSemanticColors.icon,
-
+    background.light,
+    background.dark,
+    border.light,
+    border.dark,
+    textColor.light,
+    textColor.dark,
+    iconColor.light,
+    iconColor.dark,
+    lightBackgroundColor,
+    darkBackgroundColor,
     lightBorderColor,
     darkBorderColor,
     lightTextColor,
@@ -131,21 +191,30 @@ const InfoboxComponent = ({
 
   // ─── Theme-aware rendered colors ──────────────────
 
-  const animatedBorderColor = useDerivedValue<string>(() =>
-    interpolateColor(
+  /**
+   * Container/text colors share the same dependencies and render lifecycle,
+   * so keep them in one derived worklet. Icon remains separate because Icon's
+   * public animatedColor contract requires a string Shared/DerivedValue.
+   */
+  const animatedSurfaceColors = useDerivedValue(() => ({
+    background: interpolateColor(
+      themeProgress.value,
+      [0, 1],
+      [darkBackgroundColor.value, lightBackgroundColor.value],
+    ),
+
+    border: interpolateColor(
       themeProgress.value,
       [0, 1],
       [darkBorderColor.value, lightBorderColor.value],
     ),
-  );
 
-  const animatedTextColor = useDerivedValue<string>(() =>
-    interpolateColor(
+    text: interpolateColor(
       themeProgress.value,
       [0, 1],
       [darkTextColor.value, lightTextColor.value],
     ),
-  );
+  }));
 
   const animatedIconColor = useDerivedValue<string>(() =>
     interpolateColor(
@@ -182,10 +251,52 @@ const InfoboxComponent = ({
     [tokens.typography.infobox.text],
   );
 
+  // ─── Native style color ownership ────────────────
+
+  const { resolvedConsumerStyle, styleOwnsBackground, styleOwnsBorder } =
+    useMemo(() => {
+      const flattenedStyle: ViewStyle = {
+        ...(StyleSheet.flatten(style) ?? {}),
+      };
+
+      const hasBackgroundColorOverride = colors?.background !== undefined;
+      const hasBorderColorOverride = colors?.border !== undefined;
+
+      const resolvedStyle: ViewStyle = { ...flattenedStyle };
+
+      if (hasBackgroundColorOverride) {
+        delete resolvedStyle.backgroundColor;
+      }
+
+      if (hasBorderColorOverride) {
+        delete resolvedStyle.borderColor;
+        delete resolvedStyle.borderTopColor;
+        delete resolvedStyle.borderRightColor;
+        delete resolvedStyle.borderBottomColor;
+        delete resolvedStyle.borderLeftColor;
+        delete resolvedStyle.borderStartColor;
+        delete resolvedStyle.borderEndColor;
+      }
+
+      return {
+        resolvedConsumerStyle: resolvedStyle,
+        styleOwnsBackground:
+          !hasBackgroundColorOverride &&
+          flattenedStyle.backgroundColor !== undefined,
+        styleOwnsBorder:
+          !hasBorderColorOverride && flattenedStyle.borderColor !== undefined,
+      };
+    }, [colors?.background, colors?.border, style]);
+
   // ─── Animated styles ──────────────────────────────
 
   const animatedContainerStyle = useAnimatedStyle(() => ({
-    borderColor: animatedBorderColor.value,
+    backgroundColor: styleOwnsBackground
+      ? undefined
+      : animatedSurfaceColors.value.background,
+    borderColor: styleOwnsBorder
+      ? undefined
+      : animatedSurfaceColors.value.border,
   }));
 
   const animatedTextSizeStyle = useAnimatedStyle(() => ({
@@ -196,7 +307,7 @@ const InfoboxComponent = ({
   }));
 
   const animatedTextColorStyle = useAnimatedStyle(() => ({
-    color: animatedTextColor.value,
+    color: animatedSurfaceColors.value.text,
   }));
 
   // ─── Content ──────────────────────────────────────
@@ -226,7 +337,7 @@ const InfoboxComponent = ({
       customIcon
     ) : (
       <Icon
-        type={icon ?? DEFAULT_ICON_BY_TYPE[type]}
+        type={icon ?? DEFAULT_ICON_BY_TONE[tone]}
         testID={testID ? `${testID}-icon` : undefined}
         scaleWithFont
         animatedColor={animatedIconColor}
@@ -245,7 +356,7 @@ const InfoboxComponent = ({
         styles.container,
         containerLayoutStyle,
         animatedContainerStyle,
-        style,
+        resolvedConsumerStyle,
       ]}
     >
       {iconNode}

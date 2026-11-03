@@ -21,6 +21,7 @@ import { useSelectionMotion } from "../../internal/selection/useSelectionMotion"
 import { useSelectionPress } from "../../internal/selection/useSelectionPress";
 import { useSelectionState } from "../../internal/selection/useSelectionState";
 import { resolveAnimation } from "../../utils/resolveAnimation";
+import { resolveThemeColor } from "../../utils/resolveThemeColor";
 import { resolveTextContent } from "../../utils/reactNode";
 import { Icon } from "../Icon/Icon";
 import { resolveTypographyStyle } from "../../utils/resolveTypography";
@@ -37,6 +38,7 @@ const RadioComponent = ({
   disabled,
   size,
   error,
+  colors,
   textStyle,
   style,
   onPress,
@@ -227,59 +229,118 @@ const RadioComponent = ({
     [tokens.typography.radio.error],
   );
 
-  // ─── Theme token extraction ──────────────────────────────────────────────
+  // ─── Theme color endpoints ───────────────────────────────────────────────
 
-  const lightBorderPrimary = tokens.colors.light.radio.border.primary;
+  const resolvedBorderDefault = resolveThemeColor(
+    colors?.border?.default,
+    tokens.colors.light.radio.border.primary,
+    tokens.colors.dark.radio.border.primary,
+    "Radio colors.border.default",
+  );
+  const resolvedBorderPressed = resolveThemeColor(
+    colors?.border?.pressed,
+    tokens.colors.light.radio.border.pressed,
+    tokens.colors.dark.radio.border.pressed,
+    "Radio colors.border.pressed",
+  );
+  const resolvedBorderDisabled = resolveThemeColor(
+    colors?.border?.disabled,
+    tokens.colors.light.radio.border.disabled,
+    tokens.colors.dark.radio.border.disabled,
+    "Radio colors.border.disabled",
+  );
+  const resolvedBorderInactive = resolveThemeColor(
+    colors?.border?.inactive,
+    tokens.colors.light.radio.border.inactive,
+    tokens.colors.dark.radio.border.inactive,
+    "Radio colors.border.inactive",
+  );
 
-  const lightBorderPressed = tokens.colors.light.radio.border.pressed;
+  const lightBorderPrimary = resolvedBorderDefault.light;
+  const darkBorderPrimary = resolvedBorderDefault.dark;
+  const lightBorderPressed = resolvedBorderPressed.light;
+  const darkBorderPressed = resolvedBorderPressed.dark;
+  const lightBorderDisabled = resolvedBorderDisabled.light;
+  const darkBorderDisabled = resolvedBorderDisabled.dark;
+  const lightBorderInactive = resolvedBorderInactive.light;
+  const darkBorderInactive = resolvedBorderInactive.dark;
 
-  const lightBorderDisabled = tokens.colors.light.radio.border.disabled;
+  const resolvedBackgroundChecked = resolveThemeColor(
+    colors?.background?.checked,
+    tokens.colors.light.radio.background.primary,
+    tokens.colors.dark.radio.background.primary,
+    "Radio colors.background.checked",
+  );
+  const resolvedBackgroundPressed = resolveThemeColor(
+    colors?.background?.pressed,
+    tokens.colors.light.radio.background.pressed,
+    tokens.colors.dark.radio.background.pressed,
+    "Radio colors.background.pressed",
+  );
+  const resolvedBackgroundDisabled = resolveThemeColor(
+    colors?.background?.disabled,
+    tokens.colors.light.radio.background.disabled,
+    tokens.colors.dark.radio.background.disabled,
+    "Radio colors.background.disabled",
+  );
+  const resolvedBackgroundInactive = resolveThemeColor(
+    colors?.background?.inactive,
+    tokens.colors.light.radio.background.inactive,
+    tokens.colors.dark.radio.background.inactive,
+    "Radio colors.background.inactive",
+  );
+  const resolvedBackgroundUnchecked = resolveThemeColor(
+    colors?.background?.unchecked,
+    tokens.colors.light.radio.background.transparent,
+    tokens.colors.dark.radio.background.transparent,
+    "Radio colors.background.unchecked",
+  );
 
-  const lightBorderInactive = tokens.colors.light.radio.border.inactive;
+  const lightDotPrimary = resolvedBackgroundChecked.light;
+  const darkDotPrimary = resolvedBackgroundChecked.dark;
+  const lightDotPressed = resolvedBackgroundPressed.light;
+  const darkDotPressed = resolvedBackgroundPressed.dark;
+  const lightDotDisabled = resolvedBackgroundDisabled.light;
+  const darkDotDisabled = resolvedBackgroundDisabled.dark;
+  const lightDotInactive = resolvedBackgroundInactive.light;
+  const darkDotInactive = resolvedBackgroundInactive.dark;
+  const lightDotTransparent = resolvedBackgroundUnchecked.light;
+  const darkDotTransparent = resolvedBackgroundUnchecked.dark;
 
-  const darkBorderPrimary = tokens.colors.dark.radio.border.primary;
+  const resolvedTextDefault = resolveThemeColor(
+    colors?.text?.default,
+    tokens.colors.light.radio.text.primary,
+    tokens.colors.dark.radio.text.primary,
+    "Radio colors.text.default",
+  );
+  const resolvedTextDisabled = resolveThemeColor(
+    colors?.text?.disabled,
+    tokens.colors.light.radio.text.disabled,
+    tokens.colors.dark.radio.text.disabled,
+    "Radio colors.text.disabled",
+  );
+  const resolvedTextInactive = resolveThemeColor(
+    colors?.text?.inactive,
+    tokens.colors.light.radio.text.inactive,
+    tokens.colors.dark.radio.text.inactive,
+    "Radio colors.text.inactive",
+  );
 
-  const darkBorderPressed = tokens.colors.dark.radio.border.pressed;
+  const lightTextPrimary = resolvedTextDefault.light;
+  const darkTextPrimary = resolvedTextDefault.dark;
+  const lightTextDisabled = resolvedTextDisabled.light;
+  const darkTextDisabled = resolvedTextDisabled.dark;
+  const lightTextInactive = resolvedTextInactive.light;
+  const darkTextInactive = resolvedTextInactive.dark;
 
-  const darkBorderDisabled = tokens.colors.dark.radio.border.disabled;
-
-  const darkBorderInactive = tokens.colors.dark.radio.border.inactive;
-
-  const lightDotPrimary = tokens.colors.light.radio.background.primary;
-
-  const lightDotPressed = tokens.colors.light.radio.background.pressed;
-
-  const lightDotDisabled = tokens.colors.light.radio.background.disabled;
-
-  const lightDotInactive = tokens.colors.light.radio.background.inactive;
-
-  const darkDotPrimary = tokens.colors.dark.radio.background.primary;
-
-  const darkDotPressed = tokens.colors.dark.radio.background.pressed;
-
-  const darkDotDisabled = tokens.colors.dark.radio.background.disabled;
-
-  const darkDotInactive = tokens.colors.dark.radio.background.inactive;
-
-  const lightDotTransparent = tokens.colors.light.radio.background.transparent;
-
-  const darkDotTransparent = tokens.colors.dark.radio.background.transparent;
-
-  const lightTextPrimary = tokens.colors.light.radio.text.primary;
-
-  const lightTextDisabled = tokens.colors.light.radio.text.disabled;
-
-  const lightTextInactive = tokens.colors.light.radio.text.inactive;
-
-  const darkTextPrimary = tokens.colors.dark.radio.text.primary;
-
-  const darkTextDisabled = tokens.colors.dark.radio.text.disabled;
-
-  const darkTextInactive = tokens.colors.dark.radio.text.inactive;
-
-  const lightError = tokens.colors.light.states.danger;
-
-  const darkError = tokens.colors.dark.states.danger;
+  const resolvedError = resolveThemeColor(
+    colors?.error,
+    tokens.colors.light.radio.error,
+    tokens.colors.dark.radio.error,
+    "Radio colors.error",
+  );
+  const lightError = resolvedError.light;
+  const darkError = resolvedError.dark;
 
   // ─── Radio-owned visual resolution ───────────────────────────────────────
 
@@ -665,8 +726,12 @@ const RadioComponent = ({
           <Icon
             type="alertCircle"
             size={tokens.sizings.icon.xs}
-            darkColor={darkError}
-            lightColor={lightError}
+            colors={{
+              icon: {
+                light: lightError,
+                dark: darkError,
+              },
+            }}
           />
 
           <Animated.Text

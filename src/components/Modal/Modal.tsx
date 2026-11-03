@@ -31,6 +31,7 @@ import {
 } from "../../contexts/hooks";
 import { resolveAnimation } from "../../utils/resolveAnimation";
 import { resolveSafeArea } from "../../utils/resolveSafeArea";
+import { resolveThemeColor } from "../../utils/resolveThemeColor";
 import { Icon } from "../Icon/Icon";
 import { useModalHost, useModalStack } from "./ModalProvider";
 import { resolveTypographyStyle } from "../../utils/resolveTypography";
@@ -47,6 +48,7 @@ const ModalComponent = ({
   children,
   title,
   subtitle,
+  colors,
   rightAction,
   height,
   stackOffset,
@@ -326,33 +328,69 @@ const ModalComponent = ({
 
   // ─── Token extraction ─────────────────────────────────────────────────────
 
-  const lightBackground = tokens.colors.light.modal.background;
+  const background = resolveThemeColor(
+    colors?.background,
+    tokens.colors.light.modal.background,
+    tokens.colors.dark.modal.background,
+    "Modal.colors.background",
+  );
 
-  const darkBackground = tokens.colors.dark.modal.background;
+  const backdrop = resolveThemeColor(
+    colors?.backdrop,
+    tokens.colors.light.modal.backdrop,
+    tokens.colors.dark.modal.backdrop,
+    "Modal.colors.backdrop",
+  );
 
-  const lightBackdrop = tokens.colors.light.modal.backdrop;
+  const handle = resolveThemeColor(
+    colors?.handle,
+    tokens.colors.light.modal.handle,
+    tokens.colors.dark.modal.handle,
+    "Modal.colors.handle",
+  );
 
-  const darkBackdrop = tokens.colors.dark.modal.backdrop;
+  const border = resolveThemeColor(
+    colors?.border,
+    tokens.colors.light.modal.border,
+    tokens.colors.dark.modal.border,
+    "Modal.colors.border",
+  );
 
-  const lightHandle = tokens.colors.light.modal.handle;
+  const titleColor = resolveThemeColor(
+    colors?.title,
+    tokens.colors.light.modal.title,
+    tokens.colors.dark.modal.title,
+    "Modal.colors.title",
+  );
 
-  const darkHandle = tokens.colors.dark.modal.handle;
+  const subtitleColor = resolveThemeColor(
+    colors?.subtitle,
+    tokens.colors.light.modal.subtitle,
+    tokens.colors.dark.modal.subtitle,
+    "Modal.colors.subtitle",
+  );
 
-  const lightBorder = tokens.colors.light.modal.border;
+  const iconColor = resolveThemeColor(
+    colors?.icon,
+    tokens.colors.light.modal.icon,
+    tokens.colors.dark.modal.icon,
+    "Modal.colors.icon",
+  );
 
-  const darkBorder = tokens.colors.dark.modal.border;
-
-  const lightTitle = tokens.colors.light.modal.title;
-
-  const darkTitle = tokens.colors.dark.modal.title;
-
-  const lightSubtitle = tokens.colors.light.modal.subtitle;
-
-  const darkSubtitle = tokens.colors.dark.modal.subtitle;
-
-  const lightIcon = tokens.colors.light.modal.icon;
-
-  const darkIcon = tokens.colors.dark.modal.icon;
+  const lightBackground = background.light;
+  const darkBackground = background.dark;
+  const lightBackdrop = backdrop.light;
+  const darkBackdrop = backdrop.dark;
+  const lightHandle = handle.light;
+  const darkHandle = handle.dark;
+  const lightBorder = border.light;
+  const darkBorder = border.dark;
+  const lightTitle = titleColor.light;
+  const darkTitle = titleColor.dark;
+  const lightSubtitle = subtitleColor.light;
+  const darkSubtitle = subtitleColor.dark;
+  const lightIcon = iconColor.light;
+  const darkIcon = iconColor.dark;
 
   const titleFontSize = tokens.typography.modal.title.fontSize;
 
@@ -1065,8 +1103,12 @@ const ModalComponent = ({
                     <Icon
                       type="xCircle"
                       size={iconSize}
-                      lightColor={lightIcon}
-                      darkColor={darkIcon}
+                      colors={{
+                        icon: {
+                          light: lightIcon,
+                          dark: darkIcon,
+                        },
+                      }}
                     />
                   </Pressable>
                 )}

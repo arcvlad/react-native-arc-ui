@@ -1,4 +1,6 @@
-import type { IInput } from "../Input/types";
+import type { IInput, IInputColors } from "../Input/types";
+
+export type IInputPasswordColors = IInputColors;
 
 export type IInputPassword = Omit<
   IInput,

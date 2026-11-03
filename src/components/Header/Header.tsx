@@ -29,6 +29,7 @@ import { resolveTypographyStyle } from "../../utils/resolveTypography";
 import type { IHeader, IHeaderControl } from "./types";
 import { resolveAnimation } from "../../utils/resolveAnimation";
 import { resolveNonNegativeMetric } from "../../utils/numberUtils";
+import { resolveThemeColor } from "../../utils/resolveThemeColor";
 
 /**
  * Internal icon-only Header control.
@@ -45,6 +46,7 @@ const HeaderControlComponent = ({
   mirrorInRTL = false,
   radius,
   animation,
+  colors,
   testID,
 }: IHeaderControl) => {
   const { tokens } = useARCUITheme();
@@ -85,25 +87,42 @@ const HeaderControlComponent = ({
       ? "highlight"
       : animation;
 
-  const lightBackgroundDefault =
-    tokens.colors.light.header.control.background.default;
+  const backgroundDefault = resolveThemeColor(
+    colors?.background?.default,
+    tokens.colors.light.header.control.background.default,
+    tokens.colors.dark.header.control.background.default,
+    "Header.colors.control.background.default",
+  );
 
-  const darkBackgroundDefault =
-    tokens.colors.dark.header.control.background.default;
+  const backgroundPressed = resolveThemeColor(
+    colors?.background?.pressed,
+    tokens.colors.light.header.control.background.pressed,
+    tokens.colors.dark.header.control.background.pressed,
+    "Header.colors.control.background.pressed",
+  );
 
-  const lightBackgroundPressed =
-    tokens.colors.light.header.control.background.pressed;
+  const iconDefault = resolveThemeColor(
+    colors?.icon?.default,
+    tokens.colors.light.header.control.icon.primary,
+    tokens.colors.dark.header.control.icon.primary,
+    "Header.colors.control.icon.default",
+  );
 
-  const darkBackgroundPressed =
-    tokens.colors.dark.header.control.background.pressed;
+  const iconDisabled = resolveThemeColor(
+    colors?.icon?.disabled,
+    tokens.colors.light.header.control.icon.disabled,
+    tokens.colors.dark.header.control.icon.disabled,
+    "Header.colors.control.icon.disabled",
+  );
 
-  const lightIconPrimary = tokens.colors.light.header.control.icon.primary;
-
-  const lightIconDisabled = tokens.colors.light.header.control.icon.disabled;
-
-  const darkIconPrimary = tokens.colors.dark.header.control.icon.primary;
-
-  const darkIconDisabled = tokens.colors.dark.header.control.icon.disabled;
+  const lightBackgroundDefault = backgroundDefault.light;
+  const darkBackgroundDefault = backgroundDefault.dark;
+  const lightBackgroundPressed = backgroundPressed.light;
+  const darkBackgroundPressed = backgroundPressed.dark;
+  const lightIconPrimary = iconDefault.light;
+  const darkIconPrimary = iconDefault.dark;
+  const lightIconDisabled = iconDisabled.light;
+  const darkIconDisabled = iconDisabled.dark;
 
   const controlLayoutStyle = useMemo<ViewStyle>(
     () => ({
@@ -308,6 +327,7 @@ const HeaderComponent = ({
   showBorder = true,
   controlRadius,
   controlAnimation,
+  colors,
   style,
   ...viewProps
 }: IHeader) => {
@@ -390,17 +410,72 @@ const HeaderComponent = ({
 
   // ─── Theme colors ────────────────────────────────
 
-  const lightBackground = tokens.colors.light.header.background;
+  const background = resolveThemeColor(
+    colors?.background,
+    tokens.colors.light.header.background,
+    tokens.colors.dark.header.background,
+    "Header.colors.background",
+  );
 
-  const darkBackground = tokens.colors.dark.header.background;
+  const titleColor = resolveThemeColor(
+    colors?.title,
+    tokens.colors.light.header.title,
+    tokens.colors.dark.header.title,
+    "Header.colors.title",
+  );
 
-  const lightTitle = tokens.colors.light.header.title;
+  const border = resolveThemeColor(
+    colors?.border,
+    tokens.colors.light.header.border,
+    tokens.colors.dark.header.border,
+    "Header.colors.border",
+  );
 
-  const darkTitle = tokens.colors.dark.header.title;
+  const lightBackground = background.light;
+  const darkBackground = background.dark;
+  const lightTitle = titleColor.light;
+  const darkTitle = titleColor.dark;
+  const lightBorder = border.light;
+  const darkBorder = border.dark;
 
-  const lightBorder = tokens.colors.light.header.border;
+  // ─── Native style color ownership ────────────────
 
-  const darkBorder = tokens.colors.dark.header.border;
+  const { resolvedConsumerStyle, styleOwnsBackground, styleOwnsBorder } =
+    useMemo(() => {
+      const flattenedStyle: ViewStyle = {
+        ...(StyleSheet.flatten(style) ?? {}),
+      };
+
+      const hasBackgroundColorOverride = colors?.background !== undefined;
+      const hasBorderColorOverride = colors?.border !== undefined;
+
+      const resolvedStyle: ViewStyle = { ...flattenedStyle };
+
+      if (hasBackgroundColorOverride) {
+        delete resolvedStyle.backgroundColor;
+      }
+
+      if (hasBorderColorOverride) {
+        delete resolvedStyle.borderColor;
+        delete resolvedStyle.borderTopColor;
+        delete resolvedStyle.borderRightColor;
+        delete resolvedStyle.borderBottomColor;
+        delete resolvedStyle.borderLeftColor;
+        delete resolvedStyle.borderStartColor;
+        delete resolvedStyle.borderEndColor;
+      }
+
+      return {
+        resolvedConsumerStyle: resolvedStyle,
+        styleOwnsBackground:
+          !hasBackgroundColorOverride &&
+          flattenedStyle.backgroundColor !== undefined,
+        styleOwnsBorder:
+          !hasBorderColorOverride &&
+          (flattenedStyle.borderBottomColor !== undefined ||
+            flattenedStyle.borderColor !== undefined),
+      };
+    }, [colors?.background, colors?.border, style]);
 
   // ─── Typography ──────────────────────────────────
 
@@ -501,17 +576,21 @@ const HeaderComponent = ({
   // ─── Animated styles ─────────────────────────────
 
   const animatedContainerStyle = useAnimatedStyle(() => ({
-    backgroundColor: interpolateColor(
-      themeProgress.value,
-      [0, 1],
-      [darkBackground, lightBackground],
-    ),
+    backgroundColor: styleOwnsBackground
+      ? undefined
+      : interpolateColor(
+          themeProgress.value,
+          [0, 1],
+          [darkBackground, lightBackground],
+        ),
 
-    borderBottomColor: interpolateColor(
-      themeProgress.value,
-      [0, 1],
-      [darkBorder, lightBorder],
-    ),
+    borderBottomColor: styleOwnsBorder
+      ? undefined
+      : interpolateColor(
+          themeProgress.value,
+          [0, 1],
+          [darkBorder, lightBorder],
+        ),
   }));
 
   const titleFontSize = tokens.typography.header.title.fontSize;
@@ -542,6 +621,7 @@ const HeaderComponent = ({
         mirrorInRTL
         radius={resolvedControlRadius}
         animation={resolvedControlAnimation}
+        colors={colors?.control}
         accessibilityLabel={
           backAccessibilityLabel ?? strings.headerBackAccessibilityLabel
         }
@@ -561,6 +641,7 @@ const HeaderComponent = ({
             disabled={action.disabled ?? false}
             radius={resolvedControlRadius}
             animation={resolvedControlAnimation}
+            colors={colors?.control}
             accessibilityLabel={action.accessibilityLabel}
             accessibilityHint={action.accessibilityHint}
             testID={
@@ -650,7 +731,7 @@ const HeaderComponent = ({
         styles.container,
         containerBorderStyle,
         animatedContainerStyle,
-        style,
+        resolvedConsumerStyle,
       ]}
     >
       {/*

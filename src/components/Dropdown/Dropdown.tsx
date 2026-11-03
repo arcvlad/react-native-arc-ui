@@ -36,6 +36,7 @@ import {
 import { resolveNonNegativeMetric } from "../../utils/numberUtils";
 import { resolveEasing } from "../../utils/resolveEasing";
 import { resolveSafeArea } from "../../utils/resolveSafeArea";
+import { resolveThemeColor } from "../../utils/resolveThemeColor";
 import { DropdownItem } from "./DropdownItem";
 import { useDropdownHost } from "./DropdownProvider";
 import type {
@@ -161,6 +162,7 @@ const DropdownComponent = ({
   placement = "bottom-end",
   maxVisibleItems,
   disabled = false,
+  colors,
   style,
   testID,
 }: IDropdown) => {
@@ -709,13 +711,39 @@ const DropdownComponent = ({
 
   // ─── Theme colors ──────────────────────────────────────────────────────────
 
-  const lightBackground = tokens.colors.light.dropdown.background;
+  const backgroundColor = resolveThemeColor(
+    colors?.background,
+    tokens.colors.light.dropdown.background,
+    tokens.colors.dark.dropdown.background,
+    "Dropdown colors.background",
+  );
 
-  const darkBackground = tokens.colors.dark.dropdown.background;
+  const borderColor = resolveThemeColor(
+    colors?.border,
+    tokens.colors.light.dropdown.border,
+    tokens.colors.dark.dropdown.border,
+    "Dropdown colors.border",
+  );
 
-  const lightBorder = tokens.colors.light.dropdown.border;
+  const separatorColor = resolveThemeColor(
+    colors?.separator,
+    tokens.colors.light.dropdown.separator,
+    tokens.colors.dark.dropdown.separator,
+    "Dropdown colors.separator",
+  );
 
-  const darkBorder = tokens.colors.dark.dropdown.border;
+  const lightBackground = backgroundColor.light;
+  const darkBackground = backgroundColor.dark;
+  const lightBorder = borderColor.light;
+  const darkBorder = borderColor.dark;
+
+  const stableSeparatorColor = useMemo(
+    () => ({
+      light: separatorColor.light,
+      dark: separatorColor.dark,
+    }),
+    [separatorColor.light, separatorColor.dark],
+  );
 
   // ─── Static layout styles ──────────────────────────────────────────────────
 
@@ -872,6 +900,8 @@ const DropdownComponent = ({
                 <DropdownItem
                   key={item.value}
                   item={item}
+                  colors={colors?.item}
+                  separatorColor={stableSeparatorColor}
                   onPress={handleSelect}
                   testID={testID ? `${testID}-item-${item.value}` : undefined}
                 />
@@ -891,6 +921,8 @@ const DropdownComponent = ({
     animatedSurfaceStyle,
     animatedMaxHeightStyle,
     items,
+    colors?.item,
+    stableSeparatorColor,
     handleSelect,
   ]);
 

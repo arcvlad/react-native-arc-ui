@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import type { StyleProp, ViewStyle } from "react-native";
 
+import type { TThemeColor } from "../../types/colors";
 import type { IIcon } from "../Icon/types";
 
 export type TDropdownPlacement =
@@ -8,6 +9,32 @@ export type TDropdownPlacement =
   | "bottom-end"
   | "top-start"
   | "top-end";
+
+export type TDropdownItemTone = "neutral" | "danger";
+
+export interface IDropdownItemBackgroundColors {
+  default?: TThemeColor;
+  pressed?: TThemeColor;
+  disabled?: TThemeColor;
+}
+
+export interface IDropdownItemContentColors {
+  default?: TThemeColor;
+  disabled?: TThemeColor;
+}
+
+export interface IDropdownItemColors {
+  background?: Readonly<IDropdownItemBackgroundColors>;
+  text?: Readonly<IDropdownItemContentColors>;
+  icon?: Readonly<IDropdownItemContentColors>;
+}
+
+export interface IDropdownColors {
+  background?: TThemeColor;
+  border?: TThemeColor;
+  separator?: TThemeColor;
+  item?: Readonly<IDropdownItemColors>;
+}
 
 export type TDropdownTriggerProps = {
   /**
@@ -49,32 +76,24 @@ export type TDropdownItem = {
   disabled?: boolean;
 
   /**
-   * Uses the semantic destructive item colors.
+   * Semantic item palette.
    *
-   * Explicit color overrides still take precedence.
+   * @default "neutral"
    */
-  destructive?: boolean;
+  tone?: TDropdownItemTone;
+
+  /**
+   * Per-item ARCUI-owned color overrides.
+   *
+   * Resolution priority:
+   * item colors > Dropdown colors.item > tone > Dropdown tokens.
+   */
+  colors?: Readonly<IDropdownItemColors>;
 
   /**
    * Renders a separator below this item.
    */
   separator?: boolean;
-
-  /**
-   * Fixed label and icon color in both themes.
-   *
-   * Takes precedence over darkColor/lightColor and semantic tokens.
-   */
-  color?: string;
-
-  /**
-   * Theme-aware label and icon colors.
-   *
-   * Both values must be supplied for the pair to override
-   * semantic Dropdown tokens.
-   */
-  darkColor?: string;
-  lightColor?: string;
 
   /**
    * Optional item-level test identifier.
@@ -121,6 +140,11 @@ export interface IDropdown {
   maxVisibleItems?: number;
 
   disabled?: boolean;
+
+  /**
+   * Per-instance ARCUI-owned color overrides.
+   */
+  colors?: Readonly<IDropdownColors>;
 
   /**
    * Style applied to the trigger measurement wrapper.

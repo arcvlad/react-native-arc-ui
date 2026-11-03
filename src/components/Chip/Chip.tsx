@@ -24,6 +24,7 @@ import {
 import { useEnteringExiting } from "../../hooks/useEnteringExiting";
 import { resolveNonNegativeMetric } from "../../utils/numberUtils";
 import { resolveAnimation } from "../../utils/resolveAnimation";
+import { resolveThemeColor } from "../../utils/resolveThemeColor";
 import { resolveTextContent } from "../../utils/reactNode";
 import { resolveTypographyStyle } from "../../utils/resolveTypography";
 import { Icon } from "../Icon/Icon";
@@ -53,6 +54,7 @@ const ChipComponent = ({
   ref,
   children,
   type = "border",
+  colors,
   selectedType,
   value,
   selected,
@@ -173,147 +175,210 @@ const ChipComponent = ({
 
   const chipLineHeight = tokens.typography.chip.text.lineHeight;
 
-  // ─── Base presentation: light ────────────────────────
+  // ─── Theme color endpoints ───────────────────────────────────────────────
 
-  const lightBackgroundPrimary =
-    tokens.colors.light.chip[resolvedType].background.primary;
+  const resolvedBackgroundDefault = resolveThemeColor(
+    colors?.background?.default,
+    tokens.colors.light.chip[resolvedType].background.primary,
+    tokens.colors.dark.chip[resolvedType].background.primary,
+    "Chip colors.background.default",
+  );
+  const resolvedBackgroundPressed = resolveThemeColor(
+    colors?.background?.pressed,
+    tokens.colors.light.chip[resolvedType].background.pressed,
+    tokens.colors.dark.chip[resolvedType].background.pressed,
+    "Chip colors.background.pressed",
+  );
+  const resolvedBackgroundDisabled = resolveThemeColor(
+    colors?.background?.disabled,
+    tokens.colors.light.chip[resolvedType].background.disabled,
+    tokens.colors.dark.chip[resolvedType].background.disabled,
+    "Chip colors.background.disabled",
+  );
+  const resolvedBackgroundSelected = resolveThemeColor(
+    colors?.background?.selected,
+    tokens.colors.light.chip[resolvedSelectedType].background.selected,
+    tokens.colors.dark.chip[resolvedSelectedType].background.selected,
+    "Chip colors.background.selected",
+  );
+  const resolvedBackgroundSelectedPressed = resolveThemeColor(
+    colors?.background?.selectedPressed,
+    tokens.colors.light.chip[resolvedSelectedType].background.pressed,
+    tokens.colors.dark.chip[resolvedSelectedType].background.pressed,
+    "Chip colors.background.selectedPressed",
+  );
+  const resolvedBackgroundSelectedDisabled = resolveThemeColor(
+    colors?.background?.selectedDisabled,
+    tokens.colors.light.chip[resolvedSelectedType].background.disabled,
+    tokens.colors.dark.chip[resolvedSelectedType].background.disabled,
+    "Chip colors.background.selectedDisabled",
+  );
 
-  const lightBackgroundPressed =
-    tokens.colors.light.chip[resolvedType].background.pressed;
-
-  const lightBackgroundDisabled =
-    tokens.colors.light.chip[resolvedType].background.disabled;
-
-  const lightBorderPrimary =
-    tokens.colors.light.chip[resolvedType].border.primary;
-
-  const lightBorderPressed =
-    tokens.colors.light.chip[resolvedType].border.pressed;
-
-  const lightBorderDisabled =
-    tokens.colors.light.chip[resolvedType].border.disabled;
-
-  const lightTextPrimary = tokens.colors.light.chip[resolvedType].text.primary;
-
-  const lightTextPressed = tokens.colors.light.chip[resolvedType].text.pressed;
-
-  const lightTextDisabled =
-    tokens.colors.light.chip[resolvedType].text.disabled;
-
-  const lightIconPrimary = tokens.colors.light.chip[resolvedType].icon.primary;
-
-  const lightIconPressed = tokens.colors.light.chip[resolvedType].icon.pressed;
-
-  const lightIconDisabled =
-    tokens.colors.light.chip[resolvedType].icon.disabled;
-
-  // ─── Selected presentation: light ────────────────────
-
-  const lightBackgroundSelected =
-    tokens.colors.light.chip[resolvedSelectedType].background.selected;
-
+  const lightBackgroundPrimary = resolvedBackgroundDefault.light;
+  const darkBackgroundPrimary = resolvedBackgroundDefault.dark;
+  const lightBackgroundPressed = resolvedBackgroundPressed.light;
+  const darkBackgroundPressed = resolvedBackgroundPressed.dark;
+  const lightBackgroundDisabled = resolvedBackgroundDisabled.light;
+  const darkBackgroundDisabled = resolvedBackgroundDisabled.dark;
+  const lightBackgroundSelected = resolvedBackgroundSelected.light;
+  const darkBackgroundSelected = resolvedBackgroundSelected.dark;
   const lightBackgroundSelectedPressed =
-    tokens.colors.light.chip[resolvedSelectedType].background.pressed;
-
+    resolvedBackgroundSelectedPressed.light;
+  const darkBackgroundSelectedPressed = resolvedBackgroundSelectedPressed.dark;
   const lightBackgroundSelectedDisabled =
-    tokens.colors.light.chip[resolvedSelectedType].background.disabled;
-
-  const lightBorderSelected =
-    tokens.colors.light.chip[resolvedSelectedType].border.selected;
-
-  const lightBorderSelectedPressed =
-    tokens.colors.light.chip[resolvedSelectedType].border.pressed;
-
-  const lightBorderSelectedDisabled =
-    tokens.colors.light.chip[resolvedSelectedType].border.disabled;
-
-  const lightTextSelected =
-    tokens.colors.light.chip[resolvedSelectedType].text.selected;
-
-  const lightTextSelectedPressed =
-    tokens.colors.light.chip[resolvedSelectedType].text.pressed;
-
-  const lightTextSelectedDisabled =
-    tokens.colors.light.chip[resolvedSelectedType].text.disabled;
-
-  const lightIconSelected =
-    tokens.colors.light.chip[resolvedSelectedType].icon.selected;
-
-  const lightIconSelectedPressed =
-    tokens.colors.light.chip[resolvedSelectedType].icon.pressed;
-
-  const lightIconSelectedDisabled =
-    tokens.colors.light.chip[resolvedSelectedType].icon.disabled;
-
-  // ─── Base presentation: dark ─────────────────────────
-
-  const darkBackgroundPrimary =
-    tokens.colors.dark.chip[resolvedType].background.primary;
-
-  const darkBackgroundPressed =
-    tokens.colors.dark.chip[resolvedType].background.pressed;
-
-  const darkBackgroundDisabled =
-    tokens.colors.dark.chip[resolvedType].background.disabled;
-
-  const darkBorderPrimary =
-    tokens.colors.dark.chip[resolvedType].border.primary;
-
-  const darkBorderPressed =
-    tokens.colors.dark.chip[resolvedType].border.pressed;
-
-  const darkBorderDisabled =
-    tokens.colors.dark.chip[resolvedType].border.disabled;
-
-  const darkTextPrimary = tokens.colors.dark.chip[resolvedType].text.primary;
-
-  const darkTextPressed = tokens.colors.dark.chip[resolvedType].text.pressed;
-
-  const darkTextDisabled = tokens.colors.dark.chip[resolvedType].text.disabled;
-
-  const darkIconPrimary = tokens.colors.dark.chip[resolvedType].icon.primary;
-
-  const darkIconPressed = tokens.colors.dark.chip[resolvedType].icon.pressed;
-
-  const darkIconDisabled = tokens.colors.dark.chip[resolvedType].icon.disabled;
-
-  // ─── Selected presentation: dark ─────────────────────
-
-  const darkBackgroundSelected =
-    tokens.colors.dark.chip[resolvedSelectedType].background.selected;
-
-  const darkBackgroundSelectedPressed =
-    tokens.colors.dark.chip[resolvedSelectedType].background.pressed;
-
+    resolvedBackgroundSelectedDisabled.light;
   const darkBackgroundSelectedDisabled =
-    tokens.colors.dark.chip[resolvedSelectedType].background.disabled;
+    resolvedBackgroundSelectedDisabled.dark;
 
-  const darkBorderSelected =
-    tokens.colors.dark.chip[resolvedSelectedType].border.selected;
+  const resolvedBorderDefault = resolveThemeColor(
+    colors?.border?.default,
+    tokens.colors.light.chip[resolvedType].border.primary,
+    tokens.colors.dark.chip[resolvedType].border.primary,
+    "Chip colors.border.default",
+  );
+  const resolvedBorderPressed = resolveThemeColor(
+    colors?.border?.pressed,
+    tokens.colors.light.chip[resolvedType].border.pressed,
+    tokens.colors.dark.chip[resolvedType].border.pressed,
+    "Chip colors.border.pressed",
+  );
+  const resolvedBorderDisabled = resolveThemeColor(
+    colors?.border?.disabled,
+    tokens.colors.light.chip[resolvedType].border.disabled,
+    tokens.colors.dark.chip[resolvedType].border.disabled,
+    "Chip colors.border.disabled",
+  );
+  const resolvedBorderSelected = resolveThemeColor(
+    colors?.border?.selected,
+    tokens.colors.light.chip[resolvedSelectedType].border.selected,
+    tokens.colors.dark.chip[resolvedSelectedType].border.selected,
+    "Chip colors.border.selected",
+  );
+  const resolvedBorderSelectedPressed = resolveThemeColor(
+    colors?.border?.selectedPressed,
+    tokens.colors.light.chip[resolvedSelectedType].border.pressed,
+    tokens.colors.dark.chip[resolvedSelectedType].border.pressed,
+    "Chip colors.border.selectedPressed",
+  );
+  const resolvedBorderSelectedDisabled = resolveThemeColor(
+    colors?.border?.selectedDisabled,
+    tokens.colors.light.chip[resolvedSelectedType].border.disabled,
+    tokens.colors.dark.chip[resolvedSelectedType].border.disabled,
+    "Chip colors.border.selectedDisabled",
+  );
 
-  const darkBorderSelectedPressed =
-    tokens.colors.dark.chip[resolvedSelectedType].border.pressed;
+  const lightBorderPrimary = resolvedBorderDefault.light;
+  const darkBorderPrimary = resolvedBorderDefault.dark;
+  const lightBorderPressed = resolvedBorderPressed.light;
+  const darkBorderPressed = resolvedBorderPressed.dark;
+  const lightBorderDisabled = resolvedBorderDisabled.light;
+  const darkBorderDisabled = resolvedBorderDisabled.dark;
+  const lightBorderSelected = resolvedBorderSelected.light;
+  const darkBorderSelected = resolvedBorderSelected.dark;
+  const lightBorderSelectedPressed = resolvedBorderSelectedPressed.light;
+  const darkBorderSelectedPressed = resolvedBorderSelectedPressed.dark;
+  const lightBorderSelectedDisabled = resolvedBorderSelectedDisabled.light;
+  const darkBorderSelectedDisabled = resolvedBorderSelectedDisabled.dark;
 
-  const darkBorderSelectedDisabled =
-    tokens.colors.dark.chip[resolvedSelectedType].border.disabled;
+  const resolvedTextDefault = resolveThemeColor(
+    colors?.text?.default,
+    tokens.colors.light.chip[resolvedType].text.primary,
+    tokens.colors.dark.chip[resolvedType].text.primary,
+    "Chip colors.text.default",
+  );
+  const resolvedTextPressed = resolveThemeColor(
+    colors?.text?.pressed,
+    tokens.colors.light.chip[resolvedType].text.pressed,
+    tokens.colors.dark.chip[resolvedType].text.pressed,
+    "Chip colors.text.pressed",
+  );
+  const resolvedTextDisabled = resolveThemeColor(
+    colors?.text?.disabled,
+    tokens.colors.light.chip[resolvedType].text.disabled,
+    tokens.colors.dark.chip[resolvedType].text.disabled,
+    "Chip colors.text.disabled",
+  );
+  const resolvedTextSelected = resolveThemeColor(
+    colors?.text?.selected,
+    tokens.colors.light.chip[resolvedSelectedType].text.selected,
+    tokens.colors.dark.chip[resolvedSelectedType].text.selected,
+    "Chip colors.text.selected",
+  );
+  const resolvedTextSelectedPressed = resolveThemeColor(
+    colors?.text?.selectedPressed,
+    tokens.colors.light.chip[resolvedSelectedType].text.pressed,
+    tokens.colors.dark.chip[resolvedSelectedType].text.pressed,
+    "Chip colors.text.selectedPressed",
+  );
+  const resolvedTextSelectedDisabled = resolveThemeColor(
+    colors?.text?.selectedDisabled,
+    tokens.colors.light.chip[resolvedSelectedType].text.disabled,
+    tokens.colors.dark.chip[resolvedSelectedType].text.disabled,
+    "Chip colors.text.selectedDisabled",
+  );
 
-  const darkTextSelected =
-    tokens.colors.dark.chip[resolvedSelectedType].text.selected;
+  const lightTextPrimary = resolvedTextDefault.light;
+  const darkTextPrimary = resolvedTextDefault.dark;
+  const lightTextPressed = resolvedTextPressed.light;
+  const darkTextPressed = resolvedTextPressed.dark;
+  const lightTextDisabled = resolvedTextDisabled.light;
+  const darkTextDisabled = resolvedTextDisabled.dark;
+  const lightTextSelected = resolvedTextSelected.light;
+  const darkTextSelected = resolvedTextSelected.dark;
+  const lightTextSelectedPressed = resolvedTextSelectedPressed.light;
+  const darkTextSelectedPressed = resolvedTextSelectedPressed.dark;
+  const lightTextSelectedDisabled = resolvedTextSelectedDisabled.light;
+  const darkTextSelectedDisabled = resolvedTextSelectedDisabled.dark;
 
-  const darkTextSelectedPressed =
-    tokens.colors.dark.chip[resolvedSelectedType].text.pressed;
+  const resolvedIconDefault = resolveThemeColor(
+    colors?.icon?.default,
+    tokens.colors.light.chip[resolvedType].icon.primary,
+    tokens.colors.dark.chip[resolvedType].icon.primary,
+    "Chip colors.icon.default",
+  );
+  const resolvedIconPressed = resolveThemeColor(
+    colors?.icon?.pressed,
+    tokens.colors.light.chip[resolvedType].icon.pressed,
+    tokens.colors.dark.chip[resolvedType].icon.pressed,
+    "Chip colors.icon.pressed",
+  );
+  const resolvedIconDisabled = resolveThemeColor(
+    colors?.icon?.disabled,
+    tokens.colors.light.chip[resolvedType].icon.disabled,
+    tokens.colors.dark.chip[resolvedType].icon.disabled,
+    "Chip colors.icon.disabled",
+  );
+  const resolvedIconSelected = resolveThemeColor(
+    colors?.icon?.selected,
+    tokens.colors.light.chip[resolvedSelectedType].icon.selected,
+    tokens.colors.dark.chip[resolvedSelectedType].icon.selected,
+    "Chip colors.icon.selected",
+  );
+  const resolvedIconSelectedPressed = resolveThemeColor(
+    colors?.icon?.selectedPressed,
+    tokens.colors.light.chip[resolvedSelectedType].icon.pressed,
+    tokens.colors.dark.chip[resolvedSelectedType].icon.pressed,
+    "Chip colors.icon.selectedPressed",
+  );
+  const resolvedIconSelectedDisabled = resolveThemeColor(
+    colors?.icon?.selectedDisabled,
+    tokens.colors.light.chip[resolvedSelectedType].icon.disabled,
+    tokens.colors.dark.chip[resolvedSelectedType].icon.disabled,
+    "Chip colors.icon.selectedDisabled",
+  );
 
-  const darkTextSelectedDisabled =
-    tokens.colors.dark.chip[resolvedSelectedType].text.disabled;
-
-  const darkIconSelected =
-    tokens.colors.dark.chip[resolvedSelectedType].icon.selected;
-
-  const darkIconSelectedPressed =
-    tokens.colors.dark.chip[resolvedSelectedType].icon.pressed;
-
-  const darkIconSelectedDisabled =
-    tokens.colors.dark.chip[resolvedSelectedType].icon.disabled;
+  const lightIconPrimary = resolvedIconDefault.light;
+  const darkIconPrimary = resolvedIconDefault.dark;
+  const lightIconPressed = resolvedIconPressed.light;
+  const darkIconPressed = resolvedIconPressed.dark;
+  const lightIconDisabled = resolvedIconDisabled.light;
+  const darkIconDisabled = resolvedIconDisabled.dark;
+  const lightIconSelected = resolvedIconSelected.light;
+  const darkIconSelected = resolvedIconSelected.dark;
+  const lightIconSelectedPressed = resolvedIconSelectedPressed.light;
+  const darkIconSelectedPressed = resolvedIconSelectedPressed.dark;
+  const lightIconSelectedDisabled = resolvedIconSelectedDisabled.light;
+  const darkIconSelectedDisabled = resolvedIconSelectedDisabled.dark;
 
   // ─── Independent state dimensions ────────────────────
 

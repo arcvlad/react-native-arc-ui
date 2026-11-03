@@ -7,9 +7,12 @@ import type {
   ViewStyle,
 } from "react-native";
 
+import type { IFieldColors } from "../../types/fieldColors";
 import type { TIconType } from "../Icon/types";
 
 export type TInputType = "text" | "email" | "phone" | "url";
+
+export type IInputColors = IFieldColors;
 
 export type TInputRightAction = {
   /**
@@ -45,6 +48,8 @@ type TInputBase = Omit<
   label?: string;
 
   error?: string;
+
+  colors?: Readonly<IInputColors>;
 
   /**
    * Fully disabled semantic state.

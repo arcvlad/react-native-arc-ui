@@ -5,8 +5,11 @@ import {
 } from "react-native-reanimated";
 
 import { useARCUIAnimatedTheme, useARCUITheme } from "../../contexts/hooks";
+import type { IFieldColors } from "../../types/fieldColors";
+import { resolveThemeColor } from "../../utils/resolveThemeColor";
 
 interface IUseFieldAnimatedColors {
+  colors?: Readonly<IFieldColors>;
   focusedProgress: SharedValue<number>;
   errorProgress: SharedValue<number>;
   disabledProgress: SharedValue<number>;
@@ -157,6 +160,7 @@ const resolveIconForTheme = (
  * During a normal focus transition only borderColor is invalidated.
  */
 export const useFieldAnimatedColors = ({
+  colors,
   focusedProgress,
   errorProgress,
   disabledProgress,
@@ -166,71 +170,147 @@ export const useFieldAnimatedColors = ({
   const { tokens } = useARCUITheme();
   const { themeProgress } = useARCUIAnimatedTheme();
 
-  // ─── Token extraction ────────────────────────────────────────────────────────
+  // ─── Theme color endpoints ───────────────────────────────────────────────
 
-  const lightBackgroundPrimary = tokens.colors.light.input.background.primary;
+  const resolvedBackgroundDefault = resolveThemeColor(
+    colors?.background?.default,
+    tokens.colors.light.input.background.primary,
+    tokens.colors.dark.input.background.primary,
+    "Field colors.background.default",
+  );
+  const resolvedBackgroundDisabled = resolveThemeColor(
+    colors?.background?.disabled,
+    tokens.colors.light.input.background.disabled,
+    tokens.colors.dark.input.background.disabled,
+    "Field colors.background.disabled",
+  );
 
-  const darkBackgroundPrimary = tokens.colors.dark.input.background.primary;
+  const lightBackgroundPrimary = resolvedBackgroundDefault.light;
+  const darkBackgroundPrimary = resolvedBackgroundDefault.dark;
+  const lightBackgroundDisabled = resolvedBackgroundDisabled.light;
+  const darkBackgroundDisabled = resolvedBackgroundDisabled.dark;
 
-  const lightBackgroundDisabled = tokens.colors.light.input.background.disabled;
+  const resolvedBorderEmpty = resolveThemeColor(
+    colors?.border?.empty,
+    tokens.colors.light.input.border.withoutValue,
+    tokens.colors.dark.input.border.withoutValue,
+    "Field colors.border.empty",
+  );
+  const resolvedBorderFilled = resolveThemeColor(
+    colors?.border?.filled,
+    tokens.colors.light.input.border.withValue,
+    tokens.colors.dark.input.border.withValue,
+    "Field colors.border.filled",
+  );
+  const resolvedBorderFocused = resolveThemeColor(
+    colors?.border?.focused,
+    tokens.colors.light.input.border.focused,
+    tokens.colors.dark.input.border.focused,
+    "Field colors.border.focused",
+  );
+  const resolvedBorderError = resolveThemeColor(
+    colors?.border?.error,
+    tokens.colors.light.input.border.error,
+    tokens.colors.dark.input.border.error,
+    "Field colors.border.error",
+  );
+  const resolvedBorderInactive = resolveThemeColor(
+    colors?.border?.inactive,
+    tokens.colors.light.input.border.inactive,
+    tokens.colors.dark.input.border.inactive,
+    "Field colors.border.inactive",
+  );
+  const resolvedBorderDisabled = resolveThemeColor(
+    colors?.border?.disabled,
+    tokens.colors.light.input.border.disabled,
+    tokens.colors.dark.input.border.disabled,
+    "Field colors.border.disabled",
+  );
 
-  const darkBackgroundDisabled = tokens.colors.dark.input.background.disabled;
+  const lightBorderWithoutValue = resolvedBorderEmpty.light;
+  const darkBorderWithoutValue = resolvedBorderEmpty.dark;
+  const lightBorderWithValue = resolvedBorderFilled.light;
+  const darkBorderWithValue = resolvedBorderFilled.dark;
+  const lightBorderFocused = resolvedBorderFocused.light;
+  const darkBorderFocused = resolvedBorderFocused.dark;
+  const lightBorderError = resolvedBorderError.light;
+  const darkBorderError = resolvedBorderError.dark;
+  const lightBorderInactive = resolvedBorderInactive.light;
+  const darkBorderInactive = resolvedBorderInactive.dark;
+  const lightBorderDisabled = resolvedBorderDisabled.light;
+  const darkBorderDisabled = resolvedBorderDisabled.dark;
 
-  const lightBorderWithoutValue = tokens.colors.light.input.border.withoutValue;
+  const resolvedLabelDefault = resolveThemeColor(
+    colors?.label?.default,
+    tokens.colors.light.input.label.primary,
+    tokens.colors.dark.input.label.primary,
+    "Field colors.label.default",
+  );
+  const resolvedLabelDisabled = resolveThemeColor(
+    colors?.label?.disabled,
+    tokens.colors.light.input.label.disabled,
+    tokens.colors.dark.input.label.disabled,
+    "Field colors.label.disabled",
+  );
 
-  const darkBorderWithoutValue = tokens.colors.dark.input.border.withoutValue;
+  const lightLabelPrimary = resolvedLabelDefault.light;
+  const darkLabelPrimary = resolvedLabelDefault.dark;
+  const lightLabelDisabled = resolvedLabelDisabled.light;
+  const darkLabelDisabled = resolvedLabelDisabled.dark;
 
-  const lightBorderWithValue = tokens.colors.light.input.border.withValue;
+  const resolvedTextDefault = resolveThemeColor(
+    colors?.text?.default,
+    tokens.colors.light.input.text.withValue,
+    tokens.colors.dark.input.text.withValue,
+    "Field colors.text.default",
+  );
+  const resolvedTextDisabled = resolveThemeColor(
+    colors?.text?.disabled,
+    tokens.colors.light.input.text.disabled,
+    tokens.colors.dark.input.text.disabled,
+    "Field colors.text.disabled",
+  );
 
-  const darkBorderWithValue = tokens.colors.dark.input.border.withValue;
+  const lightTextPrimary = resolvedTextDefault.light;
+  const darkTextPrimary = resolvedTextDefault.dark;
+  const lightTextDisabled = resolvedTextDisabled.light;
+  const darkTextDisabled = resolvedTextDisabled.dark;
 
-  const lightBorderFocused = tokens.colors.light.input.border.focused;
+  const resolvedPlaceholder = resolveThemeColor(
+    colors?.placeholder,
+    tokens.colors.light.input.text.placeholder,
+    tokens.colors.dark.input.text.placeholder,
+    "Field colors.placeholder",
+  );
+  const lightPlaceholder = resolvedPlaceholder.light;
+  const darkPlaceholder = resolvedPlaceholder.dark;
 
-  const darkBorderFocused = tokens.colors.dark.input.border.focused;
+  const resolvedIconDefault = resolveThemeColor(
+    colors?.icon?.default,
+    tokens.colors.light.input.icon.primary,
+    tokens.colors.dark.input.icon.primary,
+    "Field colors.icon.default",
+  );
+  const resolvedIconDisabled = resolveThemeColor(
+    colors?.icon?.disabled,
+    tokens.colors.light.input.icon.disabled,
+    tokens.colors.dark.input.icon.disabled,
+    "Field colors.icon.disabled",
+  );
 
-  const lightBorderError = tokens.colors.light.input.border.error;
+  const lightIconPrimary = resolvedIconDefault.light;
+  const darkIconPrimary = resolvedIconDefault.dark;
+  const lightIconDisabled = resolvedIconDisabled.light;
+  const darkIconDisabled = resolvedIconDisabled.dark;
 
-  const darkBorderError = tokens.colors.dark.input.border.error;
-
-  const lightBorderInactive = tokens.colors.light.input.border.inactive;
-
-  const darkBorderInactive = tokens.colors.dark.input.border.inactive;
-
-  const lightBorderDisabled = tokens.colors.light.input.border.disabled;
-
-  const darkBorderDisabled = tokens.colors.dark.input.border.disabled;
-
-  const lightLabelPrimary = tokens.colors.light.input.label.primary;
-
-  const darkLabelPrimary = tokens.colors.dark.input.label.primary;
-
-  const lightLabelDisabled = tokens.colors.light.input.label.disabled;
-
-  const darkLabelDisabled = tokens.colors.dark.input.label.disabled;
-
-  const lightTextPrimary = tokens.colors.light.input.text.withValue;
-
-  const darkTextPrimary = tokens.colors.dark.input.text.withValue;
-
-  const lightTextDisabled = tokens.colors.light.input.text.disabled;
-
-  const darkTextDisabled = tokens.colors.dark.input.text.disabled;
-
-  const lightPlaceholder = tokens.colors.light.input.text.placeholder;
-
-  const darkPlaceholder = tokens.colors.dark.input.text.placeholder;
-
-  const lightIconPrimary = tokens.colors.light.input.icon.primary;
-
-  const darkIconPrimary = tokens.colors.dark.input.icon.primary;
-
-  const lightIconDisabled = tokens.colors.light.input.icon.disabled;
-
-  const darkIconDisabled = tokens.colors.dark.input.icon.disabled;
-
-  const lightError = tokens.colors.light.input.error;
-
-  const darkError = tokens.colors.dark.input.error;
+  const resolvedError = resolveThemeColor(
+    colors?.error,
+    tokens.colors.light.input.error,
+    tokens.colors.dark.input.error,
+    "Field colors.error",
+  );
+  const lightError = resolvedError.light;
+  const darkError = resolvedError.dark;
 
   // ─── Border ──────────────────────────────────────────────────────────────────
 

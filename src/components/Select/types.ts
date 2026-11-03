@@ -1,8 +1,64 @@
 import type { StyleProp, ViewStyle } from "react-native";
 
+import type { TThemeColor } from "../../types/colors";
 import type { IIcon } from "../Icon/types";
 
 export type TSelectValue = string;
+
+export interface ISelectBorderColors {
+  default?: TThemeColor;
+  focused?: TThemeColor;
+  error?: TThemeColor;
+  inactive?: TThemeColor;
+  disabled?: TThemeColor;
+}
+
+export interface ISelectTwoStateColors {
+  default?: TThemeColor;
+  disabled?: TThemeColor;
+}
+
+export interface ISelectTextColors extends ISelectTwoStateColors {
+  placeholder?: TThemeColor;
+}
+
+export interface ISelectItemBackgroundColors {
+  default?: TThemeColor;
+  selected?: TThemeColor;
+  pressed?: TThemeColor;
+}
+
+export interface ISelectItemContentColors {
+  default?: TThemeColor;
+  selected?: TThemeColor;
+  disabled?: TThemeColor;
+}
+
+export interface ISelectItemColors {
+  background?: Readonly<ISelectItemBackgroundColors>;
+  text?: Readonly<ISelectItemContentColors>;
+  icon?: Readonly<ISelectItemContentColors>;
+}
+
+export interface ISelectSearchColors {
+  text?: TThemeColor;
+  placeholder?: TThemeColor;
+  icon?: TThemeColor;
+}
+
+export interface ISelectColors {
+  border?: Readonly<ISelectBorderColors>;
+  background?: Readonly<ISelectTwoStateColors>;
+  label?: Readonly<ISelectTwoStateColors>;
+  text?: Readonly<ISelectTextColors>;
+  icon?: Readonly<ISelectTwoStateColors>;
+  loading?: TThemeColor;
+  error?: TThemeColor;
+  item?: Readonly<ISelectItemColors>;
+  search?: Readonly<ISelectSearchColors>;
+  emptyState?: TThemeColor;
+  groupHeader?: TThemeColor;
+}
 
 export type TSelectOption = {
   /**
@@ -40,6 +96,13 @@ type TSelectBaseProps = {
    * @default []
    */
   options?: readonly TSelectOption[];
+
+  /**
+   * Per-instance ARCUI-owned color overrides.
+   *
+   * Partial overrides fall back to Select tokens for the matching visual state.
+   */
+  colors?: Readonly<ISelectColors>;
 
   // ─── Search ──────────────────────────────────────────────────────────────
 
@@ -133,9 +196,10 @@ type TSelectBaseProps = {
   itemHeight?: number;
 
   /**
-   * Maximum number of row particles visible before internal scrolling.
+   * Maximum number of structural list rows visible before internal scrolling.
    *
-   * Falls back to tokens.sizings.select.maxVisibleItems.
+   * Search, group-header, option, and empty-state rows each count toward this
+   * limit. Falls back to tokens.sizings.select.maxVisibleItems.
    */
   maxVisibleItems?: number;
 

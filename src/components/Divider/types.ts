@@ -7,9 +7,24 @@ import type {
   ViewStyle,
 } from "react-native";
 
+import type { TThemeColor } from "../../types/colors";
+
 export type TDividerOrientation = "horizontal" | "vertical";
 
 export type TDividerLabelPosition = "start" | "center" | "end";
+
+export interface IDividerColors {
+  /**
+   * Divider line color.
+   */
+  line?: TThemeColor;
+
+  /**
+   * ARCUI-owned textual label color.
+   * Consumer-provided custom ReactNode labels remain consumer-owned.
+   */
+  label?: TThemeColor;
+}
 
 type TDividerBase = Omit<ViewProps, "children" | "style"> & {
   /**
@@ -35,20 +50,9 @@ type TDividerBase = Omit<ViewProps, "children" | "style"> & {
   thickness?: number;
 
   /**
-   * Fixed line color for both themes.
-   *
-   * Takes precedence over darkColor/lightColor.
+   * Per-instance ARCUI-owned color overrides.
    */
-  color?: string;
-
-  /**
-   * Theme-aware line colors.
-   *
-   * Both darkColor and lightColor must be provided for the pair
-   * to override the semantic Divider color tokens.
-   */
-  darkColor?: string;
-  lightColor?: string;
+  colors?: Readonly<IDividerColors>;
 
   /**
    * Line corner radius.
@@ -60,7 +64,7 @@ type TDividerBase = Omit<ViewProps, "children" | "style"> & {
   /**
    * Style applied to the Divider root layout container.
    *
-   * Use color/darkColor/lightColor to customize the line itself.
+   * Use colors.line to customize the line itself.
    */
   style?: StyleProp<ViewStyle>;
 };

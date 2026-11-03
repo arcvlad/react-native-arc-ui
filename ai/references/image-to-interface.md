@@ -109,6 +109,16 @@ Use existing ARCUI/app tokens when they already represent those decisions.
 Create/override tokens only when the value is genuinely reusable design-system
 configuration.
 
+When matching colors from a design:
+
+- prefer a semantic `tone` when the component exposes one and the design intent
+  matches that semantic preset;
+- use the component `colors` prop for legitimate one-instance visual overrides;
+- use tokens when the same color decision is a reusable application/design-system
+  default;
+- preserve complete light/dark behavior instead of encoding only the screenshot's
+  currently visible theme.
+
 Keep one-off layout values local.
 
 Do not turn every measured pixel into a token.

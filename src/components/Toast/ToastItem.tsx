@@ -24,7 +24,8 @@ import {
 } from "../../contexts/hooks";
 import { resolveEasing } from "../../utils/resolveEasing";
 import { resolveTypographyStyle } from "../../utils/resolveTypography";
-import type { TToastEntry, TToastId } from "./types";
+import { resolveThemeColor } from "../../utils/resolveThemeColor";
+import type { TToastEntry, TToastId, TToastTone } from "./types";
 
 type TToastItemProps = {
   toast: TToastEntry;
@@ -36,6 +37,31 @@ type TToastItemProps = {
 };
 
 const FALLBACK_DISPLAY_DURATION = 3000;
+
+const resolveToastTone = (value: unknown): TToastTone => {
+  switch (value) {
+    case "neutral":
+    case "info":
+    case "success":
+    case "warning":
+    case "danger":
+      return value;
+
+    case undefined:
+      return "neutral";
+
+    default:
+      if (__DEV__) {
+        console.error(
+          `[react-native-arc-ui] Toast tone "${String(
+            value,
+          )}" is invalid. Falling back to "neutral".`,
+        );
+      }
+
+      return "neutral";
+  }
+};
 
 const resolveDisplayDuration = (
   duration: number | undefined,
@@ -119,14 +145,38 @@ export const ToastItem = memo(function ToastItem({
 
   // ─── Token primitives ─────────────────────────────────────────────────────
 
-  const darkBackground = tokens.colors.dark.toast.background.primary;
-  const lightBackground = tokens.colors.light.toast.background.primary;
+  const tone = resolveToastTone(toast.tone);
 
-  const darkText = tokens.colors.dark.toast.text.primary;
-  const lightText = tokens.colors.light.toast.text.primary;
+  const lightPalette = tokens.colors.light.toast[tone];
+  const darkPalette = tokens.colors.dark.toast[tone];
 
-  const darkStackBorder = tokens.colors.dark.toast.border.stacked;
-  const lightStackBorder = tokens.colors.light.toast.border.stacked;
+  const background = resolveThemeColor(
+    toast.colors?.background,
+    lightPalette.background,
+    darkPalette.background,
+    "Toast.colors.background",
+  );
+
+  const textColor = resolveThemeColor(
+    toast.colors?.text,
+    lightPalette.text,
+    darkPalette.text,
+    "Toast.colors.text",
+  );
+
+  const stackBorder = resolveThemeColor(
+    toast.colors?.border?.stacked,
+    lightPalette.border.stacked,
+    darkPalette.border.stacked,
+    "Toast.colors.border.stacked",
+  );
+
+  const darkBackground = background.dark;
+  const lightBackground = background.light;
+  const darkText = textColor.dark;
+  const lightText = textColor.light;
+  const darkStackBorder = stackBorder.dark;
+  const lightStackBorder = stackBorder.light;
 
   const textFontSize = tokens.typography.toast.text.fontSize;
   const textLineHeight = tokens.typography.toast.text.lineHeight;

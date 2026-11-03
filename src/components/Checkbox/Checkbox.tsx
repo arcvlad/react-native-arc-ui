@@ -21,6 +21,7 @@ import { useSelectionMotion } from "../../internal/selection/useSelectionMotion"
 import { useSelectionPress } from "../../internal/selection/useSelectionPress";
 import { useSelectionState } from "../../internal/selection/useSelectionState";
 import { resolveAnimation } from "../../utils/resolveAnimation";
+import { resolveThemeColor } from "../../utils/resolveThemeColor";
 import { resolveTextContent } from "../../utils/reactNode";
 import { Icon } from "../Icon/Icon";
 import { resolveTypographyStyle } from "../../utils/resolveTypography";
@@ -47,6 +48,7 @@ const CheckboxComponent = ({
   disabled,
   size,
   error,
+  colors,
   textStyle,
   style,
   onPress,
@@ -215,71 +217,127 @@ const CheckboxComponent = ({
     [tokens.typography.checkbox.error],
   );
 
-  // ─── Theme token extraction ──────────────────────────────────────────────
+  // ─── Theme color endpoints ───────────────────────────────────────────────
 
-  const lightBorderPrimary = tokens.colors.light.checkbox.border.primary;
+  const resolvedBorderDefault = resolveThemeColor(
+    colors?.border?.default,
+    tokens.colors.light.checkbox.border.primary,
+    tokens.colors.dark.checkbox.border.primary,
+    "Checkbox colors.border.default",
+  );
+  const resolvedBorderPressed = resolveThemeColor(
+    colors?.border?.pressed,
+    tokens.colors.light.checkbox.border.pressed,
+    tokens.colors.dark.checkbox.border.pressed,
+    "Checkbox colors.border.pressed",
+  );
+  const resolvedBorderDisabled = resolveThemeColor(
+    colors?.border?.disabled,
+    tokens.colors.light.checkbox.border.disabled,
+    tokens.colors.dark.checkbox.border.disabled,
+    "Checkbox colors.border.disabled",
+  );
+  const resolvedBorderInactive = resolveThemeColor(
+    colors?.border?.inactive,
+    tokens.colors.light.checkbox.border.inactive,
+    tokens.colors.dark.checkbox.border.inactive,
+    "Checkbox colors.border.inactive",
+  );
 
-  const lightBorderPressed = tokens.colors.light.checkbox.border.pressed;
+  const lightBorderPrimary = resolvedBorderDefault.light;
+  const darkBorderPrimary = resolvedBorderDefault.dark;
+  const lightBorderPressed = resolvedBorderPressed.light;
+  const darkBorderPressed = resolvedBorderPressed.dark;
+  const lightBorderDisabled = resolvedBorderDisabled.light;
+  const darkBorderDisabled = resolvedBorderDisabled.dark;
+  const lightBorderInactive = resolvedBorderInactive.light;
+  const darkBorderInactive = resolvedBorderInactive.dark;
 
-  const lightBorderDisabled = tokens.colors.light.checkbox.border.disabled;
+  const resolvedBackgroundChecked = resolveThemeColor(
+    colors?.background?.checked,
+    tokens.colors.light.checkbox.background.primary,
+    tokens.colors.dark.checkbox.background.primary,
+    "Checkbox colors.background.checked",
+  );
+  const resolvedBackgroundPressed = resolveThemeColor(
+    colors?.background?.pressed,
+    tokens.colors.light.checkbox.background.pressed,
+    tokens.colors.dark.checkbox.background.pressed,
+    "Checkbox colors.background.pressed",
+  );
+  const resolvedBackgroundDisabled = resolveThemeColor(
+    colors?.background?.disabled,
+    tokens.colors.light.checkbox.background.disabled,
+    tokens.colors.dark.checkbox.background.disabled,
+    "Checkbox colors.background.disabled",
+  );
+  const resolvedBackgroundInactive = resolveThemeColor(
+    colors?.background?.inactive,
+    tokens.colors.light.checkbox.background.inactive,
+    tokens.colors.dark.checkbox.background.inactive,
+    "Checkbox colors.background.inactive",
+  );
+  const resolvedBackgroundUnchecked = resolveThemeColor(
+    colors?.background?.unchecked,
+    tokens.colors.light.checkbox.background.transparent,
+    tokens.colors.dark.checkbox.background.transparent,
+    "Checkbox colors.background.unchecked",
+  );
 
-  const lightBorderInactive = tokens.colors.light.checkbox.border.inactive;
+  const lightBackgroundPrimary = resolvedBackgroundChecked.light;
+  const darkBackgroundPrimary = resolvedBackgroundChecked.dark;
+  const lightBackgroundPressed = resolvedBackgroundPressed.light;
+  const darkBackgroundPressed = resolvedBackgroundPressed.dark;
+  const lightBackgroundDisabled = resolvedBackgroundDisabled.light;
+  const darkBackgroundDisabled = resolvedBackgroundDisabled.dark;
+  const lightBackgroundInactive = resolvedBackgroundInactive.light;
+  const darkBackgroundInactive = resolvedBackgroundInactive.dark;
+  const lightBackgroundTransparent = resolvedBackgroundUnchecked.light;
+  const darkBackgroundTransparent = resolvedBackgroundUnchecked.dark;
 
-  const darkBorderPrimary = tokens.colors.dark.checkbox.border.primary;
+  const resolvedTextDefault = resolveThemeColor(
+    colors?.text?.default,
+    tokens.colors.light.checkbox.text.primary,
+    tokens.colors.dark.checkbox.text.primary,
+    "Checkbox colors.text.default",
+  );
+  const resolvedTextDisabled = resolveThemeColor(
+    colors?.text?.disabled,
+    tokens.colors.light.checkbox.text.disabled,
+    tokens.colors.dark.checkbox.text.disabled,
+    "Checkbox colors.text.disabled",
+  );
+  const resolvedTextInactive = resolveThemeColor(
+    colors?.text?.inactive,
+    tokens.colors.light.checkbox.text.inactive,
+    tokens.colors.dark.checkbox.text.inactive,
+    "Checkbox colors.text.inactive",
+  );
 
-  const darkBorderPressed = tokens.colors.dark.checkbox.border.pressed;
+  const lightTextPrimary = resolvedTextDefault.light;
+  const darkTextPrimary = resolvedTextDefault.dark;
+  const lightTextDisabled = resolvedTextDisabled.light;
+  const darkTextDisabled = resolvedTextDisabled.dark;
+  const lightTextInactive = resolvedTextInactive.light;
+  const darkTextInactive = resolvedTextInactive.dark;
 
-  const darkBorderDisabled = tokens.colors.dark.checkbox.border.disabled;
+  const resolvedIcon = resolveThemeColor(
+    colors?.icon,
+    tokens.colors.light.checkbox.icon,
+    tokens.colors.dark.checkbox.icon,
+    "Checkbox colors.icon",
+  );
+  const lightCheckIcon = resolvedIcon.light;
+  const darkCheckIcon = resolvedIcon.dark;
 
-  const darkBorderInactive = tokens.colors.dark.checkbox.border.inactive;
-
-  const lightBackgroundPrimary =
-    tokens.colors.light.checkbox.background.primary;
-
-  const lightBackgroundPressed =
-    tokens.colors.light.checkbox.background.pressed;
-
-  const lightBackgroundDisabled =
-    tokens.colors.light.checkbox.background.disabled;
-
-  const lightBackgroundInactive =
-    tokens.colors.light.checkbox.background.inactive;
-
-  const lightBackgroundTransparent =
-    tokens.colors.light.checkbox.background.transparent;
-
-  const darkBackgroundPrimary = tokens.colors.dark.checkbox.background.primary;
-
-  const darkBackgroundPressed = tokens.colors.dark.checkbox.background.pressed;
-
-  const darkBackgroundDisabled =
-    tokens.colors.dark.checkbox.background.disabled;
-
-  const darkBackgroundInactive =
-    tokens.colors.dark.checkbox.background.inactive;
-
-  const darkBackgroundTransparent =
-    tokens.colors.dark.checkbox.background.transparent;
-
-  const lightTextPrimary = tokens.colors.light.checkbox.text.primary;
-
-  const lightTextDisabled = tokens.colors.light.checkbox.text.disabled;
-
-  const lightTextInactive = tokens.colors.light.checkbox.text.inactive;
-
-  const darkTextPrimary = tokens.colors.dark.checkbox.text.primary;
-
-  const darkTextDisabled = tokens.colors.dark.checkbox.text.disabled;
-
-  const darkTextInactive = tokens.colors.dark.checkbox.text.inactive;
-
-  const lightCheckIcon = tokens.colors.light.checkbox.icon;
-
-  const darkCheckIcon = tokens.colors.dark.checkbox.icon;
-
-  const lightError = tokens.colors.light.states.danger;
-
-  const darkError = tokens.colors.dark.states.danger;
+  const resolvedError = resolveThemeColor(
+    colors?.error,
+    tokens.colors.light.checkbox.error,
+    tokens.colors.dark.checkbox.error,
+    "Checkbox colors.error",
+  );
+  const lightError = resolvedError.light;
+  const darkError = resolvedError.dark;
 
   // ─── Checkbox-owned visual resolution ────────────────────────────────────
 
@@ -615,8 +673,12 @@ const CheckboxComponent = ({
               type="check"
               size={resolvedIconSize}
               scaleWithFont
-              darkColor={darkCheckIcon}
-              lightColor={lightCheckIcon}
+              colors={{
+                icon: {
+                  light: lightCheckIcon,
+                  dark: darkCheckIcon,
+                },
+              }}
             />
           </Animated.View>
         </Animated.View>
@@ -661,8 +723,12 @@ const CheckboxComponent = ({
             type="alertCircle"
             size={tokens.sizings.icon.xs}
             scaleWithFont
-            darkColor={darkError}
-            lightColor={lightError}
+            colors={{
+              icon: {
+                light: lightError,
+                dark: darkError,
+              },
+            }}
           />
 
           <Animated.Text

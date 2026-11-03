@@ -28,6 +28,7 @@ import { useFieldMotion } from "../../internal/field/useFieldMotion";
 import { Icon } from "../Icon/Icon";
 import { SpinnerLoader } from "../SpinnerLoader/SpinnerLoader";
 import { resolveTypographyStyle } from "../../utils/resolveTypography";
+import { resolveThemeColor } from "../../utils/resolveThemeColor";
 import type { IInput, TInputType } from "./types";
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
@@ -56,6 +57,7 @@ const InputComponent = ({
   ref: externalRef,
   label,
   error,
+  colors,
   disabled = false,
   active = true,
   type = "text",
@@ -178,12 +180,27 @@ const InputComponent = ({
     iconColor,
     placeholderColor,
   } = useFieldAnimatedColors({
+    colors,
     focusedProgress,
     errorProgress,
     disabledProgress,
     inactiveProgress,
     hasValueProgress,
   });
+
+  const resolvedLoadingIndicator = resolveThemeColor(
+    colors?.icon?.default,
+    tokens.colors.light.input.icon.primary,
+    tokens.colors.dark.input.icon.primary,
+    "Input colors.icon.default",
+  );
+
+  const resolvedClearButton = resolveThemeColor(
+    colors?.clearButton,
+    tokens.colors.light.input.clearButton,
+    tokens.colors.dark.input.clearButton,
+    "Input colors.clearButton",
+  );
 
   // ─── Isolated UI-thread styles ─────────────────────
 
@@ -469,8 +486,9 @@ const InputComponent = ({
                   <SpinnerLoader
                     testID={testID ? `${testID}-loading` : undefined}
                     size={tokens.sizings.icon.s}
-                    lightColor={tokens.colors.light.input.icon.primary}
-                    darkColor={tokens.colors.dark.input.icon.primary}
+                    colors={{
+                      indicator: resolvedLoadingIndicator,
+                    }}
                   />
                 </Animated.View>
               )}
@@ -524,8 +542,9 @@ const InputComponent = ({
                     <Icon
                       type="xCircle"
                       size={tokens.sizings.icon.s}
-                      lightColor={tokens.colors.light.input.clearButton}
-                      darkColor={tokens.colors.dark.input.clearButton}
+                      colors={{
+                        icon: resolvedClearButton,
+                      }}
                     />
                   </Pressable>
                 </Animated.View>

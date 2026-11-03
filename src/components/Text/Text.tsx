@@ -11,6 +11,7 @@ import {
   useARCUITheme,
 } from "../../contexts/hooks";
 import { isNonNegativeFiniteNumber } from "../../utils/numberUtils";
+import { resolveThemeColor } from "../../utils/resolveThemeColor";
 import { resolveTypographyStyle } from "../../utils/resolveTypography";
 import type { IText } from "./types";
 
@@ -19,13 +20,7 @@ const TRANSPARENT = "rgba(0, 0, 0, 0)";
 const normalizeAnimatedColor = (value: string): string =>
   value === "transparent" ? TRANSPARENT : value;
 
-const TextComponent = ({
-  style,
-  color,
-  darkColor,
-  lightColor,
-  ...textProps
-}: IText) => {
+const TextComponent = ({ style, colors, ...textProps }: IText) => {
   const { tokens } = useARCUITheme();
 
   const { themeProgress } = useARCUIAnimatedTheme();
@@ -99,9 +94,7 @@ const TextComponent = ({
   /**
    * Color priority:
    *
-   * color
-   * ↓
-   * complete darkColor + lightColor pair
+   * colors.text
    * ↓
    * style.color
    * ↓
@@ -110,33 +103,24 @@ const TextComponent = ({
    * style.color remains a native escape hatch. When it owns color, ARCUI does
    * not create a competing animated color property.
    */
-  const hasThemePair = darkColor != null && lightColor != null;
+  const hasColorOverride = colors?.text !== undefined;
 
-  const hasIncompleteThemePair = (darkColor != null) !== (lightColor != null);
+  const styleOwnsColor = !hasColorOverride && styleColor != null;
 
-  const hasColorProp = color != null;
-
-  const styleOwnsColor = !hasColorProp && !hasThemePair && styleColor != null;
-
-  const defaultDarkText = normalizeAnimatedColor(
-    tokens.colors.dark.text.primary,
-  );
-
-  const defaultLightText = normalizeAnimatedColor(
+  const resolvedTextColor = resolveThemeColor(
+    colors?.text,
     tokens.colors.light.text.primary,
+    tokens.colors.dark.text.primary,
+    "Text colors.text",
   );
 
-  const customDarkText = hasThemePair ? darkColor : defaultDarkText;
+  const resolvedDarkText = normalizeAnimatedColor(resolvedTextColor.dark);
 
-  const customLightText = hasThemePair ? lightColor : defaultLightText;
-
-  const resolvedDarkText = normalizeAnimatedColor(color ?? customDarkText);
-
-  const resolvedLightText = normalizeAnimatedColor(color ?? customLightText);
+  const resolvedLightText = normalizeAnimatedColor(resolvedTextColor.light);
 
   const animatedTextColorStyle = useAnimatedStyle(() => {
     if (styleOwnsColor) {
-      return {};
+      return { color: undefined };
     }
 
     return {
@@ -175,12 +159,6 @@ const TextComponent = ({
   ) {
     console.error(
       "[react-native-arc-ui] Text: style.lineHeight must be a finite non-negative number. Falling back to the configured Text lineHeight.",
-    );
-  }
-
-  if (__DEV__ && hasIncompleteThemePair) {
-    console.error(
-      "[react-native-arc-ui] Text: darkColor and lightColor must be provided together. The incomplete theme color pair was ignored.",
     );
   }
 

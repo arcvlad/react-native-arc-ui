@@ -7,6 +7,13 @@ import type {
   ViewStyle,
 } from "react-native";
 
+import type { IFieldColors } from "../../types/fieldColors";
+
+export type IInputAreaColors = Pick<
+  IFieldColors,
+  "background" | "border" | "text" | "placeholder" | "label" | "error"
+>;
+
 export type IInputArea = Omit<
   TextInputProps,
   | "style"
@@ -27,6 +34,8 @@ export type IInputArea = Omit<
   label?: string;
 
   error?: string;
+
+  colors?: Readonly<IInputAreaColors>;
 
   /**
    * Fully disabled semantic state.

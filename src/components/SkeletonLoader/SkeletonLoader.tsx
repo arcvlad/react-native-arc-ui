@@ -1,5 +1,9 @@
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
-import { type LayoutChangeEvent, type ViewStyle } from "react-native";
+import {
+  StyleSheet,
+  type LayoutChangeEvent,
+  type ViewStyle,
+} from "react-native";
 import Animated, {
   cancelAnimation,
   interpolateColor,
@@ -13,6 +17,7 @@ import Svg, { Defs, LinearGradient, Rect, Stop } from "react-native-svg";
 
 import { useARCUIAnimatedTheme, useARCUITheme } from "../../contexts/hooks";
 import { resolveAnimation } from "../../utils/resolveAnimation";
+import { resolveThemeColor } from "../../utils/resolveThemeColor";
 import type { ISkeletonLoader } from "./types";
 import {
   resolveDimension,
@@ -32,6 +37,7 @@ const SkeletonLoaderComponent = ({
   size,
   radius,
   angle,
+  colors,
   style,
   testID,
 }: ISkeletonLoader) => {
@@ -116,22 +122,38 @@ const SkeletonLoaderComponent = ({
 
   // ─── Theme colors ────────────────────────────────────────────────────────
 
-  const lightBase = tokens.colors.light.skeleton.base;
+  const resolvedBaseColor = resolveThemeColor(
+    colors?.base,
+    tokens.colors.light.skeleton.base,
+    tokens.colors.dark.skeleton.base,
+    "SkeletonLoader colors.base",
+  );
 
-  const darkBase = tokens.colors.dark.skeleton.base;
+  const resolvedHighlightColor = resolveThemeColor(
+    colors?.highlight,
+    tokens.colors.light.skeleton.highlight,
+    tokens.colors.dark.skeleton.highlight,
+    "SkeletonLoader colors.highlight",
+  );
 
-  const lightHighlight = tokens.colors.light.skeleton.highlight;
+  const lightBase = resolvedBaseColor.light;
+  const darkBase = resolvedBaseColor.dark;
 
-  const darkHighlight = tokens.colors.dark.skeleton.highlight;
+  const lightHighlight = resolvedHighlightColor.light;
+  const darkHighlight = resolvedHighlightColor.dark;
+
+  const hasBaseOverride = colors?.base !== undefined;
+
+  const styleBackgroundColor = StyleSheet.flatten(style)?.backgroundColor;
+
+  const styleOwnsBase = !hasBaseOverride && styleBackgroundColor !== undefined;
 
   // ─── Base surface ────────────────────────────────────────────────────────
 
   const animatedContainerStyle = useAnimatedStyle(() => ({
-    backgroundColor: interpolateColor(
-      themeProgress.value,
-      [0, 1],
-      [darkBase, lightBase],
-    ),
+    backgroundColor: styleOwnsBase
+      ? undefined
+      : interpolateColor(themeProgress.value, [0, 1], [darkBase, lightBase]),
   }));
 
   // ─── Shimmer geometry ────────────────────────────────────────────────────
@@ -279,7 +301,7 @@ const SkeletonLoaderComponent = ({
       accessible={false}
       accessibilityElementsHidden
       importantForAccessibility="no-hide-descendants"
-      style={[animatedContainerStyle, style, geometryStyle]}
+      style={[style, animatedContainerStyle, geometryStyle]}
     >
       {!prefersReducedMotion && shimmerWidth > 0 && layout.height > 0 && (
         <Animated.View

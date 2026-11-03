@@ -1,12 +1,26 @@
 import type { ReactNode } from "react";
 import type { PressableProps, StyleProp, ViewStyle } from "react-native";
 
+import type { TThemeColor } from "../../types/colors";
 import type { IIcon } from "../Icon/types";
 import type { TSelectionValue } from "../SelectionGroup/types";
 
 export type TAccordionType = "solid" | "border" | "transparent";
 
 export type TAccordionGroupPosition = "single" | "first" | "middle" | "last";
+
+export interface IAccordionStateColors {
+  default?: TThemeColor;
+  disabled?: TThemeColor;
+}
+
+export interface IAccordionColors {
+  background?: Readonly<IAccordionStateColors>;
+  border?: Readonly<IAccordionStateColors>;
+  title?: Readonly<IAccordionStateColors>;
+  subtitle?: Readonly<IAccordionStateColors>;
+  icon?: Readonly<IAccordionStateColors>;
+}
 
 interface IAccordionBase extends Pick<
   PressableProps,
@@ -23,6 +37,13 @@ interface IAccordionBase extends Pick<
    * @default "transparent"
    */
   type?: TAccordionType;
+
+  /**
+   * Per-instance ARCUI-owned color overrides.
+   *
+   * Partial overrides fall back to the selected Accordion type tokens.
+   */
+  colors?: Readonly<IAccordionColors>;
 
   /**
    * Prevents user interaction without changing the current expanded state.

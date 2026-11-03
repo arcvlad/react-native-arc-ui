@@ -2,7 +2,47 @@ import type { ReactNode } from "react";
 import type { PressableProps, StyleProp, TextStyle } from "react-native";
 
 import type { TPressAnimation } from "../../tokens/Animations";
+import type { TThemeColor } from "../../types/colors";
 import type { TSelectionValue } from "../SelectionGroup/types";
+
+export interface IToggleColors {
+  track?: Readonly<{
+    border?: Readonly<{
+      default?: TThemeColor;
+      pressed?: TThemeColor;
+      inactive?: TThemeColor;
+      disabled?: TThemeColor;
+    }>;
+    background?: Readonly<{
+      default?: TThemeColor;
+      pressed?: TThemeColor;
+      inactive?: TThemeColor;
+      disabled?: TThemeColor;
+    }>;
+  }>;
+
+  thumb?: Readonly<{
+    unchecked?: TThemeColor;
+    checked?: TThemeColor;
+    pressedUnchecked?: TThemeColor;
+    pressedChecked?: TThemeColor;
+    inactiveUnchecked?: TThemeColor;
+    inactiveChecked?: TThemeColor;
+    disabledUnchecked?: TThemeColor;
+    disabledChecked?: TThemeColor;
+  }>;
+
+  text?: Readonly<{
+    default?: TThemeColor;
+    inactive?: TThemeColor;
+    disabled?: TThemeColor;
+  }>;
+
+  /**
+   * Validation color used by the error track border, error icon, and error text.
+   */
+  error?: TThemeColor;
+}
 
 interface IToggleBase extends Omit<
   PressableProps,
@@ -27,6 +67,8 @@ interface IToggleBase extends Omit<
    * actual state change. SelectionGroup remains the state owner.
    */
   onCheckedChange?: (checked: boolean) => void;
+
+  colors?: Readonly<IToggleColors>;
 
   /**
    * Press feedback behavior.

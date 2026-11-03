@@ -4,6 +4,7 @@ import type { SvgProps } from "react-native-svg";
 
 import type { DerivedValue, SharedValue } from "react-native-reanimated";
 
+import type { TThemeColor } from "../../types/colors";
 import type { TRequiredIconType } from "./defaultIcons";
 
 type TLockedIconSvgProps =
@@ -45,11 +46,21 @@ export type TIconType = TRequiredIconType | (string & Record<never, never>);
 /**
  * UI-thread-owned Icon color.
  *
- * ARCUI 1.x explicitly supports Reanimated as a peer dependency, so the
- * public contract uses the real exported Reanimated value types rather than
+ * ARCUI explicitly supports Reanimated as a peer dependency, so the public
+ * contract uses the real exported Reanimated value types rather than
  * maintaining a structural lookalike.
  */
 export type TIconAnimatedColor = SharedValue<string> | DerivedValue<string>;
+
+export interface IIconColors {
+  /**
+   * Icon glyph color.
+   *
+   * A string is fixed across themes. A { light, dark } pair participates in
+   * ARCUI's animated theme transition.
+   */
+  icon?: TThemeColor;
+}
 
 export interface IIcon extends Omit<SvgProps, TLockedIconSvgProps> {
   /**
@@ -70,39 +81,20 @@ export interface IIcon extends Omit<SvgProps, TLockedIconSvgProps> {
   size?: number;
 
   /**
-   * Fixed color used in every theme.
+   * Per-instance ARCUI-owned color overrides.
    *
-   * Ignored when animatedColor is provided.
+   * Ignored when animatedColor is provided because animatedColor is already
+   * the final UI-thread-owned rendered color.
    */
-  color?: string;
-
-  /**
-   * Theme-aware color pair.
-   *
-   * Both values must be provided. An incomplete pair is ignored.
-   *
-   * Ignored when animatedColor or color is provided.
-   */
-  darkColor?: string;
-  lightColor?: string;
+  colors?: Readonly<IIconColors>;
 
   /**
    * Final UI-thread color owned by the caller.
    *
-   * When provided, this is the complete source of truth for Icon color
-   * and takes precedence over color, darkColor, lightColor,
-   * reverseThemeColor and ARCUI's default icon colors.
+   * When provided, this is the complete source of truth for Icon color and
+   * takes precedence over colors.icon and ARCUI's default icon tokens.
    */
   animatedColor?: TIconAnimatedColor;
-
-  /**
-   * Reverses ARCUI's default dark/light icon colors.
-   *
-   * Explicit color props are never reversed.
-   *
-   * @default false
-   */
-  reverseThemeColor?: boolean;
 
   /**
    * Whether Icon size follows ARCUI's accessibility font scale.

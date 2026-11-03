@@ -6,6 +6,7 @@ import Animated, {
 } from "react-native-reanimated";
 
 import { useARCUIAnimatedTheme, useARCUITheme } from "../../contexts/hooks";
+import { resolveThemeColor } from "../../utils/resolveThemeColor";
 
 import type { IThemedView } from "./types";
 
@@ -18,77 +19,64 @@ const ThemedViewComponent = ({
   ref,
   children,
   style,
-  color,
-  darkColor,
-  lightColor,
+  colors,
   ...viewProps
 }: IThemedView) => {
   const { tokens } = useARCUITheme();
 
   const { themeProgress } = useARCUIAnimatedTheme();
 
-  // ─── Native style resolution ──────────────────────
+  // ─── Native style resolution ──────────────────────────────────────────────
 
   /**
-   * backgroundColor may be owned either by ThemedView's theme-aware
-   * color API or by the consumer's native style.
+   * backgroundColor may be owned either by ThemedView's colors API or by the
+   * consumer's native style.
    *
-   * Flattening happens only during React render. No frame-level work
-   * or SharedValue access happens here.
+   * Flattening happens only during React render. No frame-level work or
+   * SharedValue access happens here.
    */
   const flattenedStyle = StyleSheet.flatten(style) ?? {};
 
   const { backgroundColor: styleBackgroundColor, ...consumerStaticStyle } =
     flattenedStyle;
 
-  // ─── Background color ─────────────────────────────
+  // ─── Background color ────────────────────────────────────────────────────
 
-  const hasThemePair = darkColor !== undefined && lightColor !== undefined;
-
-  const hasColorProp = color !== undefined;
+  const hasBackgroundOverride = colors?.background !== undefined;
 
   /**
    * Background ownership priority:
    *
-   * color
-   * ↓
-   * complete darkColor + lightColor pair
+   * colors.background
    * ↓
    * style.backgroundColor
    * ↓
    * ARCUI ThemedView tokens
    *
-   * When native style owns backgroundColor, ARCUI intentionally does
-   * not create a competing animated background property.
+   * When native style owns backgroundColor, ARCUI intentionally does not
+   * create a competing animated background property.
    */
   const styleOwnsBackground =
-    !hasColorProp && !hasThemePair && styleBackgroundColor !== undefined;
+    !hasBackgroundOverride && styleBackgroundColor !== undefined;
 
-  const defaultDarkBackground = normalizeAnimatedColor(
-    tokens.colors.dark.themedView.background,
-  );
-
-  const defaultLightBackground = normalizeAnimatedColor(
+  const resolvedBackground = resolveThemeColor(
+    colors?.background,
     tokens.colors.light.themedView.background,
+    tokens.colors.dark.themedView.background,
+    "ThemedView colors.background",
   );
-
-  const customDarkBackground = hasThemePair ? darkColor : defaultDarkBackground;
-
-  const customLightBackground = hasThemePair
-    ? lightColor
-    : defaultLightBackground;
 
   const resolvedDarkBackground = normalizeAnimatedColor(
-    color ?? customDarkBackground,
+    resolvedBackground.dark,
   );
 
   const resolvedLightBackground = normalizeAnimatedColor(
-    color ?? customLightBackground,
+    resolvedBackground.light,
   );
 
   const animatedBackgroundStyle = useAnimatedStyle(() => {
     if (styleOwnsBackground) {
-      return {};
+      return { backgroundColor: undefined };
     }
 
     return {
@@ -108,7 +96,7 @@ const ThemedViewComponent = ({
         }
       : consumerStaticStyle;
 
-  // ─── Render ──────────────────────────────────────
+  // ─── Render ───────────────────────────────────────────────────────────────
 
   return (
     <Animated.View

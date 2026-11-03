@@ -11,7 +11,6 @@ export type TTypographyStyle = Omit<TextStyle, "color" | "fontSize"> & {
 export const Typography: {
   maxFontSizeMultiplier: number;
   button: {
-    text: TTypographyStyle;
     label: TTypographyStyle;
   };
   text: {
@@ -56,6 +55,7 @@ export const Typography: {
   slider: {
     value: TTypographyStyle;
     label: TTypographyStyle;
+    error: TTypographyStyle;
   };
   input: {
     text: TTypographyStyle;
@@ -104,10 +104,6 @@ export const Typography: {
 } = {
   maxFontSizeMultiplier: 2,
   button: {
-    text: {
-      fontSize: 16,
-      flexShrink: 1,
-    },
     label: {
       fontSize: 16,
       flexShrink: 1,
@@ -216,6 +212,10 @@ export const Typography: {
       flexShrink: 1,
     },
     label: {
+      fontSize: 12,
+      flexShrink: 1,
+    },
+    error: {
       fontSize: 12,
       flexShrink: 1,
     },

@@ -1,6 +1,20 @@
 import type { DimensionValue, StyleProp, ViewStyle } from "react-native";
 
+import type { TThemeColor } from "../../types/colors";
+
 export type TSkeletonLoaderVariant = "rect" | "square" | "circle";
+
+export interface ISkeletonLoaderColors {
+  /**
+   * Skeleton base surface color.
+   */
+  base?: TThemeColor;
+
+  /**
+   * Shimmer highlight color.
+   */
+  highlight?: TThemeColor;
+}
 
 interface ISkeletonLoaderBase {
   /**
@@ -9,6 +23,11 @@ interface ISkeletonLoaderBase {
    * Falls back to tokens.skeletonAnimations.angle.
    */
   angle?: number;
+
+  /**
+   * Per-instance ARCUI-owned color overrides.
+   */
+  colors?: Readonly<ISkeletonLoaderColors>;
 
   style?: StyleProp<ViewStyle>;
 

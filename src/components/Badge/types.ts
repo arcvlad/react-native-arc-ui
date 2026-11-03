@@ -1,9 +1,32 @@
 import type { ViewProps } from "react-native";
 
+import type { TThemeColor } from "../../types/colors";
+
+export type TBadgeTone = "neutral" | "info" | "success" | "warning" | "danger";
+
+export interface IBadgeColors {
+  /**
+   * Badge surface color.
+   */
+  background?: TThemeColor;
+
+  /**
+   * Label color for label Badges.
+   */
+  text?: TThemeColor;
+}
+
+type TDotBadgeColors = Omit<IBadgeColors, "text"> & {
+  text?: never;
+};
+
 interface IBadgeBase extends Omit<ViewProps, "children"> {
-  color?: string;
-  darkColor?: string;
-  lightColor?: string;
+  /**
+   * Semantic Badge palette.
+   *
+   * @default "danger"
+   */
+  tone?: TBadgeTone;
 }
 
 export interface IDotBadge extends IBadgeBase {
@@ -16,9 +39,11 @@ export interface IDotBadge extends IBadgeBase {
    */
   size?: number;
 
-  textColor?: never;
-  darkTextColor?: never;
-  lightTextColor?: never;
+  /**
+   * Per-instance ARCUI-owned color overrides.
+   * Dot Badges own only a background color.
+   */
+  colors?: Readonly<TDotBadgeColors>;
 }
 
 export interface ILabelBadge extends IBadgeBase {
@@ -27,9 +52,10 @@ export interface ILabelBadge extends IBadgeBase {
 
   size?: never;
 
-  textColor?: string;
-  darkTextColor?: string;
-  lightTextColor?: string;
+  /**
+   * Per-instance ARCUI-owned color overrides.
+   */
+  colors?: Readonly<IBadgeColors>;
 }
 
 export type IBadge = IDotBadge | ILabelBadge;

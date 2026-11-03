@@ -1,34 +1,27 @@
 import type { TextProps } from "react-native";
 
+import type { TThemeColor } from "../../types/colors";
+
+export interface ITextColors {
+  /**
+   * Text content color.
+   *
+   * A string is fixed across themes. A { light, dark } pair participates in
+   * ARCUI's animated theme transition.
+   */
+  text?: TThemeColor;
+}
+
 export interface IText extends Omit<
   TextProps,
   "allowFontScaling" | "maxFontSizeMultiplier"
 > {
   /**
-   * Fixed text color used in both themes.
+   * Per-instance ARCUI-owned color overrides.
    *
-   * Takes priority over darkColor/lightColor
-   * and style.color.
+   * colors.text takes priority over style.color. When no text override is
+   * provided, style.color remains a static native escape hatch before ARCUI
+   * falls back to the default Text tokens.
    */
-  color?: string;
-
-  /**
-   * Dark-theme text color override.
-   *
-   * Both darkColor and lightColor must be
-   * provided. An incomplete pair is ignored.
-   *
-   * Ignored when color is provided.
-   */
-  darkColor?: string;
-
-  /**
-   * Light-theme text color override.
-   *
-   * Both darkColor and lightColor must be
-   * provided. An incomplete pair is ignored.
-   *
-   * Ignored when color is provided.
-   */
-  lightColor?: string;
+  colors?: Readonly<ITextColors>;
 }
