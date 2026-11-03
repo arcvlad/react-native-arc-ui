@@ -157,6 +157,7 @@ const BadgeComponent = ({
   if (isDot) {
     return (
       <Animated.View
+        key="dot"
         {...viewProps}
         testID={testID}
         style={[
@@ -175,6 +176,7 @@ const BadgeComponent = ({
 
   return (
     <Animated.View
+      key="label"
       {...viewProps}
       testID={testID}
       style={[

@@ -4,6 +4,12 @@ All notable changes to `react-native-arc-ui` will be documented in this file.
 
 ARCUI follows semantic versioning.
 
+## 1.1.1 - 2026-11-04
+
+### Fixed
+
+- Fixed stale Badge layout styles when switching between badge modes.
+
 ## 1.1.0 - 2026-10-10
 
 ### Added
