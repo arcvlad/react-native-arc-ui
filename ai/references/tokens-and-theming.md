@@ -27,12 +27,7 @@ Use:
 ```tsx
 import { useARCUITheme } from "react-native-arc-ui";
 
-const {
-  theme,
-  themeMode,
-  tokens,
-  iconSet,
-} = useARCUITheme();
+const { theme, themeMode, tokens, iconSet } = useARCUITheme();
 ```
 
 for normal render-time theme and token access.
@@ -59,7 +54,7 @@ themeProgress = 1 -> light
 Therefore Reanimated color interpolation order is:
 
 ```text
-[darkColor, lightColor]
+[dark endpoint, light endpoint]
 ```
 
 Never read `themeProgress.value` during normal React render.
@@ -150,10 +145,7 @@ const tokens = {
 Correct explicit composition when defaults should be preserved:
 
 ```tsx
-import {
-  defaultTokens,
-  type TTokensOverride,
-} from "react-native-arc-ui";
+import { defaultTokens, type TTokensOverride } from "react-native-arc-ui";
 
 const tokens = {
   spacing: {
@@ -166,9 +158,7 @@ const tokens = {
 Then:
 
 ```tsx
-<ARCUI tokens={tokens}>
-  {children}
-</ARCUI>
+<ARCUI tokens={tokens}>{children}</ARCUI>
 ```
 
 Do not build hidden recursive merge logic around ARCUI token configuration.
@@ -213,9 +203,7 @@ const tokens: TTokensOverride<TAppTokens> = {
   },
 };
 
-<ARCUI<TAppTokens> tokens={tokens}>
-  {children}
-</ARCUI>;
+<ARCUI<TAppTokens> tokens={tokens}>{children}</ARCUI>;
 ```
 
 Consume with the same type:
@@ -258,18 +246,43 @@ Avoid both extremes: widespread hardcoding and tokenizing every literal.
 
 ## Colors
 
-Prefer semantic ARCUI color tokens for shared design-system intent.
+Prefer ARCUI color tokens for reusable design-system defaults and component
+`colors` props for legitimate per-instance overrides.
 
-ARCUI maintains light and dark token surfaces.
+The public primitive is:
 
-When a custom component should adapt to both themes, use the appropriate
-resolved tokens or an ARCUI theme-aware primitive.
+```ts
+type TThemeColor =
+  | string
+  | Readonly<{
+      light: string;
+      dark: string;
+    }>;
+```
 
-Use fixed colors only when they are intentionally fixed across themes.
+A string is fixed across themes. A complete `{ light, dark }` pair participates
+in ARCUI's animated theme transition. Do not provide an incomplete pair.
 
-For component-specific color precedence, inspect that component's public API.
+Color-owning components expose strongly typed, component-specific `colors`
+objects. Stateful components expose only the visual states they actually own.
+Partial overrides fall back to the matching tone/component-token state.
 
-Do not assume every component resolves color overrides identically.
+Semantic `tone` is a preset layer, not a replacement for `colors`. Use it only
+on components that expose a tone contract. Resolution is conceptually:
+
+```text
+per-instance colors override
+↓
+semantic tone/component state
+↓
+ARCUI component tokens
+```
+
+ARCUI resolves custom color objects to primitive light/dark endpoints before
+Reanimated worklets. Do not traverse arbitrary token/color objects per frame.
+
+Consumer-owned ReactNode content remains consumer-owned and is not implicitly
+recolored by the surrounding component.
 
 ## `ThemedView`
 
@@ -278,16 +291,15 @@ Use `ThemedView` for theme-aware background surfaces.
 Its background ownership is:
 
 ```text
-color
-↓
-complete darkColor + lightColor pair
+colors.background
 ↓
 style.backgroundColor
 ↓
 ARCUI ThemedView tokens
 ```
 
-An incomplete dark/light pair is not a complete theme override.
+`style.backgroundColor` remains a static native escape hatch when
+`colors.background` is not provided.
 
 Use a normal `View` when theme-aware background behavior is not needed.
 

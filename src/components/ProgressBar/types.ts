@@ -1,5 +1,19 @@
 import type { ViewProps } from "react-native";
 
+import type { TThemeColor } from "../../types/colors";
+
+export interface IProgressBarColors {
+  track?: TThemeColor;
+
+  fill?: Readonly<{
+    default?: TThemeColor;
+    disabled?: TThemeColor;
+  }>;
+
+  label?: TThemeColor;
+  value?: TThemeColor;
+}
+
 export interface IProgressBar extends Omit<
   ViewProps,
   | "children"
@@ -43,6 +57,8 @@ export interface IProgressBar extends Omit<
    * @default false
    */
   disabled?: boolean;
+
+  colors?: Readonly<IProgressBarColors>;
 
   /**
    * Track height in pixels.

@@ -1,6 +1,23 @@
 import { type ReactNode } from "react";
 import type { PressableProps, StyleProp, ViewStyle } from "react-native";
 import type { TPressAnimation } from "../../tokens";
+import type { TThemeColor } from "../../types/colors";
+
+export type TButtonTone = "primary" | "secondary" | "neutral" | "danger";
+
+export interface IButtonStateColors {
+  default?: TThemeColor;
+  pressed?: TThemeColor;
+  inactive?: TThemeColor;
+  disabled?: TThemeColor;
+}
+
+export interface IButtonColors {
+  background?: Readonly<IButtonStateColors>;
+  border?: Readonly<IButtonStateColors>;
+  text?: Readonly<IButtonStateColors>;
+  loading?: TThemeColor;
+}
 
 export interface IButton extends Omit<
   PressableProps,
@@ -14,6 +31,21 @@ export interface IButton extends Omit<
   contentStyle?: StyleProp<ViewStyle>;
 
   type?: "solid" | "border" | "transparent";
+
+  /**
+   * Semantic Button palette.
+   *
+   * @default "primary"
+   */
+  tone?: TButtonTone;
+
+  /**
+   * Per-instance ARCUI-owned color overrides.
+   *
+   * Resolution priority:
+   * colors > tone > component tokens.
+   */
+  colors?: Readonly<IButtonColors>;
 
   /**
    * Instance-level override for tokens.radius.button.

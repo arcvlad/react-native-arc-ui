@@ -22,13 +22,14 @@ import {
   useARCUITheme,
 } from "../../contexts/hooks";
 import { resolveAnimation } from "../../utils/resolveAnimation";
+import { resolveThemeColor } from "../../utils/resolveThemeColor";
 import { Icon } from "../Icon/Icon";
 
 import { SliderHeader } from "./SliderHeader";
 import { SliderThumb } from "./SliderThumb";
 import { SliderTrack } from "./SliderTrack";
 import { resolveTypographyStyle } from "../../utils/resolveTypography";
-import type { ISlider, ISliderColors, ISliderSizes } from "./types";
+import type { ISlider, ISliderAnimatedColors, ISliderSizes } from "./types";
 import {
   resolveSliderConfig,
   resolveSliderRangeValues,
@@ -49,11 +50,12 @@ const SliderComponent = (props: ISlider) => {
     showTooltip = true,
     disabled = false,
     active = true,
+    colors,
     style,
     testID,
   } = props;
 
-  const { tokens } = useARCUITheme();
+  const { tokens, theme } = useARCUITheme();
   const { themeProgress } = useARCUIAnimatedTheme();
   const { fontScale } = useARCUISystem();
   const strings = useARCUIStrings();
@@ -214,8 +216,8 @@ const SliderComponent = (props: ISlider) => {
   );
 
   const errorTypographyStyle = useMemo(
-    () => resolveTypographyStyle(tokens.typography.input.error).style,
-    [tokens.typography.input.error],
+    () => resolveTypographyStyle(tokens.typography.slider.error).style,
+    [tokens.typography.slider.error],
   );
 
   const handleTrackLayout = useCallback((event: LayoutChangeEvent) => {
@@ -548,47 +550,100 @@ const SliderComponent = (props: ISlider) => {
     ],
   );
 
-  // ─── Theme colors ────────────────────────────────────────────────────────
+  // ─── Theme color endpoints ───────────────────────────────────────────────
 
-  const lightTrackActive = tokens.colors.light.slider.track.active;
+  const resolvedTrackActive = resolveThemeColor(
+    colors?.track?.active,
+    tokens.colors.light.slider.track.active,
+    tokens.colors.dark.slider.track.active,
+    "Slider colors.track.active",
+  );
+  const resolvedTrackInactive = resolveThemeColor(
+    colors?.track?.inactive,
+    tokens.colors.light.slider.track.inactive,
+    tokens.colors.dark.slider.track.inactive,
+    "Slider colors.track.inactive",
+  );
+  const resolvedTrackDisabled = resolveThemeColor(
+    colors?.track?.disabled,
+    tokens.colors.light.slider.track.disabled,
+    tokens.colors.dark.slider.track.disabled,
+    "Slider colors.track.disabled",
+  );
 
-  const darkTrackActive = tokens.colors.dark.slider.track.active;
+  const lightTrackActive = resolvedTrackActive.light;
+  const darkTrackActive = resolvedTrackActive.dark;
+  const lightTrackInactive = resolvedTrackInactive.light;
+  const darkTrackInactive = resolvedTrackInactive.dark;
+  const lightTrackDisabled = resolvedTrackDisabled.light;
+  const darkTrackDisabled = resolvedTrackDisabled.dark;
 
-  const lightTrackInactive = tokens.colors.light.slider.track.inactive;
+  const resolvedThumbDefault = resolveThemeColor(
+    colors?.thumb?.default,
+    tokens.colors.light.slider.thumb.primary,
+    tokens.colors.dark.slider.thumb.primary,
+    "Slider colors.thumb.default",
+  );
+  const resolvedThumbDisabled = resolveThemeColor(
+    colors?.thumb?.disabled,
+    tokens.colors.light.slider.thumb.disabled,
+    tokens.colors.dark.slider.thumb.disabled,
+    "Slider colors.thumb.disabled",
+  );
 
-  const darkTrackInactive = tokens.colors.dark.slider.track.inactive;
+  const initialThumbColor = isInteractionDisabled
+    ? resolvedThumbDisabled[theme]
+    : resolvedThumbDefault[theme];
 
-  const lightTrackDisabled = tokens.colors.light.slider.track.disabled;
+  const lightThumb = resolvedThumbDefault.light;
+  const darkThumb = resolvedThumbDefault.dark;
+  const lightThumbDisabled = resolvedThumbDisabled.light;
+  const darkThumbDisabled = resolvedThumbDisabled.dark;
 
-  const darkTrackDisabled = tokens.colors.dark.slider.track.disabled;
+  const resolvedTooltipBackground = resolveThemeColor(
+    colors?.tooltip?.background,
+    tokens.colors.light.slider.tooltip.background,
+    tokens.colors.dark.slider.tooltip.background,
+    "Slider colors.tooltip.background",
+  );
+  const resolvedTooltipText = resolveThemeColor(
+    colors?.tooltip?.text,
+    tokens.colors.light.slider.tooltip.text,
+    tokens.colors.dark.slider.tooltip.text,
+    "Slider colors.tooltip.text",
+  );
 
-  const lightThumb = tokens.colors.light.slider.thumb.primary;
+  const lightTooltipBg = resolvedTooltipBackground.light;
+  const darkTooltipBg = resolvedTooltipBackground.dark;
+  const lightTooltipText = resolvedTooltipText.light;
+  const darkTooltipText = resolvedTooltipText.dark;
 
-  const darkThumb = tokens.colors.dark.slider.thumb.primary;
+  const resolvedLabelDefault = resolveThemeColor(
+    colors?.label?.default,
+    tokens.colors.light.slider.label.primary,
+    tokens.colors.dark.slider.label.primary,
+    "Slider colors.label.default",
+  );
+  const resolvedLabelDisabled = resolveThemeColor(
+    colors?.label?.disabled,
+    tokens.colors.light.slider.label.disabled,
+    tokens.colors.dark.slider.label.disabled,
+    "Slider colors.label.disabled",
+  );
 
-  const lightThumbDisabled = tokens.colors.light.slider.thumb.disabled;
+  const lightLabel = resolvedLabelDefault.light;
+  const darkLabel = resolvedLabelDefault.dark;
+  const lightLabelDisabled = resolvedLabelDisabled.light;
+  const darkLabelDisabled = resolvedLabelDisabled.dark;
 
-  const darkThumbDisabled = tokens.colors.dark.slider.thumb.disabled;
-
-  const lightTooltipBg = tokens.colors.light.slider.tooltip.background;
-
-  const darkTooltipBg = tokens.colors.dark.slider.tooltip.background;
-
-  const lightTooltipText = tokens.colors.light.slider.tooltip.text;
-
-  const darkTooltipText = tokens.colors.dark.slider.tooltip.text;
-
-  const lightLabel = tokens.colors.light.input.label.primary;
-
-  const darkLabel = tokens.colors.dark.input.label.primary;
-
-  const lightLabelDisabled = tokens.colors.light.input.label.disabled;
-
-  const darkLabelDisabled = tokens.colors.dark.input.label.disabled;
-
-  const lightError = tokens.colors.light.input.error;
-
-  const darkError = tokens.colors.dark.input.error;
+  const resolvedError = resolveThemeColor(
+    colors?.error,
+    tokens.colors.light.slider.error,
+    tokens.colors.dark.slider.error,
+    "Slider colors.error",
+  );
+  const lightError = resolvedError.light;
+  const darkError = resolvedError.dark;
 
   const thumbColor = useDerivedValue(() =>
     isInteractionDisabled
@@ -658,7 +713,7 @@ const SliderComponent = (props: ISlider) => {
     interpolateColor(themeProgress.value, [0, 1], [darkError, lightError]),
   );
 
-  const colors = useMemo<ISliderColors>(
+  const animatedColors = useMemo<ISliderAnimatedColors>(
     () => ({
       thumbColor,
       tooltipBg,
@@ -681,9 +736,9 @@ const SliderComponent = (props: ISlider) => {
 
   // ─── Error typography ────────────────────────────────────────────────────
 
-  const errorFontSize = tokens.typography.input.error.fontSize;
+  const errorFontSize = tokens.typography.slider.error.fontSize;
 
-  const errorLineHeight = tokens.typography.input.error.lineHeight;
+  const errorLineHeight = tokens.typography.slider.error.lineHeight;
 
   const animatedErrorSizeStyle = useAnimatedStyle(() => ({
     fontSize: errorFontSize * fontScale.value,
@@ -887,7 +942,7 @@ const SliderComponent = (props: ISlider) => {
         singlePos={singlePos}
         rangeLoPos={rangeLoPos}
         rangeHiPos={rangeHiPos}
-        colors={colors}
+        colors={animatedColors}
         testID={testID}
       />
 
@@ -908,7 +963,7 @@ const SliderComponent = (props: ISlider) => {
             max={max}
             step={step}
             sizes={sizes}
-            colors={colors}
+            colors={animatedColors}
             disabled={isInteractionDisabled}
             onSingleFinish={handleSingleFinish}
             onLowerFinish={handleLowerFinish}
@@ -932,7 +987,8 @@ const SliderComponent = (props: ISlider) => {
                 max={max}
                 step={step}
                 sizes={sizes}
-                colors={colors}
+                colors={animatedColors}
+                initialThumbColor={initialThumbColor}
                 onChange={onValuesChange ? handleLowerChange : undefined}
                 onFinish={handleLowerFinish}
                 onReconcile={handleControlledInteractionReconcile}
@@ -955,7 +1011,8 @@ const SliderComponent = (props: ISlider) => {
                 max={max}
                 step={step}
                 sizes={sizes}
-                colors={colors}
+                colors={animatedColors}
+                initialThumbColor={initialThumbColor}
                 onChange={onValuesChange ? handleUpperChange : undefined}
                 onFinish={handleUpperFinish}
                 onReconcile={handleControlledInteractionReconcile}
@@ -978,7 +1035,8 @@ const SliderComponent = (props: ISlider) => {
               max={max}
               step={step}
               sizes={sizes}
-              colors={colors}
+              colors={animatedColors}
+              initialThumbColor={initialThumbColor}
               onChange={onValueChange ? handleSingleChange : undefined}
               onFinish={handleSingleFinish}
               onReconcile={handleControlledInteractionReconcile}
@@ -1003,8 +1061,9 @@ const SliderComponent = (props: ISlider) => {
           <Icon
             type="alertCircle"
             size={tokens.sizings.icon.xs}
-            lightColor={tokens.colors.light.input.error}
-            darkColor={tokens.colors.dark.input.error}
+            colors={{
+              icon: resolvedError,
+            }}
           />
 
           <Animated.Text

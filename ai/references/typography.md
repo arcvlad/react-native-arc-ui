@@ -51,9 +51,7 @@ ARCUI applies the central font scale at runtime.
 Example:
 
 ```tsx
-<Text style={{ fontSize: 20 }}>
-  Heading
-</Text>
+<Text style={{ fontSize: 20 }}>Heading</Text>
 ```
 
 The `20` is the base size, not a request to bypass ARCUI scaling.
@@ -95,20 +93,18 @@ color API.
 ARCUI `Text` resolves color in this order:
 
 ```text
-color
-↓
-complete darkColor + lightColor pair
+colors.text
 ↓
 style.color
 ↓
 ARCUI text tokens
 ```
 
-Use `color` for a fixed value across themes.
+`colors.text` accepts either a fixed string or a complete `{ light, dark }`
+pair. Theme-aware pairs participate in ARCUI's animated theme transition.
 
-Use a complete dark/light pair for explicit theme-aware overrides.
-
-Use `style.color` as the native consumer escape hatch when desired.
+Use `style.color` as the native static escape hatch when no `colors.text`
+override is provided.
 
 Do not provide only one side of a theme pair.
 

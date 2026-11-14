@@ -26,9 +26,10 @@ import {
 import { useEnteringExiting } from "../../hooks/useEnteringExiting";
 import { hardwareAcceleration } from "../../utils/platformUtils";
 import { resolveAnimation } from "../../utils/resolveAnimation";
+import { resolveThemeColor } from "../../utils/resolveThemeColor";
 import { SpinnerLoader } from "../SpinnerLoader/SpinnerLoader";
 import { resolveTextContent } from "../../utils/reactNode";
-import type { IButton } from "./types";
+import type { IButton, TButtonTone } from "./types";
 import { resolveTypographyStyle } from "../../utils/resolveTypography";
 
 /**
@@ -38,10 +39,53 @@ import { resolveTypographyStyle } from "../../utils/resolveTypography";
  */
 const MUTED_ICON_OPACITY = 0.3;
 
+const resolveButtonType = (value: string): NonNullable<IButton["type"]> => {
+  switch (value) {
+    case "solid":
+    case "border":
+    case "transparent":
+      return value;
+
+    default:
+      if (__DEV__) {
+        console.error(
+          `[react-native-arc-ui] Button type "${String(
+            value,
+          )}" is invalid. Falling back to "solid".`,
+        );
+      }
+
+      return "solid";
+  }
+};
+
+const resolveButtonTone = (value: string): TButtonTone => {
+  switch (value) {
+    case "primary":
+    case "secondary":
+    case "neutral":
+    case "danger":
+      return value;
+
+    default:
+      if (__DEV__) {
+        console.error(
+          `[react-native-arc-ui] Button tone "${String(
+            value,
+          )}" is invalid. Falling back to "primary".`,
+        );
+      }
+
+      return "primary";
+  }
+};
+
 const ButtonComponent = ({
   children,
   contentStyle,
-  type = "solid",
+  type: typeProp = "solid",
+  tone = "primary",
+  colors,
   radius,
   borderWidth,
   animation,
@@ -67,6 +111,9 @@ const ButtonComponent = ({
   const { entering, exiting } = useEnteringExiting();
 
   const resolvedAnimation = animation ?? tokens.pressAnimation.type;
+
+  const type = resolveButtonType(typeProp);
+  const resolvedTone = resolveButtonTone(tone);
 
   const resolvedRadius = radius ?? tokens.radius.button;
 
@@ -154,45 +201,119 @@ const ButtonComponent = ({
     style: labelTypographyStyle,
   } = resolveTypographyStyle(tokens.typography.button.label);
 
-  // ─── Theme token values ───────────────────────────────────────────────────
+  // ─── Theme / tone color endpoints ─────────────────────────────────────────
 
-  const lightBackgroundPrimary =
-    tokens.colors.light.button[type].background.primary;
-  const lightBackgroundPressed =
-    tokens.colors.light.button[type].background.pressed;
-  const lightBackgroundDisabled =
-    tokens.colors.light.button[type].background.disabled;
-  const lightBackgroundInactive =
-    tokens.colors.light.button[type].background.inactive;
+  const lightTone = tokens.colors.light.button[resolvedTone][type];
+  const darkTone = tokens.colors.dark.button[resolvedTone][type];
 
-  const darkBackgroundPrimary =
-    tokens.colors.dark.button[type].background.primary;
-  const darkBackgroundPressed =
-    tokens.colors.dark.button[type].background.pressed;
-  const darkBackgroundDisabled =
-    tokens.colors.dark.button[type].background.disabled;
-  const darkBackgroundInactive =
-    tokens.colors.dark.button[type].background.inactive;
+  const resolvedBackgroundDefault = resolveThemeColor(
+    colors?.background?.default,
+    lightTone.background.primary,
+    darkTone.background.primary,
+    "Button colors.background.default",
+  );
+  const resolvedBackgroundPressed = resolveThemeColor(
+    colors?.background?.pressed,
+    lightTone.background.pressed,
+    darkTone.background.pressed,
+    "Button colors.background.pressed",
+  );
+  const resolvedBackgroundDisabled = resolveThemeColor(
+    colors?.background?.disabled,
+    lightTone.background.disabled,
+    darkTone.background.disabled,
+    "Button colors.background.disabled",
+  );
+  const resolvedBackgroundInactive = resolveThemeColor(
+    colors?.background?.inactive,
+    lightTone.background.inactive,
+    darkTone.background.inactive,
+    "Button colors.background.inactive",
+  );
 
-  const lightBorderPrimary = tokens.colors.light.button[type].border.primary;
-  const lightBorderPressed = tokens.colors.light.button[type].border.pressed;
-  const lightBorderDisabled = tokens.colors.light.button[type].border.disabled;
-  const lightBorderInactive = tokens.colors.light.button[type].border.inactive;
+  const lightBackgroundPrimary = resolvedBackgroundDefault.light;
+  const darkBackgroundPrimary = resolvedBackgroundDefault.dark;
+  const lightBackgroundPressed = resolvedBackgroundPressed.light;
+  const darkBackgroundPressed = resolvedBackgroundPressed.dark;
+  const lightBackgroundDisabled = resolvedBackgroundDisabled.light;
+  const darkBackgroundDisabled = resolvedBackgroundDisabled.dark;
+  const lightBackgroundInactive = resolvedBackgroundInactive.light;
+  const darkBackgroundInactive = resolvedBackgroundInactive.dark;
 
-  const darkBorderPrimary = tokens.colors.dark.button[type].border.primary;
-  const darkBorderPressed = tokens.colors.dark.button[type].border.pressed;
-  const darkBorderDisabled = tokens.colors.dark.button[type].border.disabled;
-  const darkBorderInactive = tokens.colors.dark.button[type].border.inactive;
+  const resolvedBorderDefault = resolveThemeColor(
+    colors?.border?.default,
+    lightTone.border.primary,
+    darkTone.border.primary,
+    "Button colors.border.default",
+  );
+  const resolvedBorderPressed = resolveThemeColor(
+    colors?.border?.pressed,
+    lightTone.border.pressed,
+    darkTone.border.pressed,
+    "Button colors.border.pressed",
+  );
+  const resolvedBorderDisabled = resolveThemeColor(
+    colors?.border?.disabled,
+    lightTone.border.disabled,
+    darkTone.border.disabled,
+    "Button colors.border.disabled",
+  );
+  const resolvedBorderInactive = resolveThemeColor(
+    colors?.border?.inactive,
+    lightTone.border.inactive,
+    darkTone.border.inactive,
+    "Button colors.border.inactive",
+  );
 
-  const lightTextPrimary = tokens.colors.light.button[type].text.primary;
-  const lightTextPressed = tokens.colors.light.button[type].text.pressed;
-  const lightTextDisabled = tokens.colors.light.button[type].text.disabled;
-  const lightTextInactive = tokens.colors.light.button[type].text.inactive;
+  const lightBorderPrimary = resolvedBorderDefault.light;
+  const darkBorderPrimary = resolvedBorderDefault.dark;
+  const lightBorderPressed = resolvedBorderPressed.light;
+  const darkBorderPressed = resolvedBorderPressed.dark;
+  const lightBorderDisabled = resolvedBorderDisabled.light;
+  const darkBorderDisabled = resolvedBorderDisabled.dark;
+  const lightBorderInactive = resolvedBorderInactive.light;
+  const darkBorderInactive = resolvedBorderInactive.dark;
 
-  const darkTextPrimary = tokens.colors.dark.button[type].text.primary;
-  const darkTextPressed = tokens.colors.dark.button[type].text.pressed;
-  const darkTextDisabled = tokens.colors.dark.button[type].text.disabled;
-  const darkTextInactive = tokens.colors.dark.button[type].text.inactive;
+  const resolvedTextDefault = resolveThemeColor(
+    colors?.text?.default,
+    lightTone.text.primary,
+    darkTone.text.primary,
+    "Button colors.text.default",
+  );
+  const resolvedTextPressed = resolveThemeColor(
+    colors?.text?.pressed,
+    lightTone.text.pressed,
+    darkTone.text.pressed,
+    "Button colors.text.pressed",
+  );
+  const resolvedTextDisabled = resolveThemeColor(
+    colors?.text?.disabled,
+    lightTone.text.disabled,
+    darkTone.text.disabled,
+    "Button colors.text.disabled",
+  );
+  const resolvedTextInactive = resolveThemeColor(
+    colors?.text?.inactive,
+    lightTone.text.inactive,
+    darkTone.text.inactive,
+    "Button colors.text.inactive",
+  );
+
+  const lightTextPrimary = resolvedTextDefault.light;
+  const darkTextPrimary = resolvedTextDefault.dark;
+  const lightTextPressed = resolvedTextPressed.light;
+  const darkTextPressed = resolvedTextPressed.dark;
+  const lightTextDisabled = resolvedTextDisabled.light;
+  const darkTextDisabled = resolvedTextDisabled.dark;
+  const lightTextInactive = resolvedTextInactive.light;
+  const darkTextInactive = resolvedTextInactive.dark;
+
+  const resolvedLoading = resolveThemeColor(
+    colors?.loading,
+    lightTone.loading,
+    darkTone.loading,
+    "Button colors.loading",
+  );
 
   // ─── Semantic animated state ──────────────────────────────────────────────
 
@@ -683,8 +804,9 @@ const ButtonComponent = ({
             style={styles.loadingOverlay}
           >
             <SpinnerLoader
-              darkColor={tokens.colors.dark.button[type].loading}
-              lightColor={tokens.colors.light.button[type].loading}
+              colors={{
+                indicator: resolvedLoading,
+              }}
             />
           </Animated.View>
         )}

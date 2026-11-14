@@ -1,6 +1,18 @@
 import type { Ref } from "react";
 import type { View, ViewProps } from "react-native";
 
+import type { TThemeColor } from "../../types/colors";
+
+export interface ISpinnerLoaderColors {
+  /**
+   * Spinner indicator color.
+   *
+   * A string is fixed across themes. A { light, dark } pair participates in
+   * ARCUI's animated theme transition.
+   */
+  indicator?: TThemeColor;
+}
+
 export interface ISpinnerLoader extends Omit<ViewProps, "children" | "ref"> {
   /**
    * Native SpinnerLoader container ref.
@@ -27,18 +39,7 @@ export interface ISpinnerLoader extends Omit<ViewProps, "children" | "ref"> {
   scaleWithFont?: boolean;
 
   /**
-   * Fixed color used in every theme.
-   *
-   * Takes precedence over darkColor/lightColor.
+   * Per-instance ARCUI-owned color overrides.
    */
-  color?: string;
-
-  /**
-   * Theme-aware color pair.
-   *
-   * Both values must be provided. An incomplete pair is ignored and ARCUI
-   * falls back to the SpinnerLoader theme tokens.
-   */
-  darkColor?: string;
-  lightColor?: string;
+  colors?: Readonly<ISpinnerLoaderColors>;
 }

@@ -30,6 +30,7 @@ import {
   useARCUITheme,
 } from "../../contexts/hooks";
 import { resolveAnimation } from "../../utils/resolveAnimation";
+import { resolveThemeColor } from "../../utils/resolveThemeColor";
 import { Icon } from "../Icon/Icon";
 import { useSelectionGroup } from "../SelectionGroup/SelectionGroupContext";
 
@@ -116,6 +117,7 @@ const AccordionComponent = ({
   icon,
   customIcon,
   type = "transparent",
+  colors,
   disabled = false,
   expanded: expandedProp,
   onExpandedChange,
@@ -299,63 +301,142 @@ const AccordionComponent = ({
     accordionAnimationConfig,
   ]);
 
-  // ─── Color tokens ──────────────────────────────────────────────────────────
+  // ─── Color endpoints ───────────────────────────────────────────────────────
 
-  const lightBackground =
-    tokens.colors.light.accordion[resolvedType].background.primary;
+  const lightPalette = tokens.colors.light.accordion[resolvedType];
+  const darkPalette = tokens.colors.dark.accordion[resolvedType];
 
-  const lightBackgroundDisabled =
-    tokens.colors.light.accordion[resolvedType].background.disabled;
+  const backgroundDefault = resolveThemeColor(
+    colors?.background?.default,
+    lightPalette.background.primary,
+    darkPalette.background.primary,
+    "Accordion colors.background.default",
+  );
+  const backgroundDisabled = resolveThemeColor(
+    colors?.background?.disabled,
+    lightPalette.background.disabled,
+    darkPalette.background.disabled,
+    "Accordion colors.background.disabled",
+  );
 
-  const darkBackground =
-    tokens.colors.dark.accordion[resolvedType].background.primary;
+  const borderDefault = resolveThemeColor(
+    colors?.border?.default,
+    lightPalette.border.primary,
+    darkPalette.border.primary,
+    "Accordion colors.border.default",
+  );
+  const borderDisabled = resolveThemeColor(
+    colors?.border?.disabled,
+    lightPalette.border.disabled,
+    darkPalette.border.disabled,
+    "Accordion colors.border.disabled",
+  );
 
-  const darkBackgroundDisabled =
-    tokens.colors.dark.accordion[resolvedType].background.disabled;
+  const titleDefault = resolveThemeColor(
+    colors?.title?.default,
+    lightPalette.text.primary,
+    darkPalette.text.primary,
+    "Accordion colors.title.default",
+  );
+  const titleDisabled = resolveThemeColor(
+    colors?.title?.disabled,
+    lightPalette.text.disabled,
+    darkPalette.text.disabled,
+    "Accordion colors.title.disabled",
+  );
 
-  const lightBorder =
-    tokens.colors.light.accordion[resolvedType].border.primary;
+  const subtitleDefault = resolveThemeColor(
+    colors?.subtitle?.default,
+    lightPalette.text.subtitle,
+    darkPalette.text.subtitle,
+    "Accordion colors.subtitle.default",
+  );
+  const subtitleDisabled = resolveThemeColor(
+    colors?.subtitle?.disabled,
+    lightPalette.text.disabled,
+    darkPalette.text.disabled,
+    "Accordion colors.subtitle.disabled",
+  );
 
-  const lightBorderDisabled =
-    tokens.colors.light.accordion[resolvedType].border.disabled;
+  const iconDefault = resolveThemeColor(
+    colors?.icon?.default,
+    lightPalette.icon.primary,
+    darkPalette.icon.primary,
+    "Accordion colors.icon.default",
+  );
+  const iconDisabled = resolveThemeColor(
+    colors?.icon?.disabled,
+    lightPalette.icon.disabled,
+    darkPalette.icon.disabled,
+    "Accordion colors.icon.disabled",
+  );
 
-  const darkBorder = tokens.colors.dark.accordion[resolvedType].border.primary;
+  const lightBackground = backgroundDefault.light;
+  const darkBackground = backgroundDefault.dark;
+  const lightBackgroundDisabled = backgroundDisabled.light;
+  const darkBackgroundDisabled = backgroundDisabled.dark;
 
-  const darkBorderDisabled =
-    tokens.colors.dark.accordion[resolvedType].border.disabled;
+  const lightBorder = borderDefault.light;
+  const darkBorder = borderDefault.dark;
+  const lightBorderDisabled = borderDisabled.light;
+  const darkBorderDisabled = borderDisabled.dark;
 
-  const lightTitle = tokens.colors.light.accordion[resolvedType].text.primary;
+  const lightTitle = titleDefault.light;
+  const darkTitle = titleDefault.dark;
+  const lightTitleDisabled = titleDisabled.light;
+  const darkTitleDisabled = titleDisabled.dark;
 
-  const lightTitleDisabled =
-    tokens.colors.light.accordion[resolvedType].text.disabled;
+  const lightSubtitle = subtitleDefault.light;
+  const darkSubtitle = subtitleDefault.dark;
+  const lightSubtitleDisabled = subtitleDisabled.light;
+  const darkSubtitleDisabled = subtitleDisabled.dark;
 
-  const darkTitle = tokens.colors.dark.accordion[resolvedType].text.primary;
+  const lightIconPrimary = iconDefault.light;
+  const darkIconPrimary = iconDefault.dark;
+  const lightIconDisabled = iconDisabled.light;
+  const darkIconDisabled = iconDisabled.dark;
 
-  const darkTitleDisabled =
-    tokens.colors.dark.accordion[resolvedType].text.disabled;
+  // ─── Native style color ownership ─────────────────────────────────────────
 
-  const lightSubtitle =
-    tokens.colors.light.accordion[resolvedType].text.subtitle;
+  const { resolvedConsumerStyle, styleOwnsBackground, styleOwnsBorder } =
+    useMemo(() => {
+      const flattenedStyle: ViewStyle = {
+        ...(StyleSheet.flatten(style) ?? {}),
+      };
 
-  const lightSubtitleDisabled =
-    tokens.colors.light.accordion[resolvedType].text.disabled;
+      const hasBackgroundColorOverride =
+        colors?.background?.default !== undefined ||
+        colors?.background?.disabled !== undefined;
 
-  const darkSubtitle = tokens.colors.dark.accordion[resolvedType].text.subtitle;
+      const hasBorderColorOverride =
+        colors?.border?.default !== undefined ||
+        colors?.border?.disabled !== undefined;
 
-  const darkSubtitleDisabled =
-    tokens.colors.dark.accordion[resolvedType].text.disabled;
+      const resolvedStyle: ViewStyle = { ...flattenedStyle };
 
-  const lightIconPrimary =
-    tokens.colors.light.accordion[resolvedType].icon.primary;
+      if (hasBackgroundColorOverride) {
+        delete resolvedStyle.backgroundColor;
+      }
 
-  const lightIconDisabled =
-    tokens.colors.light.accordion[resolvedType].icon.disabled;
+      if (hasBorderColorOverride) {
+        delete resolvedStyle.borderColor;
+        delete resolvedStyle.borderTopColor;
+        delete resolvedStyle.borderRightColor;
+        delete resolvedStyle.borderBottomColor;
+        delete resolvedStyle.borderLeftColor;
+        delete resolvedStyle.borderStartColor;
+        delete resolvedStyle.borderEndColor;
+      }
 
-  const darkIconPrimary =
-    tokens.colors.dark.accordion[resolvedType].icon.primary;
-
-  const darkIconDisabled =
-    tokens.colors.dark.accordion[resolvedType].icon.disabled;
+      return {
+        resolvedConsumerStyle: resolvedStyle,
+        styleOwnsBackground:
+          !hasBackgroundColorOverride &&
+          flattenedStyle.backgroundColor !== undefined,
+        styleOwnsBorder:
+          !hasBorderColorOverride && flattenedStyle.borderColor !== undefined,
+      };
+    }, [colors?.background, colors?.border, style]);
 
   // ─── Animated colors ───────────────────────────────────────────────────────
 
@@ -467,8 +548,10 @@ const AccordionComponent = ({
   // ─── Animated styles ───────────────────────────────────────────────────────
 
   const animatedContainerStyle = useAnimatedStyle(() => ({
-    backgroundColor: stateColors.value.background,
-    borderColor: stateColors.value.border,
+    backgroundColor: styleOwnsBackground
+      ? undefined
+      : stateColors.value.background,
+    borderColor: styleOwnsBorder ? undefined : stateColors.value.border,
   }));
 
   const animatedContentStyle = useAnimatedStyle(() => ({
@@ -639,7 +722,7 @@ const AccordionComponent = ({
         borderRadiusStyle,
         borderStyle,
         animatedContainerStyle,
-        style,
+        resolvedConsumerStyle,
       ]}
     >
       <Pressable

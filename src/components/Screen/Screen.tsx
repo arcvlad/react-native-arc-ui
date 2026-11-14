@@ -10,9 +10,17 @@ import {
   useARCUITheme,
 } from "../../contexts/hooks";
 import { resolveSafeArea } from "../../utils/resolveSafeArea";
+import { resolveThemeColor } from "../../utils/resolveThemeColor";
 import type { IScreen } from "./types";
 
-export const Screen = ({ ref, children, style, testID, ...props }: IScreen) => {
+export const Screen = ({
+  ref,
+  children,
+  colors,
+  style,
+  testID,
+  ...props
+}: IScreen) => {
   const { tokens } = useARCUITheme();
 
   const { themeProgress } = useARCUIAnimatedTheme();
@@ -41,20 +49,35 @@ export const Screen = ({ ref, children, style, testID, ...props }: IScreen) => {
     tokens.safeArea.screen.left,
   );
 
-  // ─── Theme token extraction ───────────────────────────────────────────────
+  // ─── Theme color resolution ──────────────────────────────────────────────
 
-  const lightBackground = tokens.colors.light.background.screen;
+  const resolvedBackground = resolveThemeColor(
+    colors?.background,
+    tokens.colors.light.background.screen,
+    tokens.colors.dark.background.screen,
+    "Screen colors.background",
+  );
 
-  const darkBackground = tokens.colors.dark.background.screen;
+  const lightBackground = resolvedBackground.light;
+  const darkBackground = resolvedBackground.dark;
 
-  // ─── Animated theme ───────────────────────────────────────────────────────
+  const hasBackgroundOverride = colors?.background !== undefined;
+
+  const styleBackgroundColor = StyleSheet.flatten(style)?.backgroundColor;
+
+  const styleOwnsBackground =
+    !hasBackgroundOverride && styleBackgroundColor !== undefined;
+
+  // ─── Animated theme ──────────────────────────────────────────────────────
 
   const animatedStyle = useAnimatedStyle(() => ({
-    backgroundColor: interpolateColor(
-      themeProgress.value,
-      [0, 1],
-      [darkBackground, lightBackground],
-    ),
+    backgroundColor: styleOwnsBackground
+      ? undefined
+      : interpolateColor(
+          themeProgress.value,
+          [0, 1],
+          [darkBackground, lightBackground],
+        ),
   }));
 
   // ─── Render ───────────────────────────────────────────────────────────────
@@ -77,9 +100,14 @@ export const Screen = ({ ref, children, style, testID, ...props }: IScreen) => {
           paddingLeft: safeLeft,
         },
 
-        animatedStyle,
-
+        /**
+         * Native style owns backgroundColor only when colors.background is
+         * absent. animatedStyle explicitly clears its backgroundColor in that
+         * case because Reanimated animated properties otherwise outrank static
+         * React Native styles regardless of array order.
+         */
         style,
+        animatedStyle,
       ]}
     >
       {children}

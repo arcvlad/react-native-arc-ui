@@ -21,6 +21,7 @@ import {
   normalizeNumberPrecision,
 } from "../../utils/numberUtils";
 import { resolveAnimation } from "../../utils/resolveAnimation";
+import { resolveThemeColor } from "../../utils/resolveThemeColor";
 import { resolveTypographyStyle } from "../../utils/resolveTypography";
 import type { IProgressBar } from "./types";
 import type { ViewStyle } from "react-native";
@@ -42,6 +43,7 @@ const ProgressBarComponent = ({
   label,
   showValue = false,
   disabled = false,
+  colors,
   height,
   radius,
   style,
@@ -100,23 +102,53 @@ const ProgressBarComponent = ({
     );
   }
 
-  // ─── Token extraction ────────────────────────────────────────────────────
+  // ─── Theme color endpoints ───────────────────────────────────────────────
 
-  const lightTrack = tokens.colors.light.progressBar.track;
+  const resolvedTrack = resolveThemeColor(
+    colors?.track,
+    tokens.colors.light.progressBar.track,
+    tokens.colors.dark.progressBar.track,
+    "ProgressBar colors.track",
+  );
 
-  const darkTrack = tokens.colors.dark.progressBar.track;
+  const resolvedFillDefault = resolveThemeColor(
+    colors?.fill?.default,
+    tokens.colors.light.progressBar.fill,
+    tokens.colors.dark.progressBar.fill,
+    "ProgressBar colors.fill.default",
+  );
 
-  const lightFill = tokens.colors.light.progressBar.fill;
+  const resolvedFillDisabled = resolveThemeColor(
+    colors?.fill?.disabled,
+    tokens.colors.light.progressBar.disabled,
+    tokens.colors.dark.progressBar.disabled,
+    "ProgressBar colors.fill.disabled",
+  );
 
-  const darkFill = tokens.colors.dark.progressBar.fill;
+  const resolvedLabel = resolveThemeColor(
+    colors?.label,
+    tokens.colors.light.progressBar.label,
+    tokens.colors.dark.progressBar.label,
+    "ProgressBar colors.label",
+  );
 
-  const lightDisabled = tokens.colors.light.progressBar.disabled;
+  const resolvedValue = resolveThemeColor(
+    colors?.value,
+    tokens.colors.light.progressBar.value,
+    tokens.colors.dark.progressBar.value,
+    "ProgressBar colors.value",
+  );
 
-  const darkDisabled = tokens.colors.dark.progressBar.disabled;
-
-  const lightLabel = tokens.colors.light.progressBar.label;
-
-  const darkLabel = tokens.colors.dark.progressBar.label;
+  const lightTrack = resolvedTrack.light;
+  const darkTrack = resolvedTrack.dark;
+  const lightFill = resolvedFillDefault.light;
+  const darkFill = resolvedFillDefault.dark;
+  const lightDisabled = resolvedFillDisabled.light;
+  const darkDisabled = resolvedFillDisabled.dark;
+  const lightLabel = resolvedLabel.light;
+  const darkLabel = resolvedLabel.dark;
+  const lightValue = resolvedValue.light;
+  const darkValue = resolvedValue.dark;
 
   const labelFontSize = tokens.typography.progressBar.label.fontSize;
 
@@ -233,6 +265,12 @@ const ProgressBarComponent = ({
         [0, 1],
         [darkLabel, lightLabel],
       ),
+
+      value: interpolateColor(
+        themeProgress.value,
+        [0, 1],
+        [darkValue, lightValue],
+      ),
     };
   });
 
@@ -281,7 +319,7 @@ const ProgressBarComponent = ({
   }));
 
   const valueColorStyle = useAnimatedStyle(() => ({
-    color: animatedColors.value.label,
+    color: animatedColors.value.value,
   }));
 
   // ─── Render semantics ────────────────────────────────────────────────────

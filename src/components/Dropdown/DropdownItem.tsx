@@ -4,6 +4,7 @@ import Animated, {
   cancelAnimation,
   interpolateColor,
   useAnimatedStyle,
+  useReducedMotion,
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
@@ -14,11 +15,18 @@ import {
   useARCUITheme,
 } from "../../contexts/hooks";
 import { Icon } from "../Icon/Icon";
+import { resolveThemeColor } from "../../utils/resolveThemeColor";
 import { resolveTypographyStyle } from "../../utils/resolveTypography";
-import type { TDropdownItem } from "./types";
+import type {
+  IDropdownItemColors,
+  TDropdownItem,
+  TDropdownItemTone,
+} from "./types";
 
 interface IDropdownItem {
   item: TDropdownItem;
+  colors?: Readonly<IDropdownItemColors>;
+  separatorColor: Readonly<{ light: string; dark: string }>;
 
   /**
    * Selection is reported with both identity and the complete item.
@@ -34,12 +42,36 @@ interface IDropdownItem {
   testID?: string;
 }
 
-const DropdownItemComponent = ({ item, onPress, testID }: IDropdownItem) => {
+const resolveDropdownItemTone = (value: unknown): TDropdownItemTone => {
+  if (value === undefined || value === "neutral" || value === "danger") {
+    return value ?? "neutral";
+  }
+
+  if (__DEV__) {
+    console.error(
+      `[react-native-arc-ui] Dropdown item tone "${String(
+        value,
+      )}" is invalid. Falling back to "neutral".`,
+    );
+  }
+
+  return "neutral";
+};
+
+const DropdownItemComponent = ({
+  item,
+  colors,
+  separatorColor,
+  onPress,
+  testID,
+}: IDropdownItem) => {
   const { tokens } = useARCUITheme();
 
   const { themeProgress } = useARCUIAnimatedTheme();
 
   const { fontScale } = useARCUISystem();
+
+  const prefersReducedMotion = useReducedMotion();
 
   const pressProgress = useSharedValue(0);
 
@@ -49,108 +81,148 @@ const DropdownItemComponent = ({ item, onPress, testID }: IDropdownItem) => {
 
   const itemMinHeight = tokens.sizings.dropdown.itemMinHeight;
 
-  const hasCustomThemePair =
-    item.darkColor !== undefined && item.lightColor !== undefined;
+  const pressDuration = tokens.pressAnimation.duration;
 
-  /**
-   * Custom color resolution is shared by text and icon:
-   *
-   * 1. color -> fixed in both themes
-   * 2. complete darkColor + lightColor pair
-   * 3. incomplete pair -> ignored
-   * 4. semantic destructive / primary tokens
-   *
-   * Disabled state intentionally overrides every custom color.
-   */
-  const customLightColor =
-    item.color ?? (hasCustomThemePair ? item.lightColor : undefined);
+  const resolvedTone = resolveDropdownItemTone(item.tone);
+  const isDanger = resolvedTone === "danger";
 
-  const customDarkColor =
-    item.color ?? (hasCustomThemePair ? item.darkColor : undefined);
+  const lightPalette = tokens.colors.light.dropdown.item;
+  const darkPalette = tokens.colors.dark.dropdown.item;
 
-  // ─── Background colors ──────────────────────────
+  // ─── Background colors ────────────────────────────────────────────────────
 
-  const lightBackgroundDefault =
-    tokens.colors.light.dropdown.item.background.default;
+  const rootBackgroundDefault = resolveThemeColor(
+    colors?.background?.default,
+    lightPalette.background.default,
+    darkPalette.background.default,
+    "Dropdown colors.item.background.default",
+  );
+  const rootBackgroundPressed = resolveThemeColor(
+    colors?.background?.pressed,
+    lightPalette.background.pressed,
+    darkPalette.background.pressed,
+    "Dropdown colors.item.background.pressed",
+  );
+  const rootBackgroundDisabled = resolveThemeColor(
+    colors?.background?.disabled,
+    lightPalette.background.disabled,
+    darkPalette.background.disabled,
+    "Dropdown colors.item.background.disabled",
+  );
 
-  const darkBackgroundDefault =
-    tokens.colors.dark.dropdown.item.background.default;
+  const backgroundDefault = resolveThemeColor(
+    item.colors?.background?.default,
+    rootBackgroundDefault.light,
+    rootBackgroundDefault.dark,
+    "Dropdown item colors.background.default",
+  );
+  const backgroundPressed = resolveThemeColor(
+    item.colors?.background?.pressed,
+    rootBackgroundPressed.light,
+    rootBackgroundPressed.dark,
+    "Dropdown item colors.background.pressed",
+  );
+  const backgroundDisabled = resolveThemeColor(
+    item.colors?.background?.disabled,
+    rootBackgroundDisabled.light,
+    rootBackgroundDisabled.dark,
+    "Dropdown item colors.background.disabled",
+  );
 
-  const lightBackgroundPressed =
-    tokens.colors.light.dropdown.item.background.pressed;
-
-  const darkBackgroundPressed =
-    tokens.colors.dark.dropdown.item.background.pressed;
-
-  const lightBackgroundDisabled =
-    tokens.colors.light.dropdown.item.background.disabled;
-
-  const darkBackgroundDisabled =
-    tokens.colors.dark.dropdown.item.background.disabled;
+  const lightBackgroundDefault = backgroundDefault.light;
+  const darkBackgroundDefault = backgroundDefault.dark;
+  const lightBackgroundPressed = backgroundPressed.light;
+  const darkBackgroundPressed = backgroundPressed.dark;
+  const lightBackgroundDisabled = backgroundDisabled.light;
+  const darkBackgroundDisabled = backgroundDisabled.dark;
 
   const lightBackground = isDisabled
     ? lightBackgroundDisabled
     : lightBackgroundDefault;
-
   const darkBackground = isDisabled
     ? darkBackgroundDisabled
     : darkBackgroundDefault;
 
-  // ─── Text colors ────────────────────────────────
+  // ─── Text colors ──────────────────────────────────────────────────────────
 
-  const lightTextPrimary = tokens.colors.light.dropdown.item.text.primary;
+  const lightToneText = isDanger
+    ? lightPalette.text.danger
+    : lightPalette.text.primary;
+  const darkToneText = isDanger
+    ? darkPalette.text.danger
+    : darkPalette.text.primary;
 
-  const darkTextPrimary = tokens.colors.dark.dropdown.item.text.primary;
+  const rootTextDefault = resolveThemeColor(
+    colors?.text?.default,
+    lightToneText,
+    darkToneText,
+    "Dropdown colors.item.text.default",
+  );
+  const rootTextDisabled = resolveThemeColor(
+    colors?.text?.disabled,
+    lightPalette.text.disabled,
+    darkPalette.text.disabled,
+    "Dropdown colors.item.text.disabled",
+  );
 
-  const lightTextDisabled = tokens.colors.light.dropdown.item.text.disabled;
+  const textDefault = resolveThemeColor(
+    item.colors?.text?.default,
+    rootTextDefault.light,
+    rootTextDefault.dark,
+    "Dropdown item colors.text.default",
+  );
+  const textDisabled = resolveThemeColor(
+    item.colors?.text?.disabled,
+    rootTextDisabled.light,
+    rootTextDisabled.dark,
+    "Dropdown item colors.text.disabled",
+  );
 
-  const darkTextDisabled = tokens.colors.dark.dropdown.item.text.disabled;
+  const lightText = isDisabled ? textDisabled.light : textDefault.light;
+  const darkText = isDisabled ? textDisabled.dark : textDefault.dark;
 
-  const lightTextDestructive =
-    tokens.colors.light.dropdown.item.text.destructive;
+  // ─── Icon colors ──────────────────────────────────────────────────────────
 
-  const darkTextDestructive = tokens.colors.dark.dropdown.item.text.destructive;
+  const lightToneIcon = isDanger
+    ? lightPalette.icon.danger
+    : lightPalette.icon.primary;
+  const darkToneIcon = isDanger
+    ? darkPalette.icon.danger
+    : darkPalette.icon.primary;
 
-  const lightText = isDisabled
-    ? lightTextDisabled
-    : (customLightColor ??
-      (item.destructive ? lightTextDestructive : lightTextPrimary));
+  const rootIconDefault = resolveThemeColor(
+    colors?.icon?.default,
+    lightToneIcon,
+    darkToneIcon,
+    "Dropdown colors.item.icon.default",
+  );
+  const rootIconDisabled = resolveThemeColor(
+    colors?.icon?.disabled,
+    lightPalette.icon.disabled,
+    darkPalette.icon.disabled,
+    "Dropdown colors.item.icon.disabled",
+  );
 
-  const darkText = isDisabled
-    ? darkTextDisabled
-    : (customDarkColor ??
-      (item.destructive ? darkTextDestructive : darkTextPrimary));
+  const iconDefault = resolveThemeColor(
+    item.colors?.icon?.default,
+    rootIconDefault.light,
+    rootIconDefault.dark,
+    "Dropdown item colors.icon.default",
+  );
+  const iconDisabled = resolveThemeColor(
+    item.colors?.icon?.disabled,
+    rootIconDisabled.light,
+    rootIconDisabled.dark,
+    "Dropdown item colors.icon.disabled",
+  );
 
-  // ─── Icon colors ────────────────────────────────
+  const lightIcon = isDisabled ? iconDisabled.light : iconDefault.light;
+  const darkIcon = isDisabled ? iconDisabled.dark : iconDefault.dark;
 
-  const lightIconPrimary = tokens.colors.light.dropdown.item.icon.primary;
+  // ─── Separator colors ─────────────────────────────────────────────────────
 
-  const darkIconPrimary = tokens.colors.dark.dropdown.item.icon.primary;
-
-  const lightIconDisabled = tokens.colors.light.dropdown.item.icon.disabled;
-
-  const darkIconDisabled = tokens.colors.dark.dropdown.item.icon.disabled;
-
-  const lightIconDestructive =
-    tokens.colors.light.dropdown.item.icon.destructive;
-
-  const darkIconDestructive = tokens.colors.dark.dropdown.item.icon.destructive;
-
-  const lightIcon = isDisabled
-    ? lightIconDisabled
-    : (customLightColor ??
-      (item.destructive ? lightIconDestructive : lightIconPrimary));
-
-  const darkIcon = isDisabled
-    ? darkIconDisabled
-    : (customDarkColor ??
-      (item.destructive ? darkIconDestructive : darkIconPrimary));
-
-  // ─── Separator colors ───────────────────────────
-
-  const lightSeparator = tokens.colors.light.dropdown.separator;
-
-  const darkSeparator = tokens.colors.dark.dropdown.separator;
+  const lightSeparator = separatorColor.light;
+  const darkSeparator = separatorColor.dark;
 
   // ─── Static token-driven styles ─────────────────
 
@@ -207,18 +279,30 @@ const DropdownItemComponent = ({ item, onPress, testID }: IDropdownItem) => {
 
     cancelAnimation(pressProgress);
 
+    if (prefersReducedMotion) {
+      pressProgress.value = 1;
+
+      return;
+    }
+
     pressProgress.value = withTiming(1, {
-      duration: tokens.pressAnimation.duration,
+      duration: pressDuration,
     });
-  }, [isDisabled, pressProgress, tokens.pressAnimation.duration]);
+  }, [isDisabled, prefersReducedMotion, pressDuration, pressProgress]);
 
   const handlePressOut = useCallback(() => {
     cancelAnimation(pressProgress);
 
+    if (prefersReducedMotion) {
+      pressProgress.value = 0;
+
+      return;
+    }
+
     pressProgress.value = withTiming(0, {
-      duration: tokens.pressAnimation.duration,
+      duration: pressDuration,
     });
-  }, [pressProgress, tokens.pressAnimation.duration]);
+  }, [prefersReducedMotion, pressDuration, pressProgress]);
 
   /**
    * An item may become disabled while the Dropdown is already open.
@@ -315,8 +399,12 @@ const DropdownItemComponent = ({ item, onPress, testID }: IDropdownItem) => {
           <Icon
             type={item.icon}
             size={tokens.sizings.icon.s}
-            darkColor={darkIcon}
-            lightColor={lightIcon}
+            colors={{
+              icon: {
+                light: lightIcon,
+                dark: darkIcon,
+              },
+            }}
             testID={resolvedTestID ? `${resolvedTestID}-icon` : undefined}
             accessible={false}
           />

@@ -1,10 +1,18 @@
-// components/Dialog/types.ts
-
 import type { ReactElement } from "react";
 
+import type { TThemeColor } from "../../types/colors";
+import type { IButton, IButtonColors, TButtonTone } from "../Button/types";
 import type { IIcon } from "../Icon/types";
 
-export type TDialogActionType = "solid" | "border" | "transparent";
+export type TDialogActionType = NonNullable<IButton["type"]>;
+
+export interface IDialogColors {
+  backdrop?: TThemeColor;
+  background?: TThemeColor;
+  title?: TThemeColor;
+  message?: TThemeColor;
+  icon?: TThemeColor;
+}
 
 export interface TDialogAction {
   /**
@@ -21,6 +29,18 @@ export interface TDialogAction {
    * remaining -> transparent
    */
   type?: TDialogActionType;
+
+  /**
+   * Semantic Button palette for this action.
+   *
+   * @default "primary"
+   */
+  tone?: TButtonTone;
+
+  /**
+   * Per-action Button color overrides.
+   */
+  colors?: Readonly<IButtonColors>;
 
   /**
    * Action callback.
@@ -46,6 +66,11 @@ interface TDialogBase {
   title?: string;
 
   message?: string;
+
+  /**
+   * Per-instance ARCUI-owned Dialog color overrides.
+   */
+  colors?: Readonly<IDialogColors>;
 
   /**
    * Explicit Dialog actions.

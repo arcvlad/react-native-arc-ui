@@ -18,6 +18,7 @@ import {
   useARCUITheme,
 } from "../../contexts/hooks";
 import { resolveAnimation } from "../../utils/resolveAnimation";
+import { resolveThemeColor } from "../../utils/resolveThemeColor";
 
 import type { ISpinnerLoader } from "./types";
 
@@ -35,9 +36,7 @@ const SpinnerLoaderComponent = ({
   ref,
   size,
   scaleWithFont = false,
-  color,
-  darkColor,
-  lightColor,
+  colors,
   style,
   ...viewProps
 }: ISpinnerLoader) => {
@@ -111,47 +110,23 @@ const SpinnerLoaderComponent = ({
 
   // ─── Theme colors ────────────────────────────────────────────────────────
 
-  const defaultDarkColor = tokens.colors.dark.spinnerLoader.color;
+  const resolvedIndicatorColor = resolveThemeColor(
+    colors?.indicator,
+    tokens.colors.light.spinnerLoader.color,
+    tokens.colors.dark.spinnerLoader.color,
+    "SpinnerLoader colors.indicator",
+  );
 
-  const defaultLightColor = tokens.colors.light.spinnerLoader.color;
+  const resolvedLightIndicator = resolvedIndicatorColor.light;
+  const resolvedDarkIndicator = resolvedIndicatorColor.dark;
 
-  const hasThemeColorPair = darkColor != null && lightColor != null;
-
-  const hasIncompleteThemeColorPair =
-    (darkColor != null) !== (lightColor != null);
-
-  if (__DEV__ && hasIncompleteThemeColorPair) {
-    console.error(
-      "[react-native-arc-ui] SpinnerLoader: darkColor and lightColor must be provided together. The incomplete theme color pair was ignored.",
-    );
-  }
-
-  /**
-   * Color ownership priority:
-   *
-   * fixed color
-   * -> complete dark/light pair
-   * -> ARCUI SpinnerLoader tokens
-   */
-  const spinnerColor = useDerivedValue<string>(() => {
-    if (color != null) {
-      return color;
-    }
-
-    if (hasThemeColorPair) {
-      return interpolateColor(
-        themeProgress.value,
-        [0, 1],
-        [darkColor, lightColor],
-      );
-    }
-
-    return interpolateColor(
+  const spinnerColor = useDerivedValue<string>(() =>
+    interpolateColor(
       themeProgress.value,
       [0, 1],
-      [defaultDarkColor, defaultLightColor],
-    );
-  });
+      [resolvedDarkIndicator, resolvedLightIndicator],
+    ),
+  );
 
   // ─── Animated geometry ───────────────────────────────────────────────────
 

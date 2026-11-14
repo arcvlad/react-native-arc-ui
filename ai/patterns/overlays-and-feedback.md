@@ -6,15 +6,9 @@
 const [visible, setVisible] = useState(false);
 
 <>
-  <Button onPress={() => setVisible(true)}>
-    Open
-  </Button>
+  <Button onPress={() => setVisible(true)}>Open</Button>
 
-  <Modal
-    visible={visible}
-    onClose={() => setVisible(false)}
-    title="Details"
-  >
+  <Modal visible={visible} onClose={() => setVisible(false)} title="Details">
     {content}
   </Modal>
 </>;
@@ -32,10 +26,7 @@ stacking.
   items={items}
   onSelect={handleSelect}
   trigger={({ onPress, isOpen, disabled }) => (
-    <Button
-      onPress={onPress}
-      disabled={disabled}
-    >
+    <Button onPress={onPress} disabled={disabled}>
       {isOpen ? "Close menu" : "Open menu"}
     </Button>
   )}
@@ -55,6 +46,7 @@ showDialog({
   actions: [
     {
       label: "Delete",
+      tone: "danger",
       onPress: handleDelete,
     },
     {

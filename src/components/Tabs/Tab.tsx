@@ -109,9 +109,7 @@ const TabComponent = ({
     fontSize: labelFontSize * fontScale.value,
 
     lineHeight:
-      labelLineHeight != null
-        ? labelLineHeight * fontScale.value
-        : undefined,
+      labelLineHeight != null ? labelLineHeight * fontScale.value : undefined,
   }));
 
   const contentGap = isIconTop
@@ -195,7 +193,8 @@ const TabComponent = ({
       {badge ? (
         <Badge
           dot
-          color={badge.color}
+          tone={badge.tone}
+          colors={badge.colors}
           style={[
             styles.badge,
             {

@@ -1,9 +1,17 @@
 import type { ReactNode, Ref } from "react";
 import type { StyleProp, View, ViewProps, ViewStyle } from "react-native";
 
+import type { TThemeColor } from "../../types/colors";
 import type { TIconType } from "../Icon/types";
 
-export type TInfoboxType = "default" | "warning" | "danger";
+export type TInfoboxTone = "info" | "success" | "warning" | "danger";
+
+export interface IInfoboxColors {
+  background?: TThemeColor;
+  border?: TThemeColor;
+  text?: TThemeColor;
+  icon?: TThemeColor;
+}
 
 type TInfoboxBase = Omit<ViewProps, "children" | "style"> & {
   /**
@@ -21,11 +29,16 @@ type TInfoboxBase = Omit<ViewProps, "children" | "style"> & {
   children: ReactNode;
 
   /**
-   * Semantic Infobox presentation.
+   * Semantic Infobox palette.
    *
-   * @default "default"
+   * @default "info"
    */
-  type?: TInfoboxType;
+  tone?: TInfoboxTone;
+
+  /**
+   * Per-instance ARCUI-owned color overrides.
+   */
+  colors?: Readonly<IInfoboxColors>;
 
   style?: StyleProp<ViewStyle>;
 };
@@ -34,10 +47,11 @@ type TInfoboxBuiltInIcon = {
   /**
    * ARCUI-owned built-in icon.
    *
-   * Its color follows the Infobox semantic type and theme.
+   * Its color follows the Infobox semantic tone and theme.
    *
-   * When omitted, the default icon follows the semantic type:
-   * default -> "info"
+   * When omitted, the default icon follows the semantic tone:
+   * info -> "info"
+   * success -> "check"
    * warning -> "alertCircle"
    * danger -> "xCircle"
    */

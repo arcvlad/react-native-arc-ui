@@ -1,9 +1,36 @@
 import type { StyleProp, ViewStyle } from "react-native";
 import type { SharedValue } from "react-native-reanimated";
 
+import type { TThemeColor } from "../../types/colors";
+
 export type TSliderLayout = "label-value" | "label-minmax" | "minmax" | "none";
 
 export type TSliderRangeValue = readonly [number, number];
+
+export interface ISliderColors {
+  track?: Readonly<{
+    active?: TThemeColor;
+    inactive?: TThemeColor;
+    disabled?: TThemeColor;
+  }>;
+
+  thumb?: Readonly<{
+    default?: TThemeColor;
+    disabled?: TThemeColor;
+  }>;
+
+  tooltip?: Readonly<{
+    background?: TThemeColor;
+    text?: TThemeColor;
+  }>;
+
+  label?: Readonly<{
+    default?: TThemeColor;
+    disabled?: TThemeColor;
+  }>;
+
+  error?: TThemeColor;
+}
 
 interface ISliderBase {
   /**
@@ -81,6 +108,11 @@ interface ISliderBase {
    * ARCUI does not provide a generic gesture instruction by default.
    */
   accessibilityHint?: string;
+
+  /**
+   * Per-instance ARCUI-owned color overrides.
+   */
+  colors?: Readonly<ISliderColors>;
 
   testID?: string;
 }
@@ -187,7 +219,7 @@ export type ISlider = ISingleSlider | IRangeSlider;
 /**
  * Internal animated colors shared between Slider sub-components.
  */
-export interface ISliderColors {
+export interface ISliderAnimatedColors {
   thumbColor: SharedValue<string>;
 
   tooltipBg: SharedValue<string>;

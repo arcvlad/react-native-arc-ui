@@ -19,14 +19,14 @@ Built for React 19, modern React Native, Reanimated, Expo, and bare React Native
   <tr>
     <td align="center">
       <img
-        src="https://arcui.arcstylen.com/github/react-native-arc-ui/assets/1.1.0/arcui-showcase-light-v1.gif"
+        src="https://arcui.arcstylen.com/github/react-native-arc-ui/assets/2.0.0/arcui-showcase-light-v1.gif"
         width="260"
         alt="ARCUI light theme showcase"
       />
     </td>
     <td align="center">
       <img
-        src="https://arcui.arcstylen.com/github/react-native-arc-ui/assets/1.1.0/arcui-showcase-dark-v1.gif"
+        src="https://arcui.arcstylen.com/github/react-native-arc-ui/assets/2.0.0/arcui-showcase-dark-v1.gif"
         width="260"
         alt="ARCUI dark theme showcase"
       />
@@ -61,7 +61,7 @@ npx expo install react-native-reanimated react-native-gesture-handler react-nati
 
 Follow the official setup instructions for the Reanimated and React Native Gesture Handler versions used by your application.
 
-ARCUI `1.x` does not require `react-native-worklets` directly. Consumers using a Reanimated version that requires additional setup should follow that Reanimated version's installation requirements.
+ARCUI does not declare `react-native-worklets` as a direct peer dependency. Consumers using a Reanimated version that requires additional setup should follow that Reanimated version's installation requirements.
 
 ## Quick start
 
@@ -99,7 +99,7 @@ The provider owns ARCUI-wide theme state, animated theme progress, font scale, s
 
 ## AI-assisted development
 
-ARCUI `1.1+` ships version-matched guidance for AI coding tools in the published `ai/` directory.
+ARCUI ships version-matched guidance for AI coding tools. When an assistant is inspecting this repository, start with [`AGENTS.md`](./AGENTS.md); it routes ARCUI usage work to the focused guidance under `ai/`.
 
 ```text
 ai/
@@ -109,9 +109,9 @@ ai/
 └── patterns/
 ```
 
-Start with `ai/SKILL.md`. `ai/INDEX.md` routes the agent to focused references only when needed, while `references/` documents ARCUI contracts and `patterns/` covers common composition workflows.
+For an installed package, start with `ai/SKILL.md`. `ai/INDEX.md` routes the agent to focused references only when needed, while `references/` documents ARCUI contracts and `patterns/` covers common composition workflows.
 
-The guidance ships alongside the package so AI-generated ARCUI code can target the same API version installed in the application. The `ai/` directory is documentation-only and is not part of ARCUI's runtime entry points.
+The guidance ships alongside the package so AI-generated ARCUI code can target the same API version installed in the application. These files are documentation-only and are not ARCUI runtime entry points.
 
 ## Motion that follows the UI
 
@@ -189,6 +189,30 @@ export default function App() {
 ```
 
 Top-level token overrides are intentionally shallow. Compose nested token groups explicitly when customizing them.
+
+## Color overrides and semantic tones
+
+Color-owning components use a consistent `colors` contract. Every color override accepts either a fixed color or a theme-aware pair:
+
+```tsx
+<Button
+  tone="secondary"
+  colors={{
+    background: {
+      default: {
+        light: "rgba(232,242,255,1)",
+        dark: "rgba(18,38,58,1)",
+      },
+    },
+  }}
+>
+  Continue
+</Button>
+```
+
+A fixed string is used in both themes. A complete `{ light, dark }` pair participates in ARCUI's animated theme transition. Partial `colors` objects fall back to the matching semantic tone/component token state.
+
+Semantic components expose `tone` only where it represents a real preset, including Button, Badge, Toast, Infobox, and Dropdown item danger semantics. Consumer-owned `ReactNode` content remains consumer-owned and is not recolored automatically.
 
 ## Components
 
@@ -277,7 +301,7 @@ Avoid deep imports from `src` or `dist`; only documented package entry points ar
 
 ## Compatibility
 
-ARCUI `1.x` targets modern React Native while keeping the public runtime compatible across supported Reanimated 3.19+ and 4.x environments.
+ARCUI targets modern React Native while keeping the public runtime compatible across the supported Reanimated 3.19+ and 4.x range.
 
 | Dependency                   | Supported range   |
 | ---------------------------- | ----------------- |

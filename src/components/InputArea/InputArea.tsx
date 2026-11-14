@@ -34,6 +34,7 @@ const InputAreaComponent = ({
   ref: externalRef,
   label,
   error,
+  colors,
   disabled = false,
   active = true,
   showCharCount = true,
@@ -196,6 +197,7 @@ const InputAreaComponent = ({
     errorColor,
     placeholderColor,
   } = useFieldAnimatedColors({
+    colors,
     focusedProgress,
     errorProgress,
     disabledProgress,

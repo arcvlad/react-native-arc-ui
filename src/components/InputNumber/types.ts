@@ -8,7 +8,13 @@ import type {
   AccessibilityValue,
 } from "react-native";
 
-import type { IButton } from "../Button/types";
+import type { IFieldColors } from "../../types/fieldColors";
+import type { IButton, IButtonColors, TButtonTone } from "../Button/types";
+
+export type IInputNumberColors = Pick<
+  IFieldColors,
+  "background" | "border" | "text" | "label" | "error"
+>;
 
 export type TInputNumberButtonType = NonNullable<IButton["type"]>;
 
@@ -89,6 +95,8 @@ export type IInputNumber = TInputNumberNativeProps & {
 
   error?: string;
 
+  colors?: Readonly<IInputNumberColors>;
+
   /**
    * Fully disabled semantic state.
    *
@@ -110,12 +118,20 @@ export type IInputNumber = TInputNumberNativeProps & {
    */
   decrementButtonType?: TInputNumberButtonType;
 
+  decrementButtonTone?: TButtonTone;
+
+  decrementButtonColors?: Readonly<IButtonColors>;
+
   /**
    * Visual type of the increment button.
    *
    * @default "border"
    */
   incrementButtonType?: TInputNumberButtonType;
+
+  incrementButtonTone?: TButtonTone;
+
+  incrementButtonColors?: Readonly<IButtonColors>;
 
   /**
    * Resting presentation of the numeric value surface.

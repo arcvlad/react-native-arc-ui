@@ -22,7 +22,7 @@ import { useARCUISystem, useARCUITheme } from "../../contexts/hooks";
 import { resolveAnimation } from "../../utils/resolveAnimation";
 
 import { resolveTypographyStyle } from "../../utils/resolveTypography";
-import type { ISliderColors, ISliderSizes } from "./types";
+import type { ISliderAnimatedColors, ISliderSizes } from "./types";
 import {
   clampSliderNormalized,
   formatSliderValue,
@@ -60,7 +60,8 @@ interface ISliderThumb {
   step: number;
 
   sizes: ISliderSizes;
-  colors: ISliderColors;
+  colors: ISliderAnimatedColors;
+  initialThumbColor: string;
 
   /**
    * Optional JS-side live semantic update.
@@ -113,6 +114,7 @@ const SliderThumbComponent = ({
   step,
   sizes,
   colors,
+  initialThumbColor,
   onChange,
   onFinish,
   onReconcile,
@@ -120,7 +122,7 @@ const SliderThumbComponent = ({
   disabled,
   testID,
 }: ISliderThumb) => {
-  const { tokens, theme } = useARCUITheme();
+  const { tokens } = useARCUITheme();
   const { fontScale } = useARCUISystem();
 
   const prefersReducedMotion = useReducedMotion();
@@ -223,10 +225,6 @@ const SliderThumbComponent = ({
     }),
     [initialNormalizedPosition, thumbTouchSize],
   );
-
-  const initialThumbColor = disabled
-    ? tokens.colors[theme].slider.thumb.disabled
-    : tokens.colors[theme].slider.thumb.primary;
 
   const initialThumbStyle = useMemo<ViewStyle>(
     () => ({
@@ -570,9 +568,7 @@ const SliderThumbComponent = ({
     fontSize: valueFontSize * fontScale.value,
 
     lineHeight:
-      valueLineHeight != null
-        ? valueLineHeight * fontScale.value
-        : undefined,
+      valueLineHeight != null ? valueLineHeight * fontScale.value : undefined,
   }));
 
   const animatedTooltipTextColorStyle = useAnimatedStyle(() => ({

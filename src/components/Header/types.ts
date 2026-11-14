@@ -1,10 +1,30 @@
 import type { ReactNode, Ref } from "react";
 import type { StyleProp, View, ViewProps, ViewStyle } from "react-native";
 
-import type { IIcon } from "../Icon/types";
+import type { TThemeColor } from "../../types/colors";
 import type { TPressAnimation } from "../../tokens/Animations";
+import type { IIcon } from "../Icon/types";
 
 export type THeaderTitleAlign = "start" | "center";
+
+export interface IHeaderControlColors {
+  background?: Readonly<{
+    default?: TThemeColor;
+    pressed?: TThemeColor;
+  }>;
+
+  icon?: Readonly<{
+    default?: TThemeColor;
+    disabled?: TThemeColor;
+  }>;
+}
+
+export interface IHeaderColors {
+  background?: TThemeColor;
+  title?: TThemeColor;
+  border?: TThemeColor;
+  control?: Readonly<IHeaderControlColors>;
+}
 
 export interface IHeaderControl {
   icon: THeaderAction["icon"];
@@ -15,6 +35,7 @@ export interface IHeaderControl {
   mirrorInRTL?: boolean;
   radius: number;
   animation: TPressAnimation;
+  colors?: Readonly<IHeaderControlColors>;
   testID?: string;
 }
 
@@ -60,6 +81,11 @@ type THeaderBase = Omit<ViewProps, "children" | "style"> & {
    * as consumer-owned custom content.
    */
   title?: ReactNode;
+
+  /**
+   * Per-instance ARCUI-owned color overrides.
+   */
+  colors?: Readonly<IHeaderColors>;
 
   /**
    * Minimum height of the toolbar content area, excluding safe-area

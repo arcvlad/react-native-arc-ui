@@ -13,7 +13,7 @@ import Animated, {
 import { useARCUITheme } from "../../contexts/hooks";
 import { resolveAnimation } from "../../utils/resolveAnimation";
 
-import type { ISliderColors, ISliderSizes } from "./types";
+import type { ISliderAnimatedColors, ISliderSizes } from "./types";
 import {
   clampSliderNormalized,
   sliderNormalizedToSnappedNormalized,
@@ -36,7 +36,7 @@ interface ISliderTrack {
   step: number;
 
   sizes: ISliderSizes;
-  colors: ISliderColors;
+  colors: ISliderAnimatedColors;
 
   disabled: boolean;
 

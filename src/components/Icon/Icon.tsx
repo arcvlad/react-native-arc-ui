@@ -12,6 +12,7 @@ import {
   useARCUITheme,
 } from "../../contexts/hooks";
 import { resolveNonNegativeMetric } from "../../utils/numberUtils";
+import { resolveThemeColor } from "../../utils/resolveThemeColor";
 
 import type { IIcon } from "./types";
 
@@ -23,11 +24,8 @@ const IconComponent = ({
   ref,
   type,
   size,
-  color,
-  darkColor,
-  lightColor,
+  colors,
   animatedColor,
-  reverseThemeColor = false,
   scaleWithFont = false,
   strokeWidth,
   accessible,
@@ -50,7 +48,7 @@ const IconComponent = ({
     Record<string, ReactElement | undefined>
   > = iconSet;
 
-  // ─── Resolution ──────────────────────────────────
+  // ─── Resolution ───────────────────────────────────────────────────────────
 
   const resolvedSize = resolveNonNegativeMetric(size, tokens.sizings.icon.m);
 
@@ -68,64 +66,41 @@ const IconComponent = ({
     );
   }
 
-  // ─── Theme resolution ────────────────────────────
+  // ─── Theme resolution ────────────────────────────────────────────────────
 
-  const defaultDarkColor = tokens.colors.dark.icon.primary;
+  const resolvedThemeColor = resolveThemeColor(
+    colors?.icon,
+    tokens.colors.light.icon.primary,
+    tokens.colors.dark.icon.primary,
+    "Icon colors.icon",
+  );
 
-  const defaultLightColor = tokens.colors.light.icon.primary;
-
-  /**
-   * reverseThemeColor applies only to ARCUI defaults.
-   *
-   * Explicit color inputs describe the consumer's intended colors and
-   * therefore must not be silently reversed.
-   */
-  const resolvedDefaultDarkColor = reverseThemeColor
-    ? defaultLightColor
-    : defaultDarkColor;
-
-  const resolvedDefaultLightColor = reverseThemeColor
-    ? defaultDarkColor
-    : defaultLightColor;
-
-  const hasThemeColorPair = darkColor != null && lightColor != null;
+  const resolvedLightColor = resolvedThemeColor.light;
+  const resolvedDarkColor = resolvedThemeColor.dark;
 
   /**
    * Color ownership priority:
    *
    * animatedColor
-   * -> fixed color
-   * -> complete theme pair
-   * -> ARCUI default / reversed default
+   * -> colors.icon
+   * -> ARCUI Icon tokens
    *
-   * animatedColor is already the final rendered color, so Icon never
-   * applies another theme interpolation on top of it.
+   * animatedColor is already the final rendered color, so Icon never applies
+   * another theme interpolation on top of it.
    */
   const resolvedColor = useDerivedValue<string>(() => {
     if (animatedColor != null) {
       return animatedColor.value;
     }
 
-    if (color != null) {
-      return color;
-    }
-
-    if (hasThemeColorPair) {
-      return interpolateColor(
-        themeProgress.value,
-        [0, 1],
-        [darkColor, lightColor],
-      );
-    }
-
     return interpolateColor(
       themeProgress.value,
       [0, 1],
-      [resolvedDefaultDarkColor, resolvedDefaultLightColor],
+      [resolvedDarkColor, resolvedLightColor],
     );
   });
 
-  // ─── Animated SVG props ──────────────────────────
+  // ─── Animated SVG props ──────────────────────────────────────────────────
 
   /**
    * IMPORTANT — keep animated color on the inner G, not on the root Svg.
@@ -186,7 +161,7 @@ const IconComponent = ({
     color: resolvedColor.value,
   }));
 
-  // ─── Accessibility ───────────────────────────────
+  // ─── Accessibility ───────────────────────────────────────────────────────
 
   /**
    * Icons are decorative by default.
@@ -196,7 +171,7 @@ const IconComponent = ({
    */
   const resolvedAccessible = accessible ?? accessibilityLabel != null;
 
-  // ─── Render ──────────────────────────────────────
+  // ─── Render ───────────────────────────────────────────────────────────────
 
   return (
     <AnimatedSvg

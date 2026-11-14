@@ -30,6 +30,7 @@ import Animated, {
 } from "react-native-reanimated";
 
 import { useARCUIAnimatedTheme, useARCUITheme } from "../../contexts/hooks";
+import { resolveThemeColor } from "../../utils/resolveThemeColor";
 import { Tab } from "./Tab";
 import { TabContext, type TTabLayout } from "./TabContext";
 import type {
@@ -38,6 +39,7 @@ import type {
   TTabBarOrientation,
   TTabScreenChild,
 } from "./types";
+import { resolveTabType } from "./utils";
 
 const isTabScreenElement = (
   child: ReactElement,
@@ -53,13 +55,11 @@ const isTabScreenElement = (
 const TabNavigationComponent = ({
   activeTab: activeTabProp,
   onActiveTabChange,
-  type = "underline",
+  type: typeProp = "underline",
   tabBarPosition = "top",
   tabBarLayout = "inline",
   tabBarRadius,
-  tabBarBackgroundColor,
-  tabBarDarkBackgroundColor,
-  tabBarLightBackgroundColor,
+  colors,
   tabBarSizeMode = "fill",
   tabBarAlignment = "start",
   tabBarInset,
@@ -73,6 +73,8 @@ const TabNavigationComponent = ({
   const { themeProgress } = useARCUIAnimatedTheme();
 
   const prefersReducedMotion = useReducedMotion();
+
+  const type = resolveTabType(typeProp, "TabNavigation");
 
   const tabBarOrientation: TTabBarOrientation =
     tabBarPosition === "start" || tabBarPosition === "end"
@@ -627,25 +629,63 @@ const TabNavigationComponent = ({
     tabOrderKey,
   ]);
 
-  const lightActiveText = tokens.colors.light.tabs[type].text.active;
-  const darkActiveText = tokens.colors.dark.tabs[type].text.active;
-  const lightInactiveText = tokens.colors.light.tabs[type].text.inactive;
-  const darkInactiveText = tokens.colors.dark.tabs[type].text.inactive;
-  const lightIndicator = tokens.colors.light.tabs[type].indicator;
-  const darkIndicator = tokens.colors.dark.tabs[type].indicator;
+  const lightTypePalette = tokens.colors.light.tabs[type];
+  const darkTypePalette = tokens.colors.dark.tabs[type];
 
-  const lightContainer = isSegment
+  const tokenLightContainer = isSegment
     ? tokens.colors.light.tabs.segment.containerBackground
     : tokens.colors.light.tabs.container.background;
-  const darkContainer = isSegment
+  const tokenDarkContainer = isSegment
     ? tokens.colors.dark.tabs.segment.containerBackground
     : tokens.colors.dark.tabs.container.background;
-  const lightContainerBorder = isSegment
+  const tokenLightContainerBorder = isSegment
     ? tokens.colors.light.tabs.segment.containerBorder
     : tokens.colors.light.tabs.container.border;
-  const darkContainerBorder = isSegment
+  const tokenDarkContainerBorder = isSegment
     ? tokens.colors.dark.tabs.segment.containerBorder
     : tokens.colors.dark.tabs.container.border;
+
+  const activeText = resolveThemeColor(
+    colors?.text?.active,
+    lightTypePalette.text.active,
+    darkTypePalette.text.active,
+    "Tabs colors.text.active",
+  );
+  const inactiveText = resolveThemeColor(
+    colors?.text?.inactive,
+    lightTypePalette.text.inactive,
+    darkTypePalette.text.inactive,
+    "Tabs colors.text.inactive",
+  );
+  const indicatorEndpoints = resolveThemeColor(
+    colors?.indicator,
+    lightTypePalette.indicator,
+    darkTypePalette.indicator,
+    "Tabs colors.indicator",
+  );
+  const container = resolveThemeColor(
+    colors?.container?.background,
+    tokenLightContainer,
+    tokenDarkContainer,
+    "Tabs colors.container.background",
+  );
+  const containerBorder = resolveThemeColor(
+    colors?.container?.border,
+    tokenLightContainerBorder,
+    tokenDarkContainerBorder,
+    "Tabs colors.container.border",
+  );
+
+  const lightActiveText = activeText.light;
+  const darkActiveText = activeText.dark;
+  const lightInactiveText = inactiveText.light;
+  const darkInactiveText = inactiveText.dark;
+  const lightIndicator = indicatorEndpoints.light;
+  const darkIndicator = indicatorEndpoints.dark;
+  const lightContainer = container.light;
+  const darkContainer = container.dark;
+  const lightContainerBorder = containerBorder.light;
+  const darkContainerBorder = containerBorder.dark;
 
   const tabsRadius = tokens.radius.tabs;
   const tabsBorderWidth = tokens.border.tabs;
@@ -664,16 +704,6 @@ const TabNavigationComponent = ({
   if (__DEV__ && !hasValidTabBarRadius) {
     console.error(
       "[react-native-arc-ui] TabNavigation: tabBarRadius must be a finite number greater than or equal to zero. Falling back to the default TabBar radius.",
-    );
-  }
-
-  const hasIncompleteTabBarThemeBackgroundPair =
-    (tabBarDarkBackgroundColor != null) !==
-    (tabBarLightBackgroundColor != null);
-
-  if (__DEV__ && hasIncompleteTabBarThemeBackgroundPair) {
-    console.error(
-      "[react-native-arc-ui] TabNavigation: tabBarDarkBackgroundColor and tabBarLightBackgroundColor must be provided together. The incomplete theme color pair was ignored.",
     );
   }
 
@@ -701,28 +731,13 @@ const TabNavigationComponent = ({
     ),
   );
 
-  const containerColor = useDerivedValue(() => {
-    if (tabBarBackgroundColor != null) {
-      return tabBarBackgroundColor;
-    }
-
-    if (
-      tabBarDarkBackgroundColor != null &&
-      tabBarLightBackgroundColor != null
-    ) {
-      return interpolateColor(
-        themeProgress.value,
-        [0, 1],
-        [tabBarDarkBackgroundColor, tabBarLightBackgroundColor],
-      );
-    }
-
-    return interpolateColor(
+  const containerColor = useDerivedValue(() =>
+    interpolateColor(
       themeProgress.value,
       [0, 1],
       [darkContainer, lightContainer],
-    );
-  });
+    ),
+  );
 
   const containerBorderColor = useDerivedValue(() =>
     interpolateColor(

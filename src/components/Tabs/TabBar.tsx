@@ -13,6 +13,7 @@ import {
 } from "react";
 import {
   ScrollView,
+  StyleSheet,
   type LayoutChangeEvent,
   type ViewStyle,
 } from "react-native";
@@ -28,8 +29,10 @@ import Animated, {
 
 import { useARCUIAnimatedTheme, useARCUITheme } from "../../contexts/hooks";
 import { resolveAnimation } from "../../utils/resolveAnimation";
+import { resolveThemeColor } from "../../utils/resolveThemeColor";
 import { TabContext, type TTabLayout } from "./TabContext";
 import type { ITabBar, TTabChild } from "./types";
+import { resolveTabType } from "./utils";
 
 const isTabElement = (child: ReactElement): child is ReactElement<TTabChild> =>
   typeof (child.props as TTabChild).value === "string";
@@ -37,9 +40,10 @@ const isTabElement = (child: ReactElement): child is ReactElement<TTabChild> =>
 const TabBarComponent = ({
   activeTab: activeTabProp,
   onActiveTabChange,
-  type = "underline",
+  type: typeProp = "underline",
   orientation = "horizontal",
   sizeMode = "fill",
+  colors,
   segmentInset: segmentInsetProp,
   children,
   style,
@@ -50,6 +54,7 @@ const TabBarComponent = ({
 
   const prefersReducedMotion = useReducedMotion();
 
+  const type = resolveTabType(typeProp, "TabBar");
   const isVertical = orientation === "vertical";
   const isSegment = type === "segment";
 
@@ -442,25 +447,99 @@ const TabBarComponent = ({
     tabProgressShared,
   ]);
 
-  const lightActiveText = tokens.colors.light.tabs[type].text.active;
-  const darkActiveText = tokens.colors.dark.tabs[type].text.active;
-  const lightInactiveText = tokens.colors.light.tabs[type].text.inactive;
-  const darkInactiveText = tokens.colors.dark.tabs[type].text.inactive;
-  const lightIndicator = tokens.colors.light.tabs[type].indicator;
-  const darkIndicator = tokens.colors.dark.tabs[type].indicator;
+  const lightTypePalette = tokens.colors.light.tabs[type];
+  const darkTypePalette = tokens.colors.dark.tabs[type];
 
-  const lightContainer = isSegment
+  const tokenLightContainer = isSegment
     ? tokens.colors.light.tabs.segment.containerBackground
     : tokens.colors.light.tabs.container.background;
-  const darkContainer = isSegment
+  const tokenDarkContainer = isSegment
     ? tokens.colors.dark.tabs.segment.containerBackground
     : tokens.colors.dark.tabs.container.background;
-  const lightContainerBorder = isSegment
+  const tokenLightContainerBorder = isSegment
     ? tokens.colors.light.tabs.segment.containerBorder
     : tokens.colors.light.tabs.container.border;
-  const darkContainerBorder = isSegment
+  const tokenDarkContainerBorder = isSegment
     ? tokens.colors.dark.tabs.segment.containerBorder
     : tokens.colors.dark.tabs.container.border;
+
+  const activeText = resolveThemeColor(
+    colors?.text?.active,
+    lightTypePalette.text.active,
+    darkTypePalette.text.active,
+    "Tabs colors.text.active",
+  );
+  const inactiveText = resolveThemeColor(
+    colors?.text?.inactive,
+    lightTypePalette.text.inactive,
+    darkTypePalette.text.inactive,
+    "Tabs colors.text.inactive",
+  );
+  const indicatorEndpoints = resolveThemeColor(
+    colors?.indicator,
+    lightTypePalette.indicator,
+    darkTypePalette.indicator,
+    "Tabs colors.indicator",
+  );
+  const container = resolveThemeColor(
+    colors?.container?.background,
+    tokenLightContainer,
+    tokenDarkContainer,
+    "Tabs colors.container.background",
+  );
+  const containerBorder = resolveThemeColor(
+    colors?.container?.border,
+    tokenLightContainerBorder,
+    tokenDarkContainerBorder,
+    "Tabs colors.container.border",
+  );
+
+  const lightActiveText = activeText.light;
+  const darkActiveText = activeText.dark;
+  const lightInactiveText = inactiveText.light;
+  const darkInactiveText = inactiveText.dark;
+  const lightIndicator = indicatorEndpoints.light;
+  const darkIndicator = indicatorEndpoints.dark;
+  const lightContainer = container.light;
+  const darkContainer = container.dark;
+  const lightContainerBorder = containerBorder.light;
+  const darkContainerBorder = containerBorder.dark;
+
+  const { resolvedConsumerStyle, styleOwnsBackground, styleOwnsBorder } =
+    useMemo(() => {
+      const flattenedStyle: ViewStyle = {
+        ...(StyleSheet.flatten(style) ?? {}),
+      };
+
+      const hasBackgroundColorOverride =
+        colors?.container?.background !== undefined;
+      const hasBorderColorOverride = colors?.container?.border !== undefined;
+
+      const resolvedStyle: ViewStyle = { ...flattenedStyle };
+
+      if (hasBackgroundColorOverride) {
+        delete resolvedStyle.backgroundColor;
+      }
+
+      if (hasBorderColorOverride) {
+        delete resolvedStyle.borderColor;
+        delete resolvedStyle.borderTopColor;
+        delete resolvedStyle.borderRightColor;
+        delete resolvedStyle.borderBottomColor;
+        delete resolvedStyle.borderLeftColor;
+        delete resolvedStyle.borderStartColor;
+        delete resolvedStyle.borderEndColor;
+      }
+
+      return {
+        resolvedConsumerStyle: resolvedStyle,
+        styleOwnsBackground:
+          !hasBackgroundColorOverride &&
+          flattenedStyle.backgroundColor !== undefined,
+        styleOwnsBorder:
+          !hasBorderColorOverride && flattenedStyle.borderColor !== undefined,
+      };
+    }, [colors?.container?.background, colors?.container?.border, style]);
 
   const tabsRadius = tokens.radius.tabs;
   const tabsBorderWidth = tokens.border.tabs;
@@ -524,8 +603,8 @@ const TabBarComponent = ({
   }, [isVertical, tabsBorderWidth, tabsRadius, type]);
 
   const animatedContainerStyle = useAnimatedStyle(() => ({
-    backgroundColor: containerColor.value,
-    borderColor: containerBorderColor.value,
+    backgroundColor: styleOwnsBackground ? undefined : containerColor.value,
+    borderColor: styleOwnsBorder ? undefined : containerBorderColor.value,
   }));
 
   const animatedSolidIndicatorStyle = useAnimatedStyle(() => {
@@ -832,7 +911,7 @@ const TabBarComponent = ({
           containerVariantStyle,
           animatedContainerStyle,
           segmentContainerStyle,
-          style,
+          resolvedConsumerStyle,
         ]}
         role="tablist"
         accessibilityRole="tablist"

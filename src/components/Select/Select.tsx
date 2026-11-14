@@ -34,6 +34,7 @@ import {
   resolvePositiveInteger,
 } from "../../utils/numberUtils";
 import { resolveAnimation } from "../../utils/resolveAnimation";
+import { resolveThemeColor } from "../../utils/resolveThemeColor";
 import { Chip } from "../Chip/Chip";
 import { Icon } from "../Icon/Icon";
 import { SpinnerLoader } from "../SpinnerLoader/SpinnerLoader";
@@ -60,6 +61,7 @@ const SelectComponent = ({
   maxSelect,
 
   options = [],
+  colors,
 
   searchable = false,
   onSearchAsync,
@@ -808,103 +810,198 @@ const SelectComponent = ({
     listParticleCount,
   ]);
 
-  // ─── Theme token extraction ──────────────────────────────────────────────
+  // ─── Color endpoints ───────────────────────────────────────────────────────
 
-  const lightBorderNormal = tokens.colors.light.select.border.primary;
+  const lightPalette = tokens.colors.light.select;
+  const darkPalette = tokens.colors.dark.select;
 
-  const darkBorderNormal = tokens.colors.dark.select.border.primary;
+  const borderDefault = resolveThemeColor(
+    colors?.border?.default,
+    lightPalette.border.primary,
+    darkPalette.border.primary,
+    "Select colors.border.default",
+  );
+  const borderFocused = resolveThemeColor(
+    colors?.border?.focused,
+    lightPalette.border.focused,
+    darkPalette.border.focused,
+    "Select colors.border.focused",
+  );
+  const borderDisabled = resolveThemeColor(
+    colors?.border?.disabled,
+    lightPalette.border.disabled,
+    darkPalette.border.disabled,
+    "Select colors.border.disabled",
+  );
+  const borderError = resolveThemeColor(
+    colors?.border?.error,
+    lightPalette.border.error,
+    darkPalette.border.error,
+    "Select colors.border.error",
+  );
+  const borderInactive = resolveThemeColor(
+    colors?.border?.inactive,
+    lightPalette.border.inactive,
+    darkPalette.border.inactive,
+    "Select colors.border.inactive",
+  );
 
-  const lightBorderOpen = tokens.colors.light.select.border.focused;
+  const backgroundDefault = resolveThemeColor(
+    colors?.background?.default,
+    lightPalette.background.primary,
+    darkPalette.background.primary,
+    "Select colors.background.default",
+  );
+  const backgroundDisabled = resolveThemeColor(
+    colors?.background?.disabled,
+    lightPalette.background.disabled,
+    darkPalette.background.disabled,
+    "Select colors.background.disabled",
+  );
 
-  const darkBorderOpen = tokens.colors.dark.select.border.focused;
+  const labelDefault = resolveThemeColor(
+    colors?.label?.default,
+    lightPalette.label.primary,
+    darkPalette.label.primary,
+    "Select colors.label.default",
+  );
+  const labelDisabled = resolveThemeColor(
+    colors?.label?.disabled,
+    lightPalette.label.disabled,
+    darkPalette.label.disabled,
+    "Select colors.label.disabled",
+  );
 
-  const lightBorderDisabled = tokens.colors.light.select.border.disabled;
+  const textDefault = resolveThemeColor(
+    colors?.text?.default,
+    lightPalette.text.primary,
+    darkPalette.text.primary,
+    "Select colors.text.default",
+  );
+  const textPlaceholder = resolveThemeColor(
+    colors?.text?.placeholder,
+    lightPalette.text.placeholder,
+    darkPalette.text.placeholder,
+    "Select colors.text.placeholder",
+  );
+  const textDisabled = resolveThemeColor(
+    colors?.text?.disabled,
+    lightPalette.text.disabled,
+    darkPalette.text.disabled,
+    "Select colors.text.disabled",
+  );
 
-  const darkBorderDisabled = tokens.colors.dark.select.border.disabled;
+  const iconDefault = resolveThemeColor(
+    colors?.icon?.default,
+    lightPalette.icon.primary,
+    darkPalette.icon.primary,
+    "Select colors.icon.default",
+  );
+  const iconDisabled = resolveThemeColor(
+    colors?.icon?.disabled,
+    lightPalette.icon.disabled,
+    darkPalette.icon.disabled,
+    "Select colors.icon.disabled",
+  );
 
-  const lightBorderError = tokens.colors.light.select.border.error;
+  const errorColor = resolveThemeColor(
+    colors?.error,
+    lightPalette.error,
+    darkPalette.error,
+    "Select colors.error",
+  );
+  const searchText = resolveThemeColor(
+    colors?.search?.text,
+    lightPalette.search.text,
+    darkPalette.search.text,
+    "Select colors.search.text",
+  );
+  const searchPlaceholderColor = resolveThemeColor(
+    colors?.search?.placeholder,
+    lightPalette.search.placeholder,
+    darkPalette.search.placeholder,
+    "Select colors.search.placeholder",
+  );
+  const searchIcon = resolveThemeColor(
+    colors?.search?.icon,
+    lightPalette.search.icon,
+    darkPalette.search.icon,
+    "Select colors.search.icon",
+  );
+  const loadingColor = resolveThemeColor(
+    colors?.loading,
+    lightPalette.loading,
+    darkPalette.loading,
+    "Select colors.loading",
+  );
+  const emptyStateColor = resolveThemeColor(
+    colors?.emptyState,
+    lightPalette.emptyState,
+    darkPalette.emptyState,
+    "Select colors.emptyState",
+  );
+  const groupHeaderColor = resolveThemeColor(
+    colors?.groupHeader,
+    lightPalette.groupHeader,
+    darkPalette.groupHeader,
+    "Select colors.groupHeader",
+  );
 
-  const darkBorderError = tokens.colors.dark.select.border.error;
+  const lightBorderNormal = borderDefault.light;
+  const darkBorderNormal = borderDefault.dark;
+  const lightBorderOpen = borderFocused.light;
+  const darkBorderOpen = borderFocused.dark;
+  const lightBorderDisabled = borderDisabled.light;
+  const darkBorderDisabled = borderDisabled.dark;
+  const lightBorderError = borderError.light;
+  const darkBorderError = borderError.dark;
+  const lightBorderInactive = borderInactive.light;
+  const darkBorderInactive = borderInactive.dark;
 
-  const lightBorderInactive = tokens.colors.light.select.border.inactive;
+  const lightBackground = backgroundDefault.light;
+  const darkBackground = backgroundDefault.dark;
+  const lightBackgroundDisabled = backgroundDisabled.light;
+  const darkBackgroundDisabled = backgroundDisabled.dark;
 
-  const darkBorderInactive = tokens.colors.dark.select.border.inactive;
+  const lightLabel = labelDefault.light;
+  const darkLabel = labelDefault.dark;
+  const lightLabelDisabled = labelDisabled.light;
+  const darkLabelDisabled = labelDisabled.dark;
 
-  const lightBackground = tokens.colors.light.select.background.primary;
+  const lightText = textDefault.light;
+  const darkText = textDefault.dark;
+  const lightPlaceholder = textPlaceholder.light;
+  const darkPlaceholder = textPlaceholder.dark;
+  const lightTextDisabled = textDisabled.light;
+  const darkTextDisabled = textDisabled.dark;
 
-  const darkBackground = tokens.colors.dark.select.background.primary;
+  const lightIcon = iconDefault.light;
+  const darkIcon = iconDefault.dark;
+  const lightIconDisabled = iconDisabled.light;
+  const darkIconDisabled = iconDisabled.dark;
 
-  const lightBackgroundDisabled =
-    tokens.colors.light.select.background.disabled;
+  const lightError = errorColor.light;
+  const darkError = errorColor.dark;
 
-  const darkBackgroundDisabled = tokens.colors.dark.select.background.disabled;
+  const lightListBackground = backgroundDefault.light;
+  const darkListBackground = backgroundDefault.dark;
+  const lightListBorder = borderDefault.light;
+  const darkListBorder = borderDefault.dark;
 
-  const lightLabel = tokens.colors.light.select.label.primary;
-
-  const darkLabel = tokens.colors.dark.select.label.primary;
-
-  const lightLabelDisabled = tokens.colors.light.select.label.disabled;
-
-  const darkLabelDisabled = tokens.colors.dark.select.label.disabled;
-
-  const lightText = tokens.colors.light.select.text.primary;
-
-  const darkText = tokens.colors.dark.select.text.primary;
-
-  const lightPlaceholder = tokens.colors.light.select.text.placeholder;
-
-  const darkPlaceholder = tokens.colors.dark.select.text.placeholder;
-
-  const lightTextDisabled = tokens.colors.light.select.text.disabled;
-
-  const darkTextDisabled = tokens.colors.dark.select.text.disabled;
-
-  const lightIcon = tokens.colors.light.select.icon.primary;
-
-  const darkIcon = tokens.colors.dark.select.icon.primary;
-
-  const lightIconDisabled = tokens.colors.light.select.icon.disabled;
-
-  const darkIconDisabled = tokens.colors.dark.select.icon.disabled;
-
-  const lightError = tokens.colors.light.select.error;
-
-  const darkError = tokens.colors.dark.select.error;
-
-  const lightListBackground = tokens.colors.light.select.background.primary;
-
-  const darkListBackground = tokens.colors.dark.select.background.primary;
-
-  const lightListBorder = tokens.colors.light.select.border.primary;
-
-  const darkListBorder = tokens.colors.dark.select.border.primary;
-
-  const lightSearchText = tokens.colors.light.select.search.text;
-
-  const darkSearchText = tokens.colors.dark.select.search.text;
-
-  const lightSearchPlaceholder = tokens.colors.light.select.search.placeholder;
-
-  const darkSearchPlaceholder = tokens.colors.dark.select.search.placeholder;
-
-  const lightEmptyState = tokens.colors.light.select.emptyState;
-
-  const darkEmptyState = tokens.colors.dark.select.emptyState;
-
-  const lightGroupHeader = tokens.colors.light.select.text.placeholder;
-
-  const darkGroupHeader = tokens.colors.dark.select.text.placeholder;
-
-  const lightSearchIcon = tokens.colors.light.select.search.icon;
-
-  const darkSearchIcon = tokens.colors.dark.select.search.icon;
-
-  const lightLoading = tokens.colors.light.select.loading;
-
-  const darkLoading = tokens.colors.dark.select.loading;
+  const lightSearchText = searchText.light;
+  const darkSearchText = searchText.dark;
+  const lightSearchPlaceholder = searchPlaceholderColor.light;
+  const darkSearchPlaceholder = searchPlaceholderColor.dark;
+  const lightSearchIcon = searchIcon.light;
+  const darkSearchIcon = searchIcon.dark;
+  const lightLoading = loadingColor.light;
+  const darkLoading = loadingColor.dark;
+  const lightEmptyState = emptyStateColor.light;
+  const darkEmptyState = emptyStateColor.dark;
+  const lightGroupHeader = groupHeaderColor.light;
+  const darkGroupHeader = groupHeaderColor.dark;
 
   const resolvedLightIcon = resolvedDisabled ? lightIconDisabled : lightIcon;
-
   const resolvedDarkIcon = resolvedDisabled ? darkIconDisabled : darkIcon;
 
   // ─── Trigger colors ──────────────────────────────────────────────────────
@@ -1522,8 +1619,12 @@ const SelectComponent = ({
             <Icon
               type="chevronDown"
               size={tokens.sizings.icon.s}
-              lightColor={resolvedLightIcon}
-              darkColor={resolvedDarkIcon}
+              colors={{
+                icon: {
+                  light: resolvedLightIcon,
+                  dark: resolvedDarkIcon,
+                },
+              }}
             />
           </Animated.View>
         </Animated.View>
@@ -1560,8 +1661,12 @@ const SelectComponent = ({
               <Icon
                 type="search"
                 size={tokens.sizings.icon.s}
-                lightColor={lightSearchIcon}
-                darkColor={darkSearchIcon}
+                colors={{
+                  icon: {
+                    light: lightSearchIcon,
+                    dark: darkSearchIcon,
+                  },
+                }}
               />
 
               <AnimatedTextInput
@@ -1591,8 +1696,12 @@ const SelectComponent = ({
               {searchLoading && (
                 <SpinnerLoader
                   size={tokens.sizings.icon.s}
-                  darkColor={darkLoading}
-                  lightColor={lightLoading}
+                  colors={{
+                    indicator: {
+                      light: lightLoading,
+                      dark: darkLoading,
+                    },
+                  }}
                 />
               )}
             </Animated.View>
@@ -1642,6 +1751,7 @@ const SelectComponent = ({
                     <SelectItem
                       key={option.value}
                       option={option}
+                      colors={colors?.item}
                       isSelected={isSelected}
                       multiple={multiple}
                       itemHeight={resolvedItemHeight}
@@ -1675,7 +1785,6 @@ const SelectComponent = ({
                             tokens.typography.maxFontSizeMultiplier
                           }
                           style={[
-                            styles.groupHeader,
                             labelTypographyStyle,
                             animatedGroupHeaderSizeStyle,
                             animatedGroupHeaderColorStyle,
@@ -1695,6 +1804,7 @@ const SelectComponent = ({
                           <SelectItem
                             key={option.value}
                             option={option}
+                            colors={colors?.item}
                             isSelected={isSelected}
                             multiple={multiple}
                             itemHeight={resolvedItemHeight}
@@ -1737,8 +1847,12 @@ const SelectComponent = ({
           <Icon
             type="alertCircle"
             size={tokens.sizings.icon.s}
-            lightColor={lightError}
-            darkColor={darkError}
+            colors={{
+              icon: {
+                light: lightError,
+                dark: darkError,
+              },
+            }}
           />
 
           <Animated.Text
@@ -1818,10 +1932,6 @@ const styles = StyleSheet.create({
 
   groupHeaderRow: {
     justifyContent: "center",
-  },
-
-  groupHeader: {
-    opacity: 0.6,
   },
 
   emptyText: {

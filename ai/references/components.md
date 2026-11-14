@@ -106,15 +106,17 @@ accessible state.
 Compact dot or label badge.
 
 Use for supplementary status/count information, not as a generic container or
-action.
+action. Badge supports semantic `neutral`, `info`, `success`, `warning`, and
+`danger` tones plus per-instance `colors`.
 
 ### `Infobox`
 
-Semantic informational container with `default`, `warning`, and `danger`
-presentations.
+Semantic informational container with `info`, `success`, `warning`, and
+`danger` tones.
 
 Use built-in icons when ARCUI should own semantic icon styling, or `customIcon`
-when the consumer intentionally owns the custom content.
+when the consumer intentionally owns the custom content. Per-instance `colors`
+may override the semantic surface without changing the tone contract.
 
 ## Actions
 
@@ -125,8 +127,10 @@ Semantic press action.
 Use instead of rebuilding normal application actions from `Pressable`, `View`,
 and `Text` when the Button contract fits.
 
-Supports ARCUI visual types, loading, active/disabled behavior, press motion,
-icons, and native pressable escape hatches.
+Supports ARCUI visual types, `primary` / `secondary` / `neutral` / `danger` tones,
+state-aware `colors`, loading, active/disabled behavior, press motion, icons,
+and native pressable escape hatches. Consumer-owned icon ReactNodes are not
+automatically recolored.
 
 ## Selection and disclosure
 
@@ -334,10 +338,7 @@ Content is rehosted into ARCUI's root overlay layer.
 Dialog is imperative public API, not a public `Dialog` component import.
 
 ```ts
-import {
-  showDialog,
-  hideDialog,
-} from "react-native-arc-ui";
+import { showDialog, hideDialog } from "react-native-arc-ui";
 ```
 
 ### Toast API
@@ -345,10 +346,7 @@ import {
 Toast is imperative public API.
 
 ```ts
-import {
-  showToast,
-  hideToast,
-} from "react-native-arc-ui";
+import { showToast, hideToast } from "react-native-arc-ui";
 ```
 
 `showToast` returns an id that may be passed to `hideToast`.

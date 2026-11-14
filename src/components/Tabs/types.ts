@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 import type { StyleProp, ViewStyle } from "react-native";
 
+import type { TThemeColor } from "../../types/colors";
+import type { TBadgeTone } from "../Badge/types";
 import type { IIcon } from "../Icon/types";
 
 export type TTabType = "solid" | "border" | "text" | "underline" | "segment";
@@ -17,9 +19,26 @@ export type TTabBarAlignment = "start" | "center" | "end";
 
 export type TTabIconPosition = "start" | "top";
 
+export interface ITabsColors {
+  container?: Readonly<{
+    background?: TThemeColor;
+    border?: TThemeColor;
+  }>;
+
+  indicator?: TThemeColor;
+
+  text?: Readonly<{
+    active?: TThemeColor;
+    inactive?: TThemeColor;
+  }>;
+}
+
 export type TTabBadge = {
   variant: "dot";
-  color?: string;
+  tone?: TBadgeTone;
+  colors?: Readonly<{
+    background?: TThemeColor;
+  }>;
 };
 
 type TTabAccessibility = {
@@ -89,6 +108,11 @@ interface ITabBarBase {
   sizeMode?: TTabBarSizeMode;
 
   /**
+   * Per-instance ARCUI-owned TabBar color overrides.
+   */
+  colors?: Readonly<ITabsColors>;
+
+  /**
    * Inner spacing between the active segment indicator and its tab bounds.
    *
    * Only affects type="segment". Invalid or negative values fall back to
@@ -110,6 +134,11 @@ interface ITabNavigationBase {
   tabBarPosition?: TTabBarPosition;
 
   /**
+   * Per-instance ARCUI-owned TabBar color overrides.
+   */
+  colors?: Readonly<ITabsColors>;
+
+  /**
    * Controls whether the TabBar participates in layout or floats above the
    * pager content.
    *
@@ -129,26 +158,6 @@ interface ITabNavigationBase {
    * Invalid or negative values fall back to that default behavior.
    */
   tabBarRadius?: number;
-
-  /**
-   * Fixed background color for the complete TabBar surface in both themes.
-   *
-   * Takes priority over tabBarDarkBackgroundColor/tabBarLightBackgroundColor
-   * and the Tabs color tokens.
-   */
-  tabBarBackgroundColor?: string;
-
-  /**
-   * Dark-theme TabBar surface override. Used only when the matching light
-   * override is also provided.
-   */
-  tabBarDarkBackgroundColor?: string;
-
-  /**
-   * Light-theme TabBar surface override. Used only when the matching dark
-   * override is also provided.
-   */
-  tabBarLightBackgroundColor?: string;
 
   tabBarSizeMode?: TTabBarSizeMode;
 

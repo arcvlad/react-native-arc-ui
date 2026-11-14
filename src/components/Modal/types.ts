@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 import type { StyleProp, ViewStyle } from "react-native";
 
+import type { TThemeColor } from "../../types/colors";
+
 export type TModalHeight = number | `${number}%`;
 
 export type TModalCloseReason =
@@ -10,6 +12,16 @@ export type TModalCloseReason =
   | "back"
   | "swipe"
   | "accessibility";
+
+export interface IModalColors {
+  background?: TThemeColor;
+  backdrop?: TThemeColor;
+  handle?: TThemeColor;
+  border?: TThemeColor;
+  title?: TThemeColor;
+  subtitle?: TThemeColor;
+  icon?: TThemeColor;
+}
 
 export interface IModal {
   /**
@@ -41,6 +53,11 @@ export interface IModal {
   title?: string;
 
   subtitle?: string;
+
+  /**
+   * Per-instance ARCUI-owned Modal color overrides.
+   */
+  colors?: Readonly<IModalColors>;
 
   /**
    * Replaces the default close action.

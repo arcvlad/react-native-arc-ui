@@ -21,15 +21,19 @@ front. Read only the files relevant to the current task.
 
 ## Source of truth
 
-When determining how ARCUI works, prefer information in this order:
+When determining how ARCUI itself works in a consumer project, prefer
+information in this order:
 
-1. The user's explicit requirements.
-2. The existing consumer project's architecture, conventions, and constraints.
-3. The installed ARCUI version's package metadata, root exports, and public
+1. The installed ARCUI version's package metadata, root exports, and public
    TypeScript declarations.
-4. The version-matched guidance in this `ai/` directory.
-5. Current official ARCUI documentation or repository source when available.
-6. General model knowledge.
+2. The version-matched guidance in this `ai/` directory.
+3. Official ARCUI documentation or repository source that matches the same
+   version.
+4. General model knowledge.
+
+The user's requirements and the existing consumer project's architecture,
+conventions, and constraints determine what should be built and how ARCUI
+should be integrated. They do not redefine ARCUI's public API or behavior.
 
 Do not assume an ARCUI API remembered from another version still exists.
 
@@ -41,8 +45,8 @@ In an installed npm package, start with:
 
 `node_modules/react-native-arc-ui/dist/index.d.ts`
 
-When working in the ARCUI repository itself, current source files are the
-implementation source of truth.
+When working in the ARCUI repository itself, current source files and
+repository engineering rules are authoritative.
 
 Do not broadly inspect all of `node_modules` when the needed information can be
 obtained from ARCUI guidance and the declarations for the APIs being used.
@@ -107,6 +111,12 @@ Identify interface regions, interactions, state, and accessibility semantics.
 Then map supported controls to ARCUI primitives before creating custom controls.
 
 Prefer an ARCUI component when it already owns the requested semantic behavior.
+Before creating a custom interactive control, check `references/components.md`
+when component availability is uncertain.
+
+A different visual design is not, by itself, a reason to replace an ARCUI
+semantic component. First use the component's supported props, `tone`,
+`colors`, tokens, and native style escape hatches where applicable.
 
 Do not rebuild ARCUI controls from combinations of `View`, `Pressable`,
 `TextInput`, or other primitives merely to reproduce behavior ARCUI already
@@ -236,6 +246,26 @@ Do not assume recursive token merging.
 
 Respect the surrounding ARCUI theme instead of recreating light/dark behavior
 manually.
+
+## Colors and semantic tones
+
+Use the current component `colors` contracts for per-instance visual color
+overrides. Do not invent or revive legacy parallel color props such as `color`,
+`darkColor`, `lightColor`, or `reverseThemeColor` when the current component
+contract exposes `colors`.
+
+A theme-aware ARCUI color is either a fixed color string or a complete
+`{ light, dark }` pair. Do not provide incomplete theme pairs.
+
+Use `tone` only on components that expose a semantic tone contract. A tone is a
+preset semantic palette; `colors` is the per-instance override layer. Omitted
+color slots continue to resolve through the matching tone/component tokens.
+
+Consumer-owned custom `ReactNode` content remains consumer-owned and is not
+automatically recolored by the surrounding ARCUI component.
+
+Read `references/tokens-and-theming.md` when color ownership, theme-aware
+overrides, token fallback, or native style precedence matters.
 
 ## Typography
 

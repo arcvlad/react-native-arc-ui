@@ -44,7 +44,7 @@ export const pressAnimationDefaultProps: {
   scaleDownValue: 0.965,
 };
 
-// Used only for gesture-based animations: Modal snap, Slider snap
+// Used for gesture-based spring/snap animations such as Modal snap-back
 export const springConfigDefaultProps: {
   damping: number;
   stiffness: number;

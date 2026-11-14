@@ -2,7 +2,38 @@ import type { ReactNode } from "react";
 import type { PressableProps, StyleProp, TextStyle } from "react-native";
 
 import type { TPressAnimation } from "../../tokens/Animations";
+import type { TThemeColor } from "../../types/colors";
 import type { TSelectionValue } from "../SelectionGroup/types";
+
+export interface ICheckboxColors {
+  border?: Readonly<{
+    default?: TThemeColor;
+    pressed?: TThemeColor;
+    inactive?: TThemeColor;
+    disabled?: TThemeColor;
+  }>;
+
+  background?: Readonly<{
+    unchecked?: TThemeColor;
+    checked?: TThemeColor;
+    pressed?: TThemeColor;
+    inactive?: TThemeColor;
+    disabled?: TThemeColor;
+  }>;
+
+  text?: Readonly<{
+    default?: TThemeColor;
+    inactive?: TThemeColor;
+    disabled?: TThemeColor;
+  }>;
+
+  icon?: TThemeColor;
+
+  /**
+   * Validation color used by the error border, error icon, and error text.
+   */
+  error?: TThemeColor;
+}
 
 interface ICheckboxBase extends Omit<
   PressableProps,
@@ -27,6 +58,8 @@ interface ICheckboxBase extends Omit<
    * actual state change. SelectionGroup remains the state owner.
    */
   onCheckedChange?: (checked: boolean) => void;
+
+  colors?: Readonly<ICheckboxColors>;
 
   /**
    * Press feedback behavior.

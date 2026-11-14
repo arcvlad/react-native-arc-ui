@@ -24,6 +24,7 @@ import Animated, {
 } from "react-native-reanimated";
 
 import {
+  useARCUIAnimatedTheme,
   useARCUIStrings,
   useARCUISystem,
   useARCUITheme,
@@ -44,11 +45,41 @@ import { Button } from "../Button/Button";
 import { Icon } from "../Icon/Icon";
 import { inputNumberInteractionConfig } from "./config";
 import { resolveTypographyStyle } from "../../utils/resolveTypography";
-import type { IInputNumber } from "./types";
+import { resolveThemeColor } from "../../utils/resolveThemeColor";
+import type { TButtonTone } from "../Button/types";
+import type { IInputNumber, TInputNumberButtonType } from "./types";
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
 const MAX_DECIMALS = 100;
+
+const resolveInputNumberButtonTone = (tone: TButtonTone): TButtonTone =>
+  tone === "secondary" || tone === "neutral" || tone === "danger"
+    ? tone
+    : "primary";
+
+const resolveInputNumberButtonType = (
+  value: string,
+  propName: "decrementButtonType" | "incrementButtonType",
+): TInputNumberButtonType => {
+  switch (value) {
+    case "solid":
+    case "border":
+    case "transparent":
+      return value;
+
+    default:
+      if (__DEV__) {
+        console.error(
+          `[react-native-arc-ui] InputNumber ${propName} "${String(
+            value,
+          )}" is invalid. Falling back to "border".`,
+        );
+      }
+
+      return "border";
+  }
+};
 
 const InputNumberComponent = ({
   ref: externalRef,
@@ -60,10 +91,15 @@ const InputNumberComponent = ({
   decimals,
   label,
   error,
+  colors,
   disabled = false,
   active = true,
-  decrementButtonType = "border",
-  incrementButtonType = "border",
+  decrementButtonType: decrementButtonTypeProp = "border",
+  decrementButtonTone = "primary",
+  decrementButtonColors,
+  incrementButtonType: incrementButtonTypeProp = "border",
+  incrementButtonTone = "primary",
+  incrementButtonColors,
   valueType = "border",
   shape = "rounded",
   style,
@@ -84,10 +120,20 @@ const InputNumberComponent = ({
   ...textInputProps
 }: IInputNumber) => {
   const { tokens } = useARCUITheme();
+  const { themeProgress } = useARCUIAnimatedTheme();
   const { fontScale } = useARCUISystem();
   const strings = useARCUIStrings();
 
   const prefersReducedMotion = useReducedMotion();
+
+  const decrementButtonType = resolveInputNumberButtonType(
+    decrementButtonTypeProp,
+    "decrementButtonType",
+  );
+  const incrementButtonType = resolveInputNumberButtonType(
+    incrementButtonTypeProp,
+    "incrementButtonType",
+  );
 
   // ─── Public API invariants ──────────────────────────────────────────────────
 
@@ -255,6 +301,7 @@ const InputNumberComponent = ({
 
   const { backgroundColor, borderColor, labelColor, textColor, errorColor } =
     useFieldAnimatedColors({
+      colors,
       focusedProgress,
       errorProgress,
       disabledProgress,
@@ -965,28 +1012,119 @@ const InputNumberComponent = ({
       ? "inactive"
       : "primary";
 
-  const decrementIconLight =
-    tokens.colors.light.button[decrementButtonType].text[decrementIconState];
+  const resolvedDecrementTone =
+    resolveInputNumberButtonTone(decrementButtonTone);
+  const resolvedIncrementTone =
+    resolveInputNumberButtonTone(incrementButtonTone);
 
-  const decrementIconDark =
-    tokens.colors.dark.button[decrementButtonType].text[decrementIconState];
+  const decrementTextOverride =
+    decrementIconState === "primary"
+      ? decrementButtonColors?.text?.default
+      : decrementIconState === "inactive"
+        ? decrementButtonColors?.text?.inactive
+        : decrementButtonColors?.text?.disabled;
 
-  const incrementIconLight =
-    tokens.colors.light.button[incrementButtonType].text[incrementIconState];
+  const incrementTextOverride =
+    incrementIconState === "primary"
+      ? incrementButtonColors?.text?.default
+      : incrementIconState === "inactive"
+        ? incrementButtonColors?.text?.inactive
+        : incrementButtonColors?.text?.disabled;
 
-  const incrementIconDark =
-    tokens.colors.dark.button[incrementButtonType].text[incrementIconState];
+  const resolvedDecrementIcon = resolveThemeColor(
+    decrementTextOverride,
+    tokens.colors.light.button[resolvedDecrementTone][decrementButtonType].text[
+      decrementIconState
+    ],
+    tokens.colors.dark.button[resolvedDecrementTone][decrementButtonType].text[
+      decrementIconState
+    ],
+    "InputNumber decrementButtonColors.text",
+  );
+  const resolvedDecrementPressedIcon = resolveThemeColor(
+    decrementButtonColors?.text?.pressed,
+    tokens.colors.light.button[resolvedDecrementTone][decrementButtonType].text
+      .pressed,
+    tokens.colors.dark.button[resolvedDecrementTone][decrementButtonType].text
+      .pressed,
+    "InputNumber decrementButtonColors.text.pressed",
+  );
+
+  const resolvedIncrementIcon = resolveThemeColor(
+    incrementTextOverride,
+    tokens.colors.light.button[resolvedIncrementTone][incrementButtonType].text[
+      incrementIconState
+    ],
+    tokens.colors.dark.button[resolvedIncrementTone][incrementButtonType].text[
+      incrementIconState
+    ],
+    "InputNumber incrementButtonColors.text",
+  );
+  const resolvedIncrementPressedIcon = resolveThemeColor(
+    incrementButtonColors?.text?.pressed,
+    tokens.colors.light.button[resolvedIncrementTone][incrementButtonType].text
+      .pressed,
+    tokens.colors.dark.button[resolvedIncrementTone][incrementButtonType].text
+      .pressed,
+    "InputNumber incrementButtonColors.text.pressed",
+  );
+
+  /**
+   * +/- icons are ARCUI-owned nested Button content. Mirror Button's pressed
+   * text-color behavior on the UI thread instead of trying to recolor arbitrary
+   * consumer-owned Button children.
+   */
+  const decrementIconColor = useDerivedValue(() => {
+    const usesPressedColor =
+      pressAnimationType === "highlight" ||
+      (prefersReducedMotion && pressAnimationType !== "none");
+
+    const press = usesPressedColor ? decrementPressProgress.value : 0;
+
+    const light = interpolateColor(
+      press,
+      [0, 1],
+      [resolvedDecrementIcon.light, resolvedDecrementPressedIcon.light],
+    );
+    const dark = interpolateColor(
+      press,
+      [0, 1],
+      [resolvedDecrementIcon.dark, resolvedDecrementPressedIcon.dark],
+    );
+
+    return interpolateColor(themeProgress.value, [0, 1], [dark, light]);
+  });
+
+  const incrementIconColor = useDerivedValue(() => {
+    const usesPressedColor =
+      pressAnimationType === "highlight" ||
+      (prefersReducedMotion && pressAnimationType !== "none");
+
+    const press = usesPressedColor ? incrementPressProgress.value : 0;
+
+    const light = interpolateColor(
+      press,
+      [0, 1],
+      [resolvedIncrementIcon.light, resolvedIncrementPressedIcon.light],
+    );
+    const dark = interpolateColor(
+      press,
+      [0, 1],
+      [resolvedIncrementIcon.dark, resolvedIncrementPressedIcon.dark],
+    );
+
+    return interpolateColor(themeProgress.value, [0, 1], [dark, light]);
+  });
 
   const decrementIcon = useMemo(
     () => (
       <Icon
         type="minus"
         size={tokens.sizings.icon.m}
-        lightColor={decrementIconLight}
-        darkColor={decrementIconDark}
+        animatedColor={decrementIconColor}
       />
     ),
-    [tokens.sizings.icon.m, decrementIconLight, decrementIconDark],
+    [tokens.sizings.icon.m, decrementIconColor],
   );
 
   const incrementIcon = useMemo(
@@ -994,11 +1132,10 @@ const InputNumberComponent = ({
       <Icon
         type="plus"
         size={tokens.sizings.icon.m}
-        lightColor={incrementIconLight}
-        darkColor={incrementIconDark}
+        animatedColor={incrementIconColor}
       />
     ),
-    [tokens.sizings.icon.m, incrementIconLight, incrementIconDark],
+    [tokens.sizings.icon.m, incrementIconColor],
   );
 
   /**
@@ -1061,6 +1198,8 @@ const InputNumberComponent = ({
         <Button
           testID={testID ? `${testID}-decrement` : undefined}
           type={decrementButtonType}
+          tone={decrementButtonTone}
+          colors={decrementButtonColors}
           radius={shapeRadius}
           contentStyle={buttonContentStyle}
           active={active}
@@ -1138,6 +1277,8 @@ const InputNumberComponent = ({
         <Button
           testID={testID ? `${testID}-increment` : undefined}
           type={incrementButtonType}
+          tone={incrementButtonTone}
+          colors={incrementButtonColors}
           radius={shapeRadius}
           contentStyle={buttonContentStyle}
           active={active}

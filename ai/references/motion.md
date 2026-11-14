@@ -50,7 +50,7 @@ Use `.value` in:
 
 Do not migrate isolated consumer code to another SharedValue access style merely
 for theoretical consistency if the installed Reanimated contract differs, but
-when extending ARCUI-oriented patterns, `.value` matches ARCUI 1.x.
+when extending ARCUI-oriented patterns, `.value` matches ARCUI itself.
 
 ## No JS-thread animation frames
 
